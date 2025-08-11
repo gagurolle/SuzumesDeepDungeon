@@ -362,3 +362,7 @@ MigrationBackup/
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
 /SuzumesDeepDungeon/DeepDungeonClient
+/SuzumesDeepDungeon/appsettings.json
+/SuzumesDeepDungeon/data.db
+/SuzumesDeepDungeon/data.db-shm
+/SuzumesDeepDungeon/data.db-wal
