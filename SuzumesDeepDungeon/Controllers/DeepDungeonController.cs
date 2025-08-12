@@ -1,8 +1,12 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ViewEngines;
+using Microsoft.EntityFrameworkCore;
+using SuzumesDeepDungeon.Data;
 using SuzumesDeepDungeon.DTO;
 using SuzumesDeepDungeon.Extensions;
-using SuzumesDeepDungeon.Model;
+using SuzumesDeepDungeon.Models;
+using SuzumesDeepDungeon.Services;
+using SuzumesDeepDungeon.Services.Rawg_Data;
 
 namespace SuzumesDeepDungeon.Controllers;
 
@@ -11,173 +15,306 @@ namespace SuzumesDeepDungeon.Controllers;
 public class DeepDungeon : ControllerBase
 {
     private readonly ILogger<DeepDungeon> _logger;
+    private readonly DatabaseContext _context;
 
-    public DeepDungeon(ILogger<DeepDungeon> logger)
+    public DeepDungeon(ILogger<DeepDungeon> logger, DatabaseContext context)
     {
         _logger = logger;
+        _context = context;
     }
 
     //CRUD SERVICE TO GET DATA
     [HttpGet(Name = "GetGameRank")]
-    public IEnumerable<GameRankDTO> GetGameRank()
+    public async Task<ActionResult<IEnumerable<GameRankDTO>>> GetGameRank()
     {
-        List<GameRankDTO> result = new List<GameRankDTO>();
-        foreach (var item in GameRanks)
-        {
-            result.Add(GetDTO(item));
-        }
-
-        return result.OrderByDescending(x => x.updated);
+        var gameRanks = await _context.GameRanks.Include(x => x.Stores).Include(p => p.Screenshots).Include(f => f.Trailers).Include(t => t.Achievements).Include(u => u.User).ToListAsync();
+        var result = gameRanks.Select(x => x.GetDTO()).OrderByDescending(x => x.Updated);
+        return Ok(result);
     }
 
     [HttpDelete("{id}")]
     public async Task<IActionResult> DeleteGameRank(int id)
     {
+        var gameRank = await _context.GameRanks.FindAsync(id);
+        if (gameRank == null)
+        {
+            _logger.LogWarning($"GameRank with ID {id} not found.");
+            return NotFound();
+        }
 
-        //сделать не удаление, а помечать это отдельным полем типа удалено, а потом выдавать отфильтрованные списки без этого поля
-        var gameRank = GameRanks.FirstOrDefault(g => g.id == id);
-        if (gameRank != null)
-        {
-            GameRanks.Remove(gameRank);
-        }
-        else
-        {
-            _logger.LogWarning($"GameRank with name {gameRank.name} not found.");
-        }
+        _context.GameRanks.Remove(gameRank);
+        await _context.SaveChangesAsync();
         return NoContent();
     }
 
     [HttpPost(Name = "AddGameRank")]
-    public GameRankDTO AddGameRank([FromBody] GameRankDTO newGameRank)
+    public async Task<ActionResult<GameRankDTO>> AddGameRank([FromBody] GameRankDTO newGameRank)
     {
-        if (newGameRank == null || string.IsNullOrEmpty(newGameRank.name))
+        if (newGameRank == null || string.IsNullOrEmpty(newGameRank.Name))
         {
             _logger.LogError("Invalid GameRank data provided.");
-            return null;
+            return BadRequest();
         }
-        var existingGameRank = GameRanks.FirstOrDefault(g => g.name.Equals(newGameRank.name, StringComparison.OrdinalIgnoreCase));
+
+        var existingGameRank = await _context.GameRanks
+     .FirstOrDefaultAsync(g => g.Name.ToLower() == newGameRank.Name.ToLower());
+
         if (existingGameRank != null)
         {
-            _logger.LogWarning($"GameRank with name {newGameRank.name} already exists.");
-            return null;
+            _logger.LogWarning($"GameRank with name {newGameRank.Name} already exists.");
+            return Conflict();
         }
-
-        //Console.WriteLine(newGameRank.gameTime);
-        var newIds = GameRanks.OrderBy(x => x.id);
-        var Id = GameRanks.OrderByDescending(x => x.id).First().id;
-        var newId = 1 + Id;
-
-
-        var checkId = GameRanks.Where(x => x.id == newId).FirstOrDefault();
-
-        if(checkId != null)
+        if(newGameRank.Image == null || newGameRank.Image == "")
         {
-            newId += 2;
+            newGameRank.Image = "default.png";
         }
+
+
+        var User = _context.Users.FirstOrDefaultAsync(x => x.Username == newGameRank.User.Username).Result;
+        if (User == null)
+        {
+            _logger.LogWarning("User not found. Please provide a valid user.");
+            return BadRequest("User not found. Please provide a valid user.");
+        }
+
+        var stores = newGameRank.Stores?.Select(s => new Stores
+        {
+            RawgId = s.RawgId,
+            StoreId = (StoresEnum)s.StoreId,
+            Url = s.Url,
+            Created = DateTime.Now,
+            Updated = DateTime.Now
+
+        }).ToList() ?? new List<Stores>();
+
 
         var gameRank = new GameRank
         {
-            id = newId,
-            name = newGameRank.name,
-            rate = newGameRank.rate ?? 0,
-            status = (newGameRank.status != null ? (GameStatus)Enum.Parse(typeof(GameStatus), newGameRank.status) : GameStatus.Unknown),
-            gameTime = TimeSpanExtensions.DecimalHoursToTimeSpan(newGameRank.gameTime ?? 0.0),
-            review = newGameRank.review ?? "",
-            created = DateTime.Now,
-            updated = DateTime.Now,
-            user = newGameRank.user ?? "Anonymous",
-            image = newGameRank.image ?? "default.png"
+            Name = newGameRank.Name,
+            Rate = newGameRank.Rate ?? 0,
+            Status = (newGameRank.Status != null ? (GameStatus)Enum.Parse(typeof(GameStatus), newGameRank.Status) : GameStatus.Unknown),
+            GameTime = TimeSpanExtensions.DecimalHoursToTimeSpan(newGameRank.GameTime ?? 0.0),
+            Review = newGameRank.Review ?? "",
+            Created = DateTime.Now,
+            Updated = DateTime.Now,
+            User = User,
+            Image = newGameRank.Image,
+            YoutubeLink = newGameRank.YoutubeLink ?? "",
+            MetacriticRate = newGameRank.MetacriticRate,
+            Released = newGameRank.Released,
+            RawgId = newGameRank?.RawgId ?? "",
+
+            Stores = stores,
+
+            Screenshots = newGameRank.Screenshots != null ? new Screenshot
+            {
+                SteamHeaderUrl = newGameRank.Screenshots?.SteamHeaderUrl,
+                SteamCapsuleUrl = newGameRank.Screenshots?.SteamCapsuleUrl,
+                Steam600x900Url = newGameRank.Screenshots?.Steam600x900Url,
+                RawgBackgroundUrl = newGameRank.Screenshots?.RawgBackgroundUrl,
+                Created = DateTime.Now,
+                Updated = DateTime.Now
+            } : null,
+
+            Tags = newGameRank.Tags?.Select(t => new GameTag
+            {
+                TagId = (int)t.TagId,
+                Name = t.Name,
+                Slug = t.Slug,
+                Language = t.Language,
+                GamesCount = (int)t.GamesCount,
+                ImageBackground = t.ImageBackground,
+                Created = DateTime.Now,
+                Updated = DateTime.Now
+
+            }).ToList() ?? new List<GameTag>(),
+            Achievements = newGameRank.Achievements?.Select(a => new GameAchievement
+            {
+                Name = a.Name,
+                Description = a.Description,
+                ImageUrl = a.ImageUrl,
+                CompletionPercent = a.CompletionPercent,
+                Created = DateTime.Now,
+                Updated = DateTime.Now
+            }).ToList() ?? new List<GameAchievement>(),
+
+            Trailers = newGameRank.Trailers?.Select(t => new Trailer
+            {
+                Name = t.Name,
+                PreviewImageUrl = t.PreviewImageUrl,
+                Video480p = t.Video480p,
+                VideoMaxQuality = t.VideoMaxQuality,
+                Created = DateTime.Now,
+                Updated = DateTime.Now
+            }).ToList() ?? new List<Trailer>(),
         };
 
-        GameRanks.Add(gameRank);
-        _logger.LogInformation($"GameRank with name {newGameRank.name} added successfully with ID {gameRank.id}.");
-        return GetDTO(gameRank);
+        _context.GameRanks.Add(gameRank);
+        await _context.SaveChangesAsync();
 
+        _logger.LogInformation($"GameRank with name {newGameRank.Name} added successfully with ID {gameRank.Id}.");
+        return CreatedAtAction(nameof(GetGameRank), new { id = gameRank.Id }, gameRank.GetDTO());
 
     }
 
-    [HttpPatch(Name = "UpdateGameRank")]
-    public GameRankDTO UpdateGameRank([FromBody] GameRankDTO updatedGameRank)
+    [HttpPatch()]
+    public async Task<ActionResult<GameRankDTO>> UpdateGameRank([FromBody] GameRankDTO updatedGameRank)
     {
-        if (updatedGameRank == null )
+        if (updatedGameRank == null)
         {
             _logger.LogError("Invalid GameRank data provided.");
-            return null;
+            return BadRequest();
         }
-        var existingGameRank = GameRanks.FirstOrDefault(g => g.id == updatedGameRank.id);
-        if (existingGameRank != null)
+        var id = updatedGameRank.Id;
+        var existingGameRank = await _context.GameRanks.Where(p => p.Id == id).Include(x => x.Stores).Include(p => p.Screenshots).Include(f => f.Trailers).Include(t => t.Achievements).Include(u => u.User).Include(u => u.Tags).FirstOrDefaultAsync();
+        if (existingGameRank == null)
         {
-            existingGameRank.name = updatedGameRank.name ?? existingGameRank.name;
-            existingGameRank.rate = updatedGameRank.rate ?? existingGameRank.rate;
-            existingGameRank.status = (updatedGameRank.status != null ? (GameStatus)Enum.Parse(typeof(GameStatus), updatedGameRank.status) : existingGameRank.status);
-            existingGameRank.gameTime = TimeSpanExtensions.DecimalHoursToTimeSpan(updatedGameRank.gameTime ?? 0.0);
-            existingGameRank.review = updatedGameRank.review ?? existingGameRank.review;
-            existingGameRank.updated = DateTime.Now;
-            existingGameRank.user = updatedGameRank.user ?? existingGameRank.user;
-            existingGameRank.image = updatedGameRank.image ?? existingGameRank.image;
-
-            _logger.LogInformation($"GameRank with name {updatedGameRank.name} updated successfully.");
-
-
+            _logger.LogWarning($"GameRank with ID {id} not found.");
+            return NotFound();
         }
-        else
+
+        existingGameRank.Name = updatedGameRank.Name ?? existingGameRank.Name;
+        existingGameRank.Rate = updatedGameRank.Rate ?? existingGameRank.Rate;
+        existingGameRank.Status = (updatedGameRank.Status != null ? (GameStatus)Enum.Parse(typeof(GameStatus), updatedGameRank.Status) : existingGameRank.Status);
+        existingGameRank.GameTime = TimeSpanExtensions.DecimalHoursToTimeSpan(updatedGameRank.GameTime ?? 0.0);
+        existingGameRank.Review = updatedGameRank.Review ?? existingGameRank.Review;
+        existingGameRank.Updated = DateTime.Now;
+        existingGameRank.Image = updatedGameRank.Image ?? existingGameRank.Image;
+        existingGameRank.YoutubeLink = updatedGameRank.YoutubeLink ?? "";
+        existingGameRank.MetacriticRate = updatedGameRank.MetacriticRate;
+        existingGameRank.Released = updatedGameRank.Released;
+
+        if(existingGameRank.RawgId != updatedGameRank.RawgId)
         {
-            _logger.LogWarning($"GameRank with name {updatedGameRank.name} not found.");
+            //удалить все подсущности и добавить новые
+            _context.Trailers.RemoveRange(existingGameRank.Trailers);
+            _context.Tag.RemoveRange(existingGameRank.Tags);
+            _context.Achievements.RemoveRange(existingGameRank.Achievements);
+            _context.Stores.RemoveRange(existingGameRank.Stores);
+
+            await _context.SaveChangesAsync();
+        }
+        
+
+        if (existingGameRank.Screenshots != null)
+        {
+            existingGameRank.Screenshots.RawgBackgroundUrl = updatedGameRank.Screenshots.RawgBackgroundUrl ?? existingGameRank.Screenshots.RawgBackgroundUrl;
+            existingGameRank.Screenshots.SteamHeaderUrl = updatedGameRank.Screenshots.SteamHeaderUrl ?? existingGameRank.Screenshots.SteamHeaderUrl;
+            existingGameRank.Screenshots.SteamCapsuleUrl = updatedGameRank.Screenshots.SteamCapsuleUrl ?? existingGameRank.Screenshots.SteamCapsuleUrl;
+            existingGameRank.Screenshots.Steam600x900Url = updatedGameRank.Screenshots.Steam600x900Url ?? existingGameRank.Screenshots.Steam600x900Url;
+
         }
 
+        if(existingGameRank.Stores.Count() != updatedGameRank?.Stores?.Count())
+        {
+            //удалить все магазины и добавить новыt
 
-        return GetDTO(existingGameRank);
+            _context.Stores.RemoveRange(existingGameRank.Stores);
+
+            foreach (var store in updatedGameRank.Stores)
+            {
+                existingGameRank.Stores.Add(new Stores
+                {
+                    RawgId = store.RawgId,
+                    StoreId = (StoresEnum)store.StoreId,
+                    Url = store.Url,
+                    Created = DateTime.Now,
+                    Updated = DateTime.Now
+                });
+            }
+        }
+       
+        if(existingGameRank.Tags.Count() != updatedGameRank?.Tags?.Count())
+        {
+            //удалить все теги и добавить новые
+            _context.Tag.RemoveRange(existingGameRank.Tags);
+            foreach (var tag in updatedGameRank?.Tags)
+            {
+                existingGameRank.Tags.Add(new GameTag
+                {
+                    TagId = (int)tag.TagId,
+                    Name = tag.Name,
+                    Slug = tag.Slug,
+                    Language = tag.Language,
+                    GamesCount = (int)tag.GamesCount,
+                    ImageBackground = tag.ImageBackground,
+                    Created = DateTime.Now,
+                    Updated = DateTime.Now
+                });
+            }
+        }
+        if(existingGameRank.Achievements.Count() != updatedGameRank?.Achievements?.Count())
+        {
+            //удалить все ачивки и добавить новые
+            _context.Achievements.RemoveRange(existingGameRank.Achievements);
+            foreach (var achievement in updatedGameRank?.Achievements)
+            {
+                existingGameRank.Achievements.Add(new GameAchievement
+                {
+                    Name = achievement.Name,
+                    Description = achievement.Description,
+                    ImageUrl = achievement.ImageUrl,
+                    CompletionPercent = achievement.CompletionPercent,
+                    Created = DateTime.Now,
+                    Updated = DateTime.Now
+                });
+            }
+        }
+        if(existingGameRank.Trailers.Count() != updatedGameRank?.Trailers?.Count())
+        {
+            //удалить все трейлеры и добавить новые
+            _context.Trailers.RemoveRange(existingGameRank.Trailers);
+            foreach (var trailer in updatedGameRank?.Trailers)
+            {
+                existingGameRank.Trailers.Add(new Trailer
+                {
+                    Name = trailer.Name,
+                    PreviewImageUrl = trailer.PreviewImageUrl,
+                    Video480p = trailer.Video480p,
+                    VideoMaxQuality = trailer.VideoMaxQuality,
+                    Created = DateTime.Now,
+                    Updated = DateTime.Now
+                });
+            }
+        }
+        //магазины, ачивки , теги и трейлеры если пришли другие, отличные от существующих, то удаляем старые и добавляем новые. Надо сравнить rawgId старое и новое, если они не совпадают, то удаляем старые сущности тегов, трейлеров ачивок и магазинов, и добавляем новые.
+
+
+
+
+
+        existingGameRank.RawgId = updatedGameRank.RawgId ?? existingGameRank.RawgId;
+
+        try
+        {
+            using var transaction = await _context.Database.BeginTransactionAsync();
+            try
+            {
+                await _context.SaveChangesAsync();
+                await transaction.CommitAsync();
+                _logger.LogInformation($"GameRank with ID {id} updated successfully.");
+            }
+            catch
+            {
+                await transaction.RollbackAsync();
+                throw new Exception("Couldnr Rollback Transaction");
+            }
+           
+        }
+        catch (DbUpdateConcurrencyException)
+        {
+            if (!_context.GameRanks.Any(e => e.Id == id))
+            {
+                return NotFound();
+            }
+            throw;
+        }
+
+        return Ok(existingGameRank.GetDTO());
     }
 
     //MockData
 
-
-    private static List<GameRank> GameRanks = new List<GameRank>
-    {
-        new GameRank
-        {
-            id = 1,
-            name = "Dark Souls",
-            rate = 10,
-            status = GameStatus.Completed,
-            gameTime = new TimeSpan(8, 54, 0),
-            review = "Great game!",
-            created = DateTime.Now.AddDays(-20),
-            updated = DateTime.Now.AddDays(-5),
-            user = "User1",
-            image = "assets/default-game.jpg"
-        },
-        new GameRank
-        {
-            id = 2,
-            name = "Sekiro",
-            rate = 8,
-            status = GameStatus.OnHold,
-            gameTime = new TimeSpan(45, 23, 0),
-            review = "Enjoyable so far.",
-            created = DateTime.Now.AddDays(-15),
-            updated = DateTime.Now.AddDays(-2),
-            user = "User2",
-            image = "assets/default-game.jpg"
-        }
-    };
-  
-
-    private static GameRankDTO GetDTO(GameRank gameRank)
-    {
-        return new GameRankDTO
-        {
-            id = gameRank.id,
-            name = gameRank.name,
-            rate = gameRank.rate,
-            status = gameRank.status.ToString(),
-            gameTime = gameRank.gameTime.ToDecimalHours(),
-            review = gameRank.review,
-            created = gameRank.created,
-            updated = gameRank.updated,
-            user = gameRank.user,
-            image = gameRank.image
-        };
-    }
+    
 
 }

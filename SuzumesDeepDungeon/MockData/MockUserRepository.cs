@@ -1,4 +1,4 @@
-﻿using SuzumesDeepDungeon.Model;
+﻿using SuzumesDeepDungeon.Models;
 
 namespace SuzumesDeepDungeon.MockData
 {

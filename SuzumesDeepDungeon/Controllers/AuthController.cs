@@ -1,37 +1,70 @@
 ﻿using Microsoft.AspNetCore.Identity.Data;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using SuzumesDeepDungeon.Data;
+using SuzumesDeepDungeon.DTO;
 using SuzumesDeepDungeon.MockData;
+using SuzumesDeepDungeon.Models;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 
 namespace SuzumesDeepDungeon.Controllers
 {
-
-
-
     [ApiController]
     [Route("api/auth")]
     public class AuthController : ControllerBase
     {
         private readonly IConfiguration _config;
+        private readonly DatabaseContext _context;
 
-        public AuthController(IConfiguration config)
+        public AuthController(IConfiguration config, DatabaseContext context)
         {
             _config = config;
+            _context = context;
         }
 
         [HttpPost("login")]
-        public IActionResult Login([FromBody] LoginModel model)
+        public async Task<IActionResult> Login([FromBody] LoginModel model)
         {
-            // Моковая проверка (замените на реальную)
-            if (model.Username == "admin" && model.Password == "admin")
+            if (model == null || string.IsNullOrEmpty(model.Username) || string.IsNullOrEmpty(model.Password))
             {
-                var token = GenerateJwtToken(model.Username, isAdmin: true);
-                return Ok(new { token });
+                return BadRequest("Username and password are required");
             }
-            return Unauthorized();
+            try
+            {
+                var user = await _context.Users
+                    .FirstOrDefaultAsync(u => u.Username == model.Username);
+           
+            if (user == null)
+            {
+
+                return Unauthorized("Invalid username or password");
+            }
+
+            //ToDo: использовать хеширование
+            if (user.Password != model.Password)
+            {
+                return Unauthorized("Invalid username or password");
+            }
+            
+
+            var token = GenerateJwtToken(user.Username, user.Role == UserRole.Admin);
+
+            return Ok(new
+            {
+                token,
+                username = user.Username,
+                role = user.Role.ToString(),
+                isAdmin = user.Role == UserRole.Admin
+            });
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+            }
+            return Unauthorized("Invalid username or password");
         }
 
         private string GenerateJwtToken(string username, bool isAdmin)
@@ -57,10 +90,5 @@ namespace SuzumesDeepDungeon.Controllers
         }
     }
 
-    public class LoginModel
-    {
-        public string Username { get; set; }
-        public string Password { get; set; }
-    }
-
+    
 }

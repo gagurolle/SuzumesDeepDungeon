@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.Xml.Linq;
 
-namespace SuzumesDeepDungeon.Model
+namespace SuzumesDeepDungeon.Models
 {
     public enum GameStatus
     {
