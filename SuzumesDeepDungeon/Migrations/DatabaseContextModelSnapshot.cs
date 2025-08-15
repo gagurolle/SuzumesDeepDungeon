@@ -56,7 +56,7 @@ namespace SuzumesDeepDungeon.Migrations
 
                     b.HasIndex("GameId");
 
-                    b.ToTable("Achievements");
+                    b.ToTable("Achievements", (string)null);
                 });
 
             modelBuilder.Entity("SuzumesDeepDungeon.Models.GameRank", b =>
@@ -116,7 +116,7 @@ namespace SuzumesDeepDungeon.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("GameRanks");
+                    b.ToTable("GameRanks", (string)null);
                 });
 
             modelBuilder.Entity("SuzumesDeepDungeon.Models.GameTag", b =>
@@ -164,7 +164,7 @@ namespace SuzumesDeepDungeon.Migrations
 
                     b.HasIndex("GameId");
 
-                    b.ToTable("Tag");
+                    b.ToTable("Tag", (string)null);
                 });
 
             modelBuilder.Entity("SuzumesDeepDungeon.Models.Screenshot", b =>
@@ -207,7 +207,7 @@ namespace SuzumesDeepDungeon.Migrations
                     b.HasIndex("GameId")
                         .IsUnique();
 
-                    b.ToTable("Screenshots");
+                    b.ToTable("Screenshots", (string)null);
                 });
 
             modelBuilder.Entity("SuzumesDeepDungeon.Models.Stores", b =>
@@ -244,7 +244,7 @@ namespace SuzumesDeepDungeon.Migrations
 
                     b.HasIndex("GameId");
 
-                    b.ToTable("Stores");
+                    b.ToTable("Stores", (string)null);
                 });
 
             modelBuilder.Entity("SuzumesDeepDungeon.Models.Trailer", b =>
@@ -286,7 +286,7 @@ namespace SuzumesDeepDungeon.Migrations
 
                     b.HasIndex("GameId");
 
-                    b.ToTable("Trailers");
+                    b.ToTable("Trailers", (string)null);
                 });
 
             modelBuilder.Entity("SuzumesDeepDungeon.Models.User", b =>
@@ -325,7 +325,7 @@ namespace SuzumesDeepDungeon.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Users");
+                    b.ToTable("Users", (string)null);
                 });
 
             modelBuilder.Entity("SuzumesDeepDungeon.Models.GameAchievement", b =>

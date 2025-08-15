@@ -25,10 +25,80 @@ public class DeepDungeon : ControllerBase
 
     //CRUD SERVICE TO GET DATA
     [HttpGet(Name = "GetGameRank")]
-    public async Task<ActionResult<IEnumerable<GameRankDTO>>> GetGameRank()
+    public async Task<ActionResult<IEnumerable<GameRankDTO>>> GetGameRank(
+    [FromQuery] string? status,      
+    [FromQuery] int? minRate,        
+    [FromQuery] int? maxRate,        
+    [FromQuery] string? name,
+    [FromQuery] string? tags,        
+    [FromQuery] string? sortBy,
+    [FromQuery] DateTime? created,
+    [FromQuery] DateTime? updated,
+    [FromQuery] bool desc = false)   
     {
-        var gameRanks = await _context.GameRanks.Include(x => x.Stores).Include(p => p.Screenshots).Include(f => f.Trailers).Include(t => t.Achievements).Include(u => u.User).ToListAsync();
-        var result = gameRanks.Select(x => x.GetDTO()).OrderByDescending(x => x.Updated);
+        // Базовый запрос с включением связанных данных
+        var query = _context.GameRanks
+            .Include(x => x.Stores)
+            .Include(p => p.Screenshots)
+            .Include(f => f.Trailers)
+            .Include(t => t.Achievements)
+            .Include(u => u.User)
+            .Include(h => h.Tags)
+            .AsQueryable();
+
+
+        if (!string.IsNullOrEmpty(name))
+        {
+            // Приводим к нижнему регистру для регистронезависимого поиска
+            var searchTerm = name.ToLower();
+            query = query.Where(g => g.Name.ToLower().Contains(searchTerm));
+        }
+        // Применение фильтров
+        if (!string.IsNullOrEmpty(status))
+        {
+            if (Enum.TryParse<GameStatus>(status, true, out var statusFilter))
+            {
+                query = query.Where(g => g.Status == statusFilter);
+            }
+        }
+
+        if (minRate.HasValue)
+        {
+            query = query.Where(g => g.Rate >= minRate.Value);
+        }
+
+        if (maxRate.HasValue)
+        {
+            query = query.Where(g => g.Rate <= maxRate.Value);
+        }
+
+        if (created.HasValue)
+        {
+            query = query.Where(g => g.Created >= created.Value);
+        }
+
+        if (!string.IsNullOrEmpty(tags))
+        {
+            var tagList = tags.Split(',', StringSplitOptions.RemoveEmptyEntries);
+            query = query.Where(g => g.Tags.Any(t => tagList.Contains(t.Name)));
+        }
+        // Применение сортировки
+        query = (sortBy?.ToLower(), desc) switch
+        {
+            ("name", false) => query.OrderBy(g => g.Name),
+            ("name", true) => query.OrderByDescending(g => g.Name),
+            ("rate", false) => query.OrderBy(g => g.Rate),
+            ("rate", true) => query.OrderByDescending(g => g.Rate),
+            ("released", false) => query.OrderBy(g => g.Released),
+            ("released", true) => query.OrderByDescending(g => g.Released),
+            ("created", false) => query.OrderBy(g => g.Created),
+            ("created", true) => query.OrderByDescending(g => g.Created),
+            _ => query.OrderByDescending(g => g.Created) // По умолчанию
+        };
+
+        var gameRanks = await query.ToListAsync();
+        var result = gameRanks.Select(x => x.GetDTO());
+
         return Ok(result);
     }
 

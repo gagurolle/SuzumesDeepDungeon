@@ -22,6 +22,11 @@ namespace SuzumesDeepDungeon.Models
         Nintendo = 6,
         Microsoft = 2,
         Playstation = 3,
-        Xbox = 7
+        Xbox = 7,
+        Epic = 11,
+        Apple = 4,
+        Google = 11,
+        Itch = 9
+
     }
 }

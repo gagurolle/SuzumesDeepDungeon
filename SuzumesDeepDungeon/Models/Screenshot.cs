@@ -6,10 +6,10 @@ namespace SuzumesDeepDungeon.Models
     {
         public int Id { get; set; }
         public int GameId { get; set; }
-        public string SteamHeaderUrl { get; set; } = string.Empty;
-        public string SteamCapsuleUrl { get; set; } = string.Empty;
-        public string Steam600x900Url { get; set; } = string.Empty;
-        public string RawgBackgroundUrl { get; set; } = string.Empty;
+        public string? SteamHeaderUrl { get; set; } = "";
+        public string? SteamCapsuleUrl { get; set; } = "";
+        public string? Steam600x900Url { get; set; } = "";
+        public string? RawgBackgroundUrl { get; set; } = "";
         [JsonIgnore]
         public GameRank? GameRank { get; set; }
         public DateTime Created { get; set; }

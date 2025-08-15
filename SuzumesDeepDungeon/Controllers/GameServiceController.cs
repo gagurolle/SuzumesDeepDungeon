@@ -4,8 +4,10 @@ using Microsoft.EntityFrameworkCore.Storage.Json;
 using Microsoft.IdentityModel.Tokens;
 using SuzumesDeepDungeon.Data;
 using SuzumesDeepDungeon.DTO;
+using SuzumesDeepDungeon.Extensions;
 using SuzumesDeepDungeon.Models;
 using SuzumesDeepDungeon.Services;
+using SuzumesDeepDungeon.Services.CSVLoad;
 using SuzumesDeepDungeon.Services.HowLongToBeat;
 using SuzumesDeepDungeon.Services.Rawg_Data;
 using System.IdentityModel.Tokens.Jwt;
@@ -26,6 +28,109 @@ namespace SuzumesDeepDungeon.Controllers
         {
             _config = config;
             _context = context;
+        }
+
+        [HttpGet("csvLoad1Game")]
+        public async Task<ActionResult<List<TwitchStatisticGames>>> CSVGameLoad1(string path, string game = null)
+        {
+            var k = CSVLoad.LoadGames(path);
+            TwitchStatisticGames? p = null;
+            var user = _context.Users.Where(x => x.IsAdmin == true).FirstOrDefault();
+            if (game != null && !string.IsNullOrEmpty(game))
+            {
+                 p = k.Where(x => x.gameName == game).FirstOrDefault();
+                if (p == null)
+                {
+                    return NotFound("Game not found in the provided CSV file.");
+                }
+            }
+            else
+            {
+                 p = k.FirstOrDefault();
+            }
+
+                List<GameRank> gameRanks = new List<GameRank>();
+            List<Exception> exceptions = new();
+
+                var existingGame = _context.GameRanks.FirstOrDefault(g => g.Name == p.gameName);
+                if (existingGame != null)
+                {
+                   return BadRequest("Game already exists in the database.");
+            }
+                Task.Delay(100).Wait();
+                try
+                {
+                    var rawgresponse = await GameAddService.RawgAPI.GetGameFullInfo(p.gameName);
+                    if (rawgresponse == null)
+                    {
+                         return NotFound("Game data not found in RAWG API.");
+                }
+                    var gameRankData = await GameAddService.RawgAPI.RawgDataToGameRank(rawgresponse, user);
+                    if (gameRankData == null)
+                    {
+                    return NotFound("Game data not found in RAWG API.");
+                }
+                    gameRankData.GameTime = TimeSpanExtensions.DecimalHoursToTimeSpan(p.StreamTime);
+                    gameRankData.Created = p.LastSeen;
+                    gameRanks.Add(gameRankData);
+                _context.GameRanks.Add(gameRankData);
+                await _context.SaveChangesAsync();
+            }
+                catch (Exception e)
+                {
+                    exceptions.Add(e);
+                }
+
+            return Ok(p);
+        }
+
+
+        [HttpGet("csvLoad")]
+        public async Task<ActionResult<List<TwitchStatisticGames>>> CSVGameLoad(string path)
+        {
+            var p = CSVLoad.LoadGames(path);
+            var user = _context.Users.Where(x => x.IsAdmin == true).FirstOrDefault();
+            List<GameRank> gameRanks = new List<GameRank>();
+            Dictionary<Exception, TwitchStatisticGames?> exceptions = new();
+            foreach (var item in p)
+            {
+                var existingGame = _context.GameRanks.FirstOrDefault(g => g.Name == item.gameName);
+                if (existingGame != null)
+                {
+                    continue; // Game already exists, skip to the next one
+                }
+                Task.Delay(100).Wait();
+                try
+                {
+                    var rawgresponse = await GameAddService.RawgAPI.GetGameFullInfo(item.gameName);
+                    if (rawgresponse == null)
+                    {
+                        continue;
+                    }
+                    var gameRankData = await GameAddService.RawgAPI.RawgDataToGameRank(rawgresponse, user);
+                    if (gameRankData == null)
+                    {
+                        continue;
+                    }
+                    gameRankData.GameTime = TimeSpanExtensions.DecimalHoursToTimeSpan(item.StreamTime);
+                    gameRankData.Created = item.LastSeen;
+                    gameRanks.Add(gameRankData);
+
+                    _context.GameRanks.Add(gameRankData);
+                    await _context.SaveChangesAsync();
+                }
+                catch(Exception e)
+                {
+                    exceptions.Add(e, item);
+                }
+                
+            }
+
+            foreach(var exception in exceptions)
+            {
+                Console.WriteLine($"Error processing game '{exception.Value?.gameName}': {exception.Key.InnerException}");
+            }
+            return Ok(p);
         }
 
 

@@ -55,7 +55,7 @@ namespace SuzumesDeepDungeon.Services
 
             public static async Task<string> GetGameCoverAsync(string steamAppId, string url = SteamImageBaseUrl_600x900)
             {
-
+                await Task.Delay(100);
                 if(steamAppId == "")
                 {
                     Console.WriteLine("Empty steam Id game");
@@ -106,12 +106,12 @@ namespace SuzumesDeepDungeon.Services
         {
             public static async Task<RawgGameCompleteData> GetGameFullInfo(string? gameName = null, string? id = null)
             {
-                if(gameName == null && id == null)
+                if((gameName == "" || gameName == null) && (id == "" || id == null))
                 {
                     throw new ArgumentNullException(nameof(gameName) + nameof(id));
                 }
 
-                if (id == null)
+                if (id == null || id == "")
                 {
                     var games = FindGames(gameName).Result.ToList();
                     id = games?.FirstOrDefault()?.Id.ToString();
@@ -121,6 +121,7 @@ namespace SuzumesDeepDungeon.Services
                 var trailers = GetGameTrailers(id);
                 var stores = GetGameStores(id);
                 var achievements = GetGameAchievements(id);
+                //сделать загрузку ачивок пока acievements.next != null, может быть вложенным циклом
                 var steamUrl = "";
 
                 if (stores?.Results != null)
@@ -193,9 +194,9 @@ namespace SuzumesDeepDungeon.Services
                     achievements.Add(new GameAchievement()
                     {
                         Name = ach.Name,
-                        Description = ach.Description,
-                        ImageUrl = ach.ImageUrl,
-                        CompletionPercent = ach.CompletionPercent,
+                        Description = ach.Description ?? "",
+                        ImageUrl = ach.ImageUrl ?? "",
+                        CompletionPercent = ach.CompletionPercent ?? "",
                         Created = DateTime.Now,
                         Updated = DateTime.Now
                     });
@@ -234,13 +235,14 @@ namespace SuzumesDeepDungeon.Services
 
                         gameRank.Screenshots = new Screenshot()
                         {
-                            SteamHeaderUrl = await SteamApi.GetGameCoverAsync(steamIdFromurl, SteamApi.SteamImageBaseUrl_header),
-                            SteamCapsuleUrl = await SteamApi.GetGameCoverAsync(steamIdFromurl, SteamApi.SteamImageBaseUrl_capsule),
-                            Steam600x900Url = await SteamApi.GetGameCoverAsync(steamIdFromurl, SteamApi.SteamImageBaseUrl_600x900),
-                            RawgBackgroundUrl = data.game.BackgroundImage,
+                            SteamHeaderUrl = await SteamApi.GetGameCoverAsync(steamIdFromurl, SteamApi.SteamImageBaseUrl_header) ?? "",
+                            SteamCapsuleUrl = await SteamApi.GetGameCoverAsync(steamIdFromurl, SteamApi.SteamImageBaseUrl_capsule) ?? "",
+                            Steam600x900Url = await SteamApi.GetGameCoverAsync(steamIdFromurl, SteamApi.SteamImageBaseUrl_600x900) ?? "",
+                            RawgBackgroundUrl = data.game.BackgroundImage ?? "",
                             Created = DateTime.Now,
                             Updated = DateTime.Now
                         };
+
                         gameRank.Image = gameRank.Screenshots.Steam600x900Url;
                     }
                     catch (Exception ex)
@@ -341,11 +343,15 @@ namespace SuzumesDeepDungeon.Services
                     }
                 }
             }
-            public static AchievementsApiResponse GetGameAchievements(string id)
+            public static AchievementsApiResponse GetGameAchievements(string id, int page = 1)
             {
+                //высчитать page из count, сделать вложенные вызовы,
+                //совместить results в один список
+                //(10 ачивок за запрос, page начинает с 1)
                 using (var client = new HttpClient())
                 {
-                    string urlGameDetail = $"https://api.rawg.io/api/games/{id}/achievements?key={rawgApi}";
+
+                    string urlGameDetail = $"https://api.rawg.io/api/games/{id}/achievements?key={rawgApi}&page={page}";
                     var responseDetail = client.GetAsync(urlGameDetail).Result;
 
                     if (responseDetail.IsSuccessStatusCode)
@@ -361,6 +367,11 @@ namespace SuzumesDeepDungeon.Services
                             };
 
                             var content = JsonSerializer.Deserialize<AchievementsApiResponse>(contentDetail, options);
+
+                            if (content?.Next != null)
+                            {
+                                GetGameAchievements(id, page + 1).Results.ForEach(ach => content.Results.Add(ach));
+                            }
 
                             return content;
                         }
