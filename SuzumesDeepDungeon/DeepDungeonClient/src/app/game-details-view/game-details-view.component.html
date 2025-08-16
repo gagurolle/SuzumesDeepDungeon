@@ -1,0 +1,160 @@
+<div class="modal-overlay" (click)="close.emit()">
+    <div class="modal-content" (click)="$event.stopPropagation()">
+        <button class="close-button" (click)="close.emit()">&times;</button>
+
+        <div class="game-details-container">
+            <div class="game-header">
+                <h2 class="game-title">{{ game.name || 'Без названия' }}</h2>
+                <div class="game-rating">
+                    <span class="rating-value">{{ game.rate?.toFixed(1) || '0.0' }}</span>
+                    <span class="rating-max">/10</span>
+                    <mat-icon class="star-icon">star</mat-icon>
+                </div>
+            </div>
+
+            <div class="game-content">
+                <div class="game-image-container">
+                    <img [src]="game.image || 'assets/default-game.jpg'" alt="{{ game.name }}" class="game-image">
+                </div>
+
+                <div class="game-info">
+                    <div class="game-meta">
+                        <div class="meta-row">
+                            <div class="meta-item">
+                                <mat-icon>play_circle</mat-icon>
+                                <span class="status-badge" [class]="getStatusClass(game.status)">
+                                    {{ statusService.getStatusText(game.status) }}
+                                </span>
+                            </div>
+
+                            <div class="meta-item" *ngIf="game.metacriticRate">
+                                <span class="metacritic-rating">
+                                    <span>Metacritic : </span>
+                                    <span class="rating-value">{{ game.metacriticRate }}</span>
+                                    <span class="rating-max">/100</span>
+                                    <mat-icon class="metacritic-icon">star</mat-icon>
+                                </span>
+                            </div>
+                        </div>
+
+                        <div class="meta-row">
+                            <div class="meta-item">
+                                <mat-icon>schedule</mat-icon>
+                                <span>Время в игре: {{ formatPlayTime(game.gameTime || 0 ) }}</span>
+                            </div>
+
+                            <div *ngIf="game.youtubeLink" class="meta-item youtube-icon">
+                                <a [href]="game.youtubeLink" target="_blank">
+                                    <mat-icon>play_circle</mat-icon> Запись YouTube
+                                </a>
+                            </div>
+                        </div>
+
+                        <div class="meta-item">
+                            <mat-icon>event</mat-icon>
+                            <span>Вышла: {{ game.released | date:'dd.MM.yyyy' }}</span>
+                        </div>
+
+                        <div class="meta-item">
+                            <mat-icon>calendar_today</mat-icon>
+                            <span>Добавлено: {{ game.created | date:'dd.MM.yyyy' }}</span>
+                            <span *ngIf="game.updated" class="date-updated">
+                                (Обновлено: {{ game.updated | date:'dd.MM.yyyy' }})
+                            </span>
+                        </div>
+                    </div>
+
+                    <div class="section">
+                        <h3><mat-icon>rate_review</mat-icon> Мой отзыв</h3>
+                        <div class="review-text">
+                            {{ game.review || 'Отзыв отсутствует' }}
+                        </div>
+                    </div>
+
+                    <div *ngIf="game.stores && game.stores.length > 0" class="section">
+                        <h3><mat-icon>store</mat-icon> Магазины</h3>
+                        <div class="stores-container">
+                            <a *ngFor="let store of game.stores" [href]="store.url" target="_blank" class="store-badge"
+                                [class]="'store-' + store.storeId">
+                                {{ statusService.getStoreName(store) }}
+                            </a>
+                        </div>
+                    </div>
+
+                    <div *ngIf="game.tags && game.tags.length > 0" class="section">
+                        <h3><mat-icon>local_offer</mat-icon> Теги</h3>
+                        <div class="tags-container">
+                            <span *ngFor="let tag of game.tags" class="tag-badge">
+                                {{ tag.name }}
+                            </span>
+                        </div>
+                    </div>
+
+                    <div *ngIf="game.trailers && game.trailers.length > 0" class="section">
+                        <h3><mat-icon>movie</mat-icon> Трейлеры</h3>
+                        <div class="trailers-container">
+                            <div *ngFor="let trailer of game.trailers" class="trailer-item">
+                                <h4>{{ trailer.name }}</h4>
+                                <video controls [poster]="trailer.previewImageUrl" class="trailer-video">
+                                    <source [src]="trailer.videoMaxQuality || trailer.video480p" type="video/mp4">
+                                    Ваш браузер не поддерживает видео тег.
+                                </video>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div *ngIf="game.screenshots" class="section">
+                        <h3><mat-icon>photo_library</mat-icon> Скриншоты</h3>
+                        <div class="screenshots-container">
+                            <div *ngIf="game.screenshots.steamHeaderUrl" class="screenshot-item">
+                                <img [src]="game.screenshots.steamHeaderUrl" alt="Steam Header">
+                            </div>
+                            <div *ngIf="game.screenshots.steamCapsuleUrl" class="screenshot-item">
+                                <img [src]="game.screenshots.steamCapsuleUrl" alt="Steam Capsule">
+                            </div>
+                            <div *ngIf="game.screenshots.steam600x900Url" class="screenshot-item">
+                                <img [src]="game.screenshots.steam600x900Url" alt="Steam 600x900">
+                            </div>
+                            <div *ngIf="game.screenshots.rawgBackgroundUrl" class="screenshot-item">
+                                <img [src]="game.screenshots.rawgBackgroundUrl" alt="RAWG Background">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div *ngIf="game.achievements && game.achievements.length > 0" class="section">
+                        <h3><mat-icon>military_tech</mat-icon> Достижения
+                            <button class="spoiler-toggle" (click)="toggleAchievements()">
+                                <mat-icon>{{ showAchievements ? 'expand_less' : 'expand_more' }}</mat-icon>
+                            </button>
+                        </h3>
+
+                        <div class="spoiler-content" [class.expanded]="showAchievements">
+                            <div class="achievements-container">
+                                <div *ngFor="let achievement of game.achievements" class="achievement-item">
+
+
+                                    <img [src]="achievement.imageUrl" alt="{{ achievement.name }}"
+                                        class="achievement-image">
+
+                                    <div class="achievement-details">
+
+
+                                        <h4>{{ achievement.name }}</h4>
+                                        <p>{{ achievement.description }}</p>
+
+
+                                        <div class="achievement-progress">
+                                            <mat-progress-bar [value]="achievement.completionPercent"
+                                                mode="determinate"></mat-progress-bar>
+                                            <span>{{ achievement.completionPercent }}%</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

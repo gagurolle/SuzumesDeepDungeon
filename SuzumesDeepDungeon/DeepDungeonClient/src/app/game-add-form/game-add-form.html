@@ -1,0 +1,225 @@
+<div class="modal-overlay">
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    <button class="close-button" (click)="close()">&times;</button>
+    
+    <h2>{{ isEditMode ? 'Редактировать игру' : 'Добавить новую игру' }}</h2>
+    
+    <form [formGroup]="gameForm">
+      <div class="form-group">
+        <label for="name">Название игры</label>
+        <input id="name" formControlName="name" type="text" [class.invalid]="gameForm.get('name')?.invalid && gameForm.get('name')?.touched">
+        
+        <div *ngIf="gameForm.get('name')?.invalid && gameForm.get('name')?.touched" class="error">
+          Обязательное поле
+        </div>
+      </div>
+      
+      @if (currentGameName.length>1) {
+      <app-game-find [gameName]="currentGameName" 
+                     (gameFound)="onGameFound($event)">
+      </app-game-find>
+      }
+      
+      <div class="form-group">
+        <label for="rate">Рейтинг (0-10)</label>
+        <input id="rate" formControlName="rate" type="number" min="0" max="10" 
+                [class.invalid]="gameForm.get('rate')?.invalid && gameForm.get('rate')?.touched">
+        <div *ngIf="gameForm.get('rate')?.invalid && gameForm.get('rate')?.touched" class="error">
+          Введите число от 0 до 10
+        </div>
+      </div>
+
+     <div class="form-group">
+  <label for="status">Статус</label>
+  <select id="status" 
+          formControlName="status"
+          [class.invalid]="gameForm.get('status')?.invalid && gameForm.get('status')?.touched">
+    <option [ngValue]="null" disabled>Выберите статус</option>
+    <option *ngFor="let status of gameStatuses" [ngValue]="status.value">
+      {{ status.text }}
+    </option>
+  </select>
+  
+  <div *ngIf="gameForm.get('status')?.invalid && gameForm.get('status')?.touched" class="error">
+    Пожалуйста, выберите статус
+  </div>
+</div>
+
+      <div class="form-group">
+        <label for="gameTime">Время в игре (часы:минуты)</label>
+        <input id="gameTime" formControlName="gameTime" type="text" 
+               [class.invalid]="gameForm.get('gameTime')?.invalid && gameForm.get('gameTime')?.touched">
+        <div *ngIf="gameForm.get('gameTime')?.invalid && gameForm.get('gameTime')?.touched" class="error">
+          Введите число 0 или больше
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="image">URL изображения</label>
+        <input id="image" formControlName="image" type="url" 
+               [class.invalid]="gameForm.get('image')?.invalid && gameForm.get('image')?.touched">
+        <div *ngIf="gameForm.get('image')?.invalid && gameForm.get('image')?.touched" class="error">
+          Введите корректный URL
+        </div>
+      </div>
+      <div class="form-group">
+        <label for="youtubeLink">Ссылка на YouTube</label>
+        <input id="youtubeLink" formControlName="youtubeLink" type="url" 
+               [class.invalid]="gameForm.get('youtubeLink')?.invalid && gameForm.get('youtubeLink')?.touched">
+        <div *ngIf="gameForm.get('youtubeLink')?.invalid && gameForm.get('youtubeLink')?.touched" class="error">
+          Введите корректный URL
+        </div>
+      </div>
+      <div class="form-group">
+        <label for="metacriticRate">Рейтинг Metacritic</label>
+        <input id="metacriticRate" formControlName="metacriticRate" type="number" min="0" max="100" 
+               [class.invalid]="gameForm.get('metacriticRate')?.invalid && gameForm.get('metacriticRate')?.touched">
+        <div *ngIf="gameForm.get('metacriticRate')?.invalid && gameForm.get('metacriticRate')?.touched" class="error">
+          Введите число от 0 до 100
+        </div>
+      </div>
+      <div class="form-group">
+        <label for="released">Дата выпуска</label>
+        <input id="released" formControlName="released" type="date" 
+               [class.invalid]="gameForm.get('released')?.invalid && gameForm.get('released')?.touched">
+        <div *ngIf="gameForm.get('released')?.invalid && gameForm.get('released')?.touched" class="error">
+          Пожалуйста, выберите дату
+        </div>
+      </div>
+
+
+
+
+      <div class="form-group">
+        <label for="review">Отзыв</label>
+        <textarea id="review" formControlName="review" rows="4"></textarea>
+      </div>
+
+      <div *ngIf="errorMessage" class="form-error">
+        {{ errorMessage }}
+      </div>
+
+      <div class="form-actions">
+        <button type="button" class="cancel-button" (click)="close()">Отмена</button>
+        
+        <button *ngIf="isEditMode" 
+                type="button" 
+                class="delete-button"
+                (click)="confirmDelete()">
+          Удалить игру
+        </button>
+        
+        <button type="submit" 
+                class="submit-button"
+                [disabled]="gameForm.invalid || isSubmitting"
+                (click)="onSave()">
+          <span *ngIf="isSubmitting" class="spinner"></span>
+          {{ isSubmitting ? (isEditMode ? 'Сохранение...' : 'Добавление...') : (isEditMode ? 'Сохранить' : 'Добавить') }}
+        </button>
+      </div>
+      <div class="form-group">
+        <label>Магазины</label>
+        <div class="cards-container">
+         @if (gameToEdit && gameToEdit.stores && gameToEdit.stores.length) {
+            @for (store of gameToEdit.stores; track store.storeId) {
+              <div class="card">
+                <div class="card-header">
+                  <span>{{ statusService.getStoreName(store) }}</span>
+                </div>
+                <div class="card-content">
+                  @if (store.url) {
+                    <a [href]="store.url" target="_blank" class="store-link">Ссылка на магазин</a>
+                  }
+                </div>
+              </div>
+            }
+          } @else {
+            <div class="card">
+              <div class="card-content empty-message">Магазины не указаны</div>
+            </div>
+          }
+        </div>
+      </div>
+
+      <!-- Achievements -->
+      <div class="form-group">
+        <label>Достижения</label>
+        <div class="cards-container">
+           @if (gameToEdit && gameToEdit.achievements && gameToEdit.achievements.length) {
+            @for (achievement of gameToEdit.achievements; track achievement.name) {
+              <div class="card">
+                <div class="card-header">
+                  <span>{{ achievement.name }}</span>
+                  <span>{{ achievement.completionPercent }}%</span>
+                </div>
+                <div class="card-content">
+                  {{ achievement.description }}
+                </div>
+                @if (achievement.imageUrl) {
+                  <img [src]="achievement.imageUrl" alt="Achievement image" class="achievement-image">
+                }
+              </div>
+            }
+          } @else {
+            <div class="card">
+              <div class="card-content empty-message">Достижения не найдены</div>
+            </div>
+          }
+        </div>
+      </div>
+
+      <!-- Tags -->
+      <div class="form-group">
+        <label>Теги</label>
+        <div class="cards-container tags-container">
+         @if (gameToEdit && gameToEdit.tags && gameToEdit.tags.length) {
+  @for (tag of gameToEdit.tags; track tag?.name) {
+    <div class="card tag-card">
+      <div class="card-content">{{ tag?.name || 'Без названия' }}</div>
+    </div>
+  }
+
+          } @else {
+            <div class="card">
+              <div class="card-content empty-message">Теги не указаны</div>
+            </div>
+          }
+        </div>
+      </div>
+
+      <!-- Trailers -->
+      <div class="form-group">
+        <label>Трейлеры</label>
+        <div class="cards-container">
+           @if (gameToEdit && gameToEdit.trailers && gameToEdit.trailers.length) {
+            @for (trailer of gameToEdit.trailers; track trailer.id) {
+              <div class="card">
+                <div class="card-header">{{ trailer.name || 'Трейлер' }}</div>
+                @if (trailer.videoMaxQuality) {
+                  <div class="trailer-card">
+                    <iframe [src]="getSafeUrl(trailer.videoMaxQuality)" allowfullscreen></iframe>
+                  </div>
+                }
+              </div>
+            }
+          } @else {
+            <div class="card">
+              <div class="card-content empty-message">Трейлеры не найдены</div>
+            </div>
+          }
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+
+<div *ngIf="showDeleteConfirm" class="confirm-dialog-overlay">
+  <div class="confirm-dialog">
+    <h3>Удалить игру?</h3>
+    <p>Вы уверены, что хотите удалить "{{ gameForm.get('name')?.value }}"?</p>
+    <div class="confirm-actions">
+      <button (click)="showDeleteConfirm = false" class="cancel-button">Отмена</button>
+      <button (click)="onDelete()" class="delete-button">Удалить</button>
+    </div>
+  </div>
+</div>

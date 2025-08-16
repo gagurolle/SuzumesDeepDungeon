@@ -1,0 +1,33 @@
+   <div class="profile-container">
+      <div class="profile-card">
+        <h2 class="profile-title">Профиль пользователя</h2>
+        
+        <div class="profile-info">
+          <div class="info-row">
+            <span class="info-label">Имя:</span>
+            <span class="info-value">{{ auth.getUserName }}</span>
+          </div>
+          
+          <div class="info-row">
+            <span class="info-label">Роль:</span>
+            <span class="info-value">{{ auth.getUserRole }}</span>
+          </div>
+        </div>
+
+        <div class="profile-actions">
+          <button mat-raised-button 
+                  color="primary" 
+                  class="action-button"
+                  (click)="goHome()">
+            На главную
+          </button>
+          
+          <button mat-raised-button 
+                  color="warn" 
+                  class="action-button"
+                  (click)="logout()">
+            Выйти
+          </button>
+        </div>
+      </div>
+    </div>

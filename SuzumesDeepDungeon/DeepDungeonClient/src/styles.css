@@ -1,0 +1,48 @@
+/* You can add global styles to this file, and also import other style files */
+
+html, body { height: 100%; }
+body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+.store-1 { background-color: #1b2838; } /* Steam */
+.store-2 { background-color: #107c10; } /* Microsoft */
+.store-3 { background-color: #003791; } /* Playstation */
+.store-5 { background-color: #86328c; } /* GoG */
+.store-6 { background-color: #e60012; } /* Nintendo */
+.store-7 { background-color: #107c10; } /* Xbox */
+.store-11 { background-color: #040d1a; } /* Epic Games */
+.store-8 { background-color: #f58026; } /* Google play Store */
+.store-4 { background-color:  #1f82bb;} /* Apple Store */
+.store-9 { background-color: #665141; } /* Itch.io */
+.status-Completed {
+  background-color: #4caf50;
+  color: #ffffff;
+}
+
+.status-InProgress {
+  color: #ffffff;
+  background-color: #818d16;
+}
+
+.status-Drop {
+  background-color: #f44336;
+  color: #ffffff;
+}
+
+.status-OnHold {
+  background-color: #7e7fc0;
+  color: #ffffff;
+}
+
+.status-PlantoPlay {
+  background-color: #c059b7;
+  color: #ffffff;
+}
+
+.status-NetworkGame {
+  background-color: #51818a;
+  color: #ffffff;
+}
+
+.status-Unknown {
+  background-color: #d1d0d096;
+  color: #ffffff;
+}

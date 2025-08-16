@@ -1,0 +1,183 @@
+<!-- game-list.component.html -->
+
+<div class="game-list-container">
+  
+  <div class="list-header">
+    <h1 class="page-title">Рейтинг моих игр</h1>
+    
+    <div *ngIf="(auth.currentUser$ | async) as user">
+      <div *ngIf="user">
+        <button class="login-button" (click)="goToProfile()">Профиль</button>
+      </div>
+      <div *ngIf="!user">
+        <a routerLink="/login">Вход</a>
+      </div>
+    </div>
+    
+    <div class="filters-container">
+
+ <mat-form-field appearance="fill" class="search-field">
+  <mat-label>Поиск</mat-label>
+  <input matInput 
+         [value]="searchName" 
+         (input)="onSearchInput($event)"
+         placeholder="Введите название...">
+  <mat-icon matSuffix>search</mat-icon>
+</mat-form-field>
+      <!-- Фильтр по статусу -->
+      <mat-form-field appearance="fill" class="filter-field">
+        <mat-label>Статус</mat-label>
+        <mat-select [(ngModel)]="selectedStatus" (selectionChange)="loadGames()">
+          <mat-option [value]="null">Все статусы</mat-option>
+          <mat-option *ngFor="let status of statuses" [value]="status.value">
+            {{ status.text }}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <!-- Сортировка -->
+      <mat-form-field appearance="fill" class="filter-field">
+        <mat-label>Сортировка</mat-label>
+        <mat-select [(ngModel)]="sortField" (selectionChange)="loadGames()">
+          <mat-option value="created">По дате добавления</mat-option>
+          <mat-option value="name">По названию</mat-option>
+          <mat-option value="rate">По рейтингу</mat-option>
+          <mat-option value="released">По дате выхода</mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <!-- Направление сортировки -->
+      <mat-form-field appearance="fill" class="filter-field">
+        <mat-label>Порядок</mat-label>
+        <mat-select [(ngModel)]="sortDesc" (selectionChange)="loadGames()">
+          <mat-option [value]="true">По убыванию</mat-option>
+          <mat-option [value]="false">По возрастанию</mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <div *ngIf="isLoading" class="loading-spinner" class="filter-field">
+      <mat-spinner diameter="50"></mat-spinner>
+    </div>
+
+    
+    </div>
+
+
+    <div *ngIf="auth.isAdmin">
+      <button class="add-button" (click)="openAddForm()">
+        <mat-icon>add</mat-icon> Добавить игру
+      </button>
+    </div>
+  </div>
+  <div class="game-list-container">
+    <h1 class="page-title">Мои игры</h1>
+
+    <div *ngIf="!isLoading && games.length === 0" class="empty-list">
+      <mat-icon>sports_esports</mat-icon>
+      <p>Список игр пуст</p>
+    </div>
+
+    <div class="game-cards">
+      <div *ngFor="let game of games" class="game-card">
+        <div class="game-image-container">
+          <img [src]="game.image || 'assets/default-game.jpg'" alt="{{ game.name }}" class="game-image"
+            (error)="handleImageError($event)">
+        </div>
+
+        <div class="game-info">
+
+
+          <div class="game-header">
+            <h2 class="game-name clickable" (click)="openGameDetails(game)">{{ game.name || 'Без названия' }}</h2>
+            <div class="game-rating">
+              <span class="rating-value">{{ game.rate?.toFixed(1) || '0.0' }}</span>
+              <span class="rating-max">/10</span>
+              <mat-icon class="star-icon">star</mat-icon>
+            </div>
+          </div>
+
+          <div class="game-meta">
+            <div class="meta-row">
+              <div class="meta-item">
+                <mat-icon>play_circle</mat-icon>
+                <span class="status-badge" [class]="'status-' + game.status">
+                  {{ statusService.getStatusText(game.status) }}
+                </span>
+              </div>
+              <ng-container *ngIf="game.metacriticRate">
+                <span class="metacritic-rating">
+                  <span class="rating-value">{{ game.metacriticRate }}</span>
+                  <span class="rating-max">/100</span>
+                  <mat-icon class="metacritic-icon">star</mat-icon>
+                </span>
+              </ng-container>
+            </div>
+
+            <div class="meta-row">
+              <div class="meta-item">
+                <mat-icon>schedule</mat-icon>
+                <span>Время в игре: {{ formatPlayTime(game.gameTime + "" || "0") }}</span>
+              </div>
+
+              <!-- Иконка YouTube -->
+              <div *ngIf="game.youtubeLink" class="meta-item youtube-icon">
+                <a [href]="game.youtubeLink" target="_blank">
+                  <mat-icon>play_circle</mat-icon> Запись YouTube
+                </a>
+              </div>
+            </div>
+
+
+
+            <div class="meta-item">
+              <div *ngIf="game.released" class="meta-item released-date">
+                <mat-icon>event</mat-icon>
+                <span>Вышла: {{ game.released | date:'dd.MM.yyyy' }}</span>
+              </div>
+            </div>
+          </div>
+
+
+
+
+          <div class="review-header">
+            <h3 class="review-title">Мой отзыв:</h3>
+
+            <div *ngIf="auth.isAdmin">
+              <button mat-icon-button class="edit-button" (click)="openEditForm(game)">
+                <mat-icon>edit</mat-icon>
+              </button>
+            </div>
+          </div>
+
+          <div class="review-text">
+            {{ game.review || 'Отзыв отсутствует' }}
+          </div>
+
+
+          <div class="game-footer">
+            <span class="date-added">Добавлено: {{ game.created | date:'dd.MM.yyyy' }}</span>
+            <span *ngIf="game.updated" class="date-updated">
+              (Обновлено: {{ game.updated | date:'dd.MM.yyyy' }})
+            </span>
+          </div>
+
+          <div *ngIf="game.stores && game.stores.length > 0" class="stores-container">
+            <a *ngFor="let store of game.stores" [href]="store.url" target="_blank" class="store-badge"
+              [class]="'store-' + store.storeId">
+              {{ statusService.getStoreName(store) }}
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+<app-game-details-view 
+    *ngIf="selectedGame" 
+    [game]="selectedGame"
+    (close)="closeGameDetails()">
+  </app-game-details-view>
+  <app-game-add-form *ngIf="showForm" [gameToEdit]="currentGame" (gameSaved)="onGameSaved($event)"
+    (gameDeleted)="onGameDeleted($event)" (closed)="showForm = false">
+  </app-game-add-form>
+</div>

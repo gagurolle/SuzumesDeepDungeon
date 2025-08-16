@@ -1,0 +1,615 @@
+/* game-list.component.css */
+.game-list-container {
+  background-color: #121212;
+  color: #e0e0e0;
+  min-height: 100vh;
+  padding: 32px;
+  font-family: 'Roboto', sans-serif;
+}
+
+.game-list-container .page-title {
+  color: #bb86fc;
+  text-align: center;
+  margin-bottom: 32px;
+  font-weight: 300;
+}
+
+.game-list-container .loading-spinner {
+  display: flex;
+  justify-content: center;
+  padding: 48px;
+}
+
+.game-list-container .error-message {
+  background-color: #cf6679;
+  color: #000;
+  padding: 16px;
+  border-radius: 4px;
+  text-align: center;
+  margin-bottom: 32px;
+}
+
+.game-list-container .empty-list {
+  text-align: center;
+  padding: 48px;
+  color: #9e9e9e;
+}
+
+.game-list-container .empty-list mat-icon {
+  font-size: 48px;
+  width: 48px;
+  height: 48px;
+  margin-bottom: 16px;
+}
+
+.game-list-container .game-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(600px, 1fr));
+  gap: 32px;
+}
+
+.game-list-container .game-card {
+
+ display: flex;
+  min-height: 400px;
+  background-color: #1e1e1e;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+  transition: transform 0.3s ease;
+  position: relative;
+}
+
+.game-list-container .game-card:hover {
+  transform: translateY(-5px);
+}
+
+.game-list-container .game-card .game-image-container {
+   flex: 0 0 330px; /* ширина картинки */
+  height: 100%;
+  display: flex;
+  align-items: stretch;
+  justify-content: flex-start;
+  background-color: #2d2d2d;
+  overflow: hidden;
+  position: relative;
+  margin-right: -100px; /* Картинка заходит под текст */
+  z-index: 1;
+}
+
+.game-list-container .game-card  .game-image {
+ width: 110%;
+  height: 100%;
+  /* object-fit: contain; */
+  display: block;
+  background: #2d2d2d;
+  object-fit: contain;
+  transition: opacity 0.4s;
+}
+
+.game-list-container .game-card .game-image-container::after {
+   content: "";
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  background: linear-gradient(
+    to left,
+    #1e1e1e 5%,
+    rgba(30,30,30,0.95) 10%,
+    rgba(30,30,30,0.7) 30%,
+    rgba(30,30,30,0.2) 40%,
+    rgba(30,30,30,0) 100%
+  );
+  z-index: 2;
+}
+
+.game-list-container .game-card .game-info {
+ position: relative;
+  z-index: 2;
+  flex: 1 1 0;
+  padding: 32px 24px 24px 64px; /* Больше паддинг слева, чтобы текст не прилипал к картинке */
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.game-list-container .game-card .game-info .game-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 19px;
+}
+
+.game-list-container .game-card .game-info .game-header .game-name {
+  margin: 0;
+  color: #bb86fc;
+  font-size: 24px;
+}
+
+.game-list-container .game-card .game-info .game-header .game-rating {
+  display: flex;
+  align-items: center;
+  background-color: #3700b3;
+  padding: 5px 13px;
+  border-radius: 20px;
+}
+
+.game-list-container .game-card .game-info .game-header .game-rating .rating-value {
+  font-weight: bold;
+  font-size: 19px;
+}
+
+.game-list-container .game-card .game-info .game-header .game-rating .rating-max {
+  opacity: 0.7;
+  margin: 0 5px;
+}
+
+.game-list-container .game-card .game-info .game-header .game-rating .star-icon {
+  color: #ffd740;
+  font-size: 19px;
+}
+
+.game-list-container .game-card .game-info .game-meta {
+  margin-bottom: 1px;
+}
+
+.game-list-container .game-card .game-info .game-meta .meta-item {
+  display: flex;
+  align-items: center;
+  margin-bottom: 2px;
+  color: #b0bec5;
+}
+
+.game-list-container .game-card .game-info .game-meta .meta-item mat-icon {
+  margin-right: 2px;
+  font-size: 18px;
+  width: 18px;
+  height: 18px;
+}
+
+.game-list-container .game-card .game-info .game-review .review-header{
+  flex-grow: 1;
+  margin-bottom: 16px;
+}
+
+.game-list-container .game-card .game-info .game-review .review-header h3 {
+  color: #bb86fc;
+  margin-top: 0;
+  margin-bottom: 8px;
+  font-size: 18px;
+}
+
+.game-list-container .game-card .game-info  .review-text {
+  white-space: pre-line;
+  line-height: 1.6;
+  margin: 0;
+  background-color: #252525;
+  padding: 16px;
+  border-radius: 4px;
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+.game-list-container .game-card .game-info .review-footer{
+  font-size: 13px;
+  color: #757575;
+  display: flex;
+  gap: 16px;
+}
+
+.game-list-container .game-card .game-info  .date-updated {
+  font-style: italic;
+}
+
+.list-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+}
+
+.add-button {
+  background-color: #bb86fc;
+  color: #000;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+}
+
+.add-button:hover {
+  background-color: #9b6ce0;
+}
+
+.edit-button {
+  background: none;
+  border: none;
+  color: #bb86fc;
+  cursor: pointer;
+  padding: 0.5rem;
+}
+
+.edit-button:hover {
+  color: #9b6ce0;
+}
+
+.delete-button {
+  background-color: #cf6679;
+  color: white;
+  margin-right: auto;
+}
+
+.delete-button:hover {
+  background-color: #b00020;
+}
+
+/* .game-image-container 
+ width: 250px; /* Фиксированная ширина изображения 
+  display: flex;
+  align-items: center; /* Вертикальное центрирование 
+  justify-content: center; /* Горизонтальное центрирование 
+  overflow: hidden;
+  background: #f5f5f5; /* Фон на случай прозрачных изображений 
+ */
+
+.game-image-container {
+  width: 100%;
+  height: 100%;
+
+}
+
+
+.game-card {
+  display: flex;     /* Фиксированная ширина карточки */
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  overflow: hidden;    /* Чтобы углы картинки соответствовали скруглению карточки */
+}
+
+.game-content {
+  padding: 15px;
+  flex-grow: 1;       /* Текст занимает оставшееся пространство */
+  display: flex;
+  flex-direction: column;
+}
+
+
+
+.game-content p {
+  margin: 0;    /* Текст отзыва занимает доступное пространство */
+  overflow: hidden;    /* Скрываем избыточный текст */
+  text-overflow: ellipsis;
+}
+
+.review-text {
+  /* Фиксированные размеры */
+  width: 95%;
+  height: 120px; /* Фиксированная высота */
+  min-height: 120px; /* Дополнительная страховка */
+  max-height: 120px; /* Фиксируем максимальную высоту */
+  
+  /* Настройки переноса и скролла */
+  overflow-y: auto; /* Вертикальный скролл при необходимости */
+  overflow-x: hidden; /* Запрещаем горизонтальный скролл */
+  word-wrap: break-word; /* Перенос длинных слов */
+  white-space: pre-wrap; /* Сохраняет переносы строк из текста */
+  word-break: break-word; /* Переносит длинные слова */
+  
+  /* Визуальное оформление */
+  padding: 10px;
+  margin: 8px 0;
+  border: 2px solid #bb86fc38;
+  border-radius: 8px;
+  font-family: inherit;
+  line-height: 1.5;
+  
+  /* Стилизация скроллбара */
+  scrollbar-width: thin;
+  scrollbar-color: #bb86fc #f1f1f10a;
+}
+
+/* Стилизация скроллбара для Chrome/Safari */
+.review-text::-webkit-scrollbar {
+  width: 6px;
+}
+
+.review-text::-webkit-scrollbar-track {
+  background: #b94040;
+  border-radius: 3px;
+}
+
+.review-text::-webkit-scrollbar-thumb {
+  background-color: #bb86fc;
+  border-radius: 3px;
+}
+
+.game-name {
+   overflow-y: hidden; /* Вертикальный скролл при необходимости */
+  overflow-x: hidden; /* Запрещаем горизонтальный скролл */
+  word-wrap: break-word; /* Перенос длинных слов */
+  white-space: pre-wrap; /* Сохраняет переносы строк из текста */
+  word-break: break-word;
+}
+
+/* Стилизация скроллбара для WebKit */
+.review-header {
+  display: flex;
+  justify-content: space-between; /* Распределяет элементы по ширине */
+  align-items: center; /* Выравнивает по вертикали */
+  margin-bottom: 2px;
+  width: 100%;
+}
+
+.review-title {
+  margin: 0; /* Убираем стандартные отступы */
+  font-size: 1.1rem;
+  color: #bb86fc;
+}
+
+.edit-button {
+  margin-left: auto; /* Прижимает кнопку вправо */
+  color: #bb86fc;
+}
+
+.edit-button:hover {
+  background-color: rgba(187, 134, 252, 0.1);
+}
+
+.review-text {
+  /* Ваши существующие стили для текста отзыва */
+  margin-top: 0; /* Убираем отступ сверху */
+}
+
+.login-button{
+  background-color: #bb86fc;
+  color: #000;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+}
+
+.login-button:hover {
+  background-color: rgba(187, 134, 252, 0.1);
+}
+
+
+
+.login-button:hover {
+  color: #9b6ce0;
+}
+
+.status-badge {
+  padding: 4px 8px;
+  border-radius: 12px;
+  font-size: 18px;
+}
+
+
+
+.meta-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.metacritic-rating {
+  display: flex;
+  align-items: right;
+  background-color: rgb(70, 39, 70); /* Зеленый цвет Metacritic */
+  padding: 5px 13px;
+  border-radius: 20px;
+  margin-left: 12px;
+}
+.metacritic-rating .rating-value {
+  font-weight: bold;
+  
+  font-size: 19px;
+}
+.metacritic-rating .rating-max {
+  opacity: 0.7;
+  
+  margin: 0 5px;
+}
+
+.metacritic-rating .metacritic-icon {
+  color: #ffd740;
+  
+  font-size: 19px;
+}
+
+.youtube-icon {
+  margin-left: 12px;
+}
+
+.youtube-icon a {
+  color: #e76060; /* Красный цвет YouTube */
+  display: flex;
+  align-items: center;
+}
+
+.released-date {
+  margin-top: 8px;
+}
+
+.stores-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.store-badge {
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  text-decoration: none;
+  color: white;
+  display: inline-block;
+}
+
+
+.meta-item .metacritic-rating {
+  display: inline-flex;
+  align-items: center;
+  margin-left: 12px;
+  background: #222;
+  border-radius: 12px;
+  
+  padding: 2px 10px;
+  font-size: 1rem;
+  color: #b4ff7a;
+  font-weight: bold;
+  gap: 4px;
+}
+.meta-item .metacritic-rating .rating-max {
+  font-size: 0.9em;
+  color: #252c20;
+}
+.meta-item .metacritic-icon {
+  font-size: 1.1em;
+  color: #2d3a23;
+  margin-left: 2px;
+}
+
+
+.list-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-bottom: 0px;
+}
+
+.filters-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  flex-grow: 1;
+  margin: 0 20px;
+}
+
+.header-buttons {
+  display: flex;
+  gap: 12px;
+}
+
+.filter-field {
+  width: 180px;
+  color: #114c69 !important;
+}
+.filter-field .mat-form-field-label {
+  color: #114c69 !important;
+}
+
+.search-field{
+  width: 300px;
+  color: #ec1717 !important;
+}
+
+.search-field .filled-caret-color {
+  color: #d64b4b !important;
+}
+
+/* Изменение цвета иконок */
+.search-field .mat-icon {
+  color: #0579b3 !important;
+}
+
+/* Изменение цвета подчеркивания и рамки */
+.search-field .mat-form-field-appearance-fill .mat-form-field-fill {
+  color: #e71046 !important;
+}
+
+/* Изменение цвета подписи (hint) */
+.search-field .mat-form-field-hint {
+  color: #b0bec5 !important;
+}
+
+/* Изменение цвета иконок */
+.filter-field .mat-icon {
+  color: #1888c0 !important;
+}
+
+/* Изменение цвета подчеркивания и рамки */
+.filter-field .mat-form-field-appearance-fill .mat-form-field-fill {
+  color: #27769e !important;
+}
+
+/* Изменение цвета подписи (hint) */
+
+ /* mat-form-field {
+      width: 100%;
+    }
+
+    ::ng-deep .filter-field  {
+      color: #e4e2e2 !important;
+    }
+
+    ::ng-deep .mat-form-field-outline-thick {
+      color: #bb86fc !important;
+    }
+
+    ::ng-deep .mat-input-element {
+      caret-color: #bb86fc !important;
+      color: #e0e0e0 !important;
+    }
+
+    ::ng-deep .mat-form-field-label {
+      color: #9e9e9e !important;
+    } */
+
+/* Для мобильных устройств - перенос фильтров */
+@media (max-width: 768px) {
+  .list-header {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .filters-container {
+    margin: 10px 0;
+  }
+  
+  .header-buttons {
+    align-self: flex-end;
+  }
+}
+
+/* Стиль для кликабельного названия игры */
+.clickable {
+  cursor: pointer;
+  transition: color 0.2s;
+}
+
+.clickable:hover {
+  color: #bb86fc;
+  text-decoration: underline;
+}
+
+/* Расположение компонентов */
+.game-list-container {
+  position: relative;
+}
+
+/* Стили для контейнера контента */
+.game-list-content {
+  transition: filter 0.3s ease;
+}
+
+/* Эффект размытия фона при открытой детализации */
+.game-list-content.blurred {
+  filter: blur(5px);
+  pointer-events: none;
+  user-select: none;
+}
