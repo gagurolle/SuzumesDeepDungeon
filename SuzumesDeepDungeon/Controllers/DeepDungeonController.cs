@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ViewEngines;
 using Microsoft.EntityFrameworkCore;
@@ -24,6 +25,7 @@ public class DeepDungeon : ControllerBase
     }
 
     //CRUD SERVICE TO GET DATA
+    
     [HttpGet(Name = "GetGameRank")]
     public async Task<ActionResult<IEnumerable<GameRankDTO>>> GetGameRank(
     [FromQuery] string? status,      
@@ -36,7 +38,7 @@ public class DeepDungeon : ControllerBase
     [FromQuery] DateTime? updated,
     [FromQuery] bool desc = false)   
     {
-        // Базовый запрос с включением связанных данных
+
         var query = _context.GameRanks
             .Include(x => x.Stores)
             .Include(p => p.Screenshots)
@@ -49,11 +51,11 @@ public class DeepDungeon : ControllerBase
 
         if (!string.IsNullOrEmpty(name))
         {
-            // Приводим к нижнему регистру для регистронезависимого поиска
+
             var searchTerm = name.ToLower();
             query = query.Where(g => g.Name.ToLower().Contains(searchTerm));
         }
-        // Применение фильтров
+
         if (!string.IsNullOrEmpty(status))
         {
             if (Enum.TryParse<GameStatus>(status, true, out var statusFilter))
@@ -82,7 +84,7 @@ public class DeepDungeon : ControllerBase
             var tagList = tags.Split(',', StringSplitOptions.RemoveEmptyEntries);
             query = query.Where(g => g.Tags.Any(t => tagList.Contains(t.Name)));
         }
-        // Применение сортировки
+
         query = (sortBy?.ToLower(), desc) switch
         {
             ("name", false) => query.OrderBy(g => g.Name),
@@ -93,7 +95,7 @@ public class DeepDungeon : ControllerBase
             ("released", true) => query.OrderByDescending(g => g.Released),
             ("created", false) => query.OrderBy(g => g.Created),
             ("created", true) => query.OrderByDescending(g => g.Created),
-            _ => query.OrderByDescending(g => g.Created) // По умолчанию
+            _ => query.OrderByDescending(g => g.Created) 
         };
 
         var gameRanks = await query.ToListAsync();
@@ -101,7 +103,7 @@ public class DeepDungeon : ControllerBase
 
         return Ok(result);
     }
-
+    [Authorize(Roles = "Admin")]
     [HttpDelete("{id}")]
     public async Task<IActionResult> DeleteGameRank(int id)
     {
@@ -116,7 +118,7 @@ public class DeepDungeon : ControllerBase
         await _context.SaveChangesAsync();
         return NoContent();
     }
-
+    [Authorize(Roles = "Admin")]
     [HttpPost(Name = "AddGameRank")]
     public async Task<ActionResult<GameRankDTO>> AddGameRank([FromBody] GameRankDTO newGameRank)
     {
@@ -226,7 +228,7 @@ public class DeepDungeon : ControllerBase
         return CreatedAtAction(nameof(GetGameRank), new { id = gameRank.Id }, gameRank.GetDTO());
 
     }
-
+    [Authorize(Roles = "Admin")]
     [HttpPatch()]
     public async Task<ActionResult<GameRankDTO>> UpdateGameRank([FromBody] GameRankDTO updatedGameRank)
     {
