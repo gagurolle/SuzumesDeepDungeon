@@ -12,11 +12,13 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v4
 
-    - name: Ensure Docker volume exists
+    # Создаем директории вместо volume create
+    - name: Create data directories
       run: |
-        docker volume create db_data || true
-        docker volume create logs || true
+        New-Item -ItemType Directory -Force -Path C:\docker_data\db
+        New-Item -ItemType Directory -Force -Path C:\docker_data\logs
 
+    # Исправленные команды для Windows
     - name: Build and deploy containers
       run: |
         docker compose -f docker-compose.prod.yml down
@@ -24,5 +26,4 @@ jobs:
         docker compose -f docker-compose.prod.yml up -d
         
     - name: Apply database migrations
-      run: |
-        docker exec -it $(docker ps -qf "name=backend") dotnet SuzumesDeepDungeon.dll --migrate
+      run: docker exec backend dotnet SuzumesDeepDungeon.dll --migrate
