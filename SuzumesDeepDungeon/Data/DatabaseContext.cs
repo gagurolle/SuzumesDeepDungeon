@@ -21,7 +21,6 @@ public class DatabaseContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        // Конфигурация модели
         modelBuilder.Entity<GameRank>(entity =>
         {
 
@@ -39,7 +38,7 @@ public class DatabaseContext : DbContext
             entity.HasOne(g => g.User)
         .WithMany(u => u.GameRanks)
         .HasForeignKey(g => g.UserId)
-        .IsRequired(false)  // Разрешить NULL
+        .IsRequired(false)
         .OnDelete(DeleteBehavior.SetNull);
 
             entity.HasMany(g => g.Stores).WithOne(s => s.GameRank)

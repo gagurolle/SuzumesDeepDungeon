@@ -1,29 +1,30 @@
-<div *ngIf="!auth.isAuthenticated" class="login-container">
-      <div class="login-card">
-        <h2 class="login-title">Вход в систему</h2>
-        
-        <form (ngSubmit)="onSubmit()" class="login-form">
-          <mat-form-field appearance="outline">
-            <mat-label class="password-text">Логин</mat-label>
-            <input matInput class="password-text" [(ngModel)]="username" name="username" required>
-            <mat-icon matPrefix>person</mat-icon>
-          </mat-form-field>
+@if (!auth.isAuthenticated){
+<div class="login-container">
+  <div class="login-card">
+    <h2 class="login-title">Вход в систему</h2>
 
-          <mat-form-field appearance="outline">
-            <mat-label class="password-text">Пароль</mat-label>
-            <input matInput type="password" class="password-text"[(ngModel)]="password" name="password" required>
-            <mat-icon matPrefix>lock</mat-icon>
-          </mat-form-field>
+    <form (ngSubmit)="onSubmit()" class="login-form">
+      <mat-form-field appearance="outline">
+        <mat-label class="password-text">Логин</mat-label>
+        <input matInput class="password-text" [(ngModel)]="username" name="username" required>
+        <mat-icon matPrefix>person</mat-icon>
+      </mat-form-field>
 
-          <button matButton="tonal" color="primary" type="submit" class="login-button">
-            Войти
-          </button>
-        </form>
+      <mat-form-field appearance="outline">
+        <mat-label class="password-text">Пароль</mat-label>
+        <input matInput type="password" class="password-text" [(ngModel)]="password" name="password" required>
+        <mat-icon matPrefix>lock</mat-icon>
+      </mat-form-field>
 
-        <div *ngIf="error" class="error-message">
-          {{ error }}
-        </div>
-      </div>
+      <button matButton="tonal" color="primary" type="submit" class="login-button">
+        Войти
+      </button>
+    </form>
+    @if (error) {
+    <div class="error-message">
+      {{ error }}
     </div>
-
-    
+    }
+  </div>
+</div>
+}

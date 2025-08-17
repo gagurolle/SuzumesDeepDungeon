@@ -8,17 +8,17 @@ namespace SuzumesDeepDungeon.Models
         public string Username { get; set; }
         public string Email { get; set; }
         public string Password { get; set; }
-        public UserRole Role { get; set; } // e.g., "admin", "user"
+        public UserRole Role { get; set; }
         public bool IsAdmin { get; set; }
-        [JsonIgnore] 
+        [JsonIgnore]
         public List<GameRank> GameRanks { get; set; } = new List<GameRank>();
-        public DateTime Created { get; set; } // Date when the user was created
-        public DateTime Updated { get; set; } // Date when the user was last updated
-    }
+        public DateTime Created { get; set; }
+        public DateTime Updated { get; set; }
 
-    public enum UserRole
-    {
-        Admin,
-        User
+        public enum UserRole
+        {
+            Admin,
+            User
+        }
     }
 }

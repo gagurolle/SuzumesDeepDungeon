@@ -4,13 +4,12 @@ using System.Globalization;
 
 namespace SuzumesDeepDungeon.Services.CSVLoad
 {
-    public static class CSVLoad
+    public class CSVLoad
     {
-        public static List<TwitchStatisticGames> LoadGames(string filePath)
+        public  List<TwitchStatisticGames> LoadGames(string filePath)
         {
             var config = new CsvConfiguration(CultureInfo.InvariantCulture)
             {
-                // Настройки при необходимости:
                 Delimiter = ",",                         // Разделитель (по умолчанию ",")
                 HasHeaderRecord = true,                   // Флаг наличия заголовков
                 MissingFieldFound = null,                 // Игнорировать отсутствующие поля

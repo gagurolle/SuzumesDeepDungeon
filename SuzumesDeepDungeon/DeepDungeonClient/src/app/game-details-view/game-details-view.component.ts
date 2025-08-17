@@ -1,6 +1,6 @@
 import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { GameRankDTO } from '../models/game-ranking';
-import { GameStatusService } from '../services/game-status.service';
+import { GameStatusService } from '../services/game-status/game-status.service';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { Store, StoresEnum } from '../models/store';
 import { MatIconModule } from '@angular/material/icon';

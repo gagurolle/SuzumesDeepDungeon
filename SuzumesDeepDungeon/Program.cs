@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using SuzumesDeepDungeon.Data;
 using SuzumesDeepDungeon.Services;
+using SuzumesDeepDungeon.Services.CSVLoad;
 using System.Text;
 using System.Text.Json.Serialization;
 
@@ -16,7 +17,7 @@ builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-GameAddService.rawgApi = builder.Configuration["rawgAPI"] ?? "";
+RawgApi.rawgApi = builder.Configuration["rawgAPI"] ?? "";
 builder.Services.AddCors(options => {
     options.AddPolicy("AllowAll", policy => {
         policy.AllowAnyOrigin()
@@ -47,6 +48,10 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     });
 
 builder.Services.AddAuthorization();
+builder.Services.AddScoped<SteamApi>();
+builder.Services.AddScoped<RawgApi>();
+builder.Services.AddScoped<CSVLoad>();
+
 
 builder.Services.AddDbContext<DatabaseContext>(options =>
     options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));

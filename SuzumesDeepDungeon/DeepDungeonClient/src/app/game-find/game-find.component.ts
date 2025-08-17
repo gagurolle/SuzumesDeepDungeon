@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
-import { GameFindServiceService } from '../game-find-service.service';
+import { GameFindServiceService } from '../services/game-find/game-find-service.service';
 import { FindGameDTO } from '../models/game-find';
 import { GameRankDTO } from '../models/game-ranking';
 import { CommonModule } from '@angular/common';
@@ -20,7 +20,8 @@ export class GameFindComponent {
   isLoading = false;
   errorMessage: string | null = null;
 
-  constructor(private findService: GameFindServiceService) {}
+
+  constructor(private findService: GameFindServiceService) { }
 
   async findGame(): Promise<void> {
     if (!this.gameName.trim()) {
@@ -35,10 +36,10 @@ export class GameFindComponent {
     try {
       // Используем setTimeout для гарантированного обновления UI перед долгой операцией
       await new Promise(resolve => setTimeout(resolve, 0));
-      
+
       const data = await this.findService.getGames(this.gameName).toPromise();
       this.games = data || [];
-      
+
       if (this.games.length === 0) {
         this.errorMessage = 'Игры не найдены';
       }
@@ -56,7 +57,7 @@ export class GameFindComponent {
 
     try {
       await new Promise(resolve => setTimeout(resolve, 0));
-      
+
       const data = await this.findService.getGameData(game).toPromise();
       if (data) {
         this.gameFound.emit(data);
@@ -65,7 +66,7 @@ export class GameFindComponent {
       console.error(err);
       this.errorMessage = 'Ошибка при загрузке данных игры';
     } finally {
-      this.games = []; 
+      this.games = [];
       this.isLoading = false;
     }
   }

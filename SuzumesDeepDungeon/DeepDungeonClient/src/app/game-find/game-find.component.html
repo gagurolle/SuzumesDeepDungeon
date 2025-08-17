@@ -1,36 +1,38 @@
 <div class="game-find-container">
   <div class="search-controls">
     <button class="search-button" (click)="findGame()" [disabled]="isLoading">
-      <span *ngIf="!isLoading">Найти игру</span>
-      <span *ngIf="isLoading">Поиск...</span>
+
+      @if (!isLoading){<span>Найти игру</span>}
+
+      @if (isLoading){<span>Поиск...</span>}
     </button>
-    
+
     @if (isLoading) {
-      <div class="loading-bar">
-        <div class="loading-progress"></div>
-      </div>
+    <div class="loading-bar">
+      <div class="loading-progress"></div>
+    </div>
     }
   </div>
 
   @if (games.length > 0) {
-    <div class="games-dropdown">
-      <div class="games-list">
-        @for (game of games; track game.name) {
-          <div class="game-item" (click)="chooseGame(game)">
-            <div class="game-info">
-              <span class="game-name">{{ game.name }}</span>
-              @if (game.released) {
-                <span class="game-released">Дата выхода: {{ game.released | date:'dd.MM.yyyy' }}</span>
-              }
-            </div>
-            <button class="select-button">Выбрать</button>
-          </div>
-        }
+  <div class="games-dropdown">
+    <div class="games-list">
+      @for (game of games; track game.name) {
+      <div class="game-item" (click)="chooseGame(game)">
+        <div class="game-info">
+          <span class="game-name">{{ game.name }}</span>
+          @if (game.released) {
+          <span class="game-released">Дата выхода: {{ game.released | date:'dd.MM.yyyy' }}</span>
+          }
+        </div>
+        <button class="select-button">Выбрать</button>
       </div>
+      }
     </div>
+  </div>
   }
 
   @if (errorMessage) {
-    <div class="error-message">{{ errorMessage }}</div>
+  <div class="error-message">{{ errorMessage }}</div>
   }
 </div>

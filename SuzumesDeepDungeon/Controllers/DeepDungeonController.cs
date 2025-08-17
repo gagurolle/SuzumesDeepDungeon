@@ -23,8 +23,6 @@ public class DeepDungeon : ControllerBase
         _logger = logger;
         _context = context;
     }
-
-    //CRUD SERVICE TO GET DATA
     
     [HttpGet(Name = "GetGameRank")]
     public async Task<ActionResult<IEnumerable<GameRankDTO>>> GetGameRank(
@@ -258,7 +256,6 @@ public class DeepDungeon : ControllerBase
 
         if(existingGameRank.RawgId != updatedGameRank.RawgId)
         {
-            //удалить все подсущности и добавить новые
             _context.Trailers.RemoveRange(existingGameRank.Trailers);
             _context.Tag.RemoveRange(existingGameRank.Tags);
             _context.Achievements.RemoveRange(existingGameRank.Achievements);
@@ -279,7 +276,6 @@ public class DeepDungeon : ControllerBase
 
         if(existingGameRank.Stores.Count() != updatedGameRank?.Stores?.Count())
         {
-            //удалить все магазины и добавить новыt
 
             _context.Stores.RemoveRange(existingGameRank.Stores);
 
@@ -298,7 +294,6 @@ public class DeepDungeon : ControllerBase
        
         if(existingGameRank.Tags.Count() != updatedGameRank?.Tags?.Count())
         {
-            //удалить все теги и добавить новые
             _context.Tag.RemoveRange(existingGameRank.Tags);
             foreach (var tag in updatedGameRank?.Tags)
             {
@@ -317,7 +312,6 @@ public class DeepDungeon : ControllerBase
         }
         if(existingGameRank.Achievements.Count() != updatedGameRank?.Achievements?.Count())
         {
-            //удалить все ачивки и добавить новые
             _context.Achievements.RemoveRange(existingGameRank.Achievements);
             foreach (var achievement in updatedGameRank?.Achievements)
             {
@@ -334,7 +328,6 @@ public class DeepDungeon : ControllerBase
         }
         if(existingGameRank.Trailers.Count() != updatedGameRank?.Trailers?.Count())
         {
-            //удалить все трейлеры и добавить новые
             _context.Trailers.RemoveRange(existingGameRank.Trailers);
             foreach (var trailer in updatedGameRank?.Trailers)
             {
@@ -349,11 +342,6 @@ public class DeepDungeon : ControllerBase
                 });
             }
         }
-        //магазины, ачивки , теги и трейлеры если пришли другие, отличные от существующих, то удаляем старые и добавляем новые. Надо сравнить rawgId старое и новое, если они не совпадают, то удаляем старые сущности тегов, трейлеров ачивок и магазинов, и добавляем новые.
-
-
-
-
 
         existingGameRank.RawgId = updatedGameRank.RawgId ?? existingGameRank.RawgId;
 
@@ -369,7 +357,7 @@ public class DeepDungeon : ControllerBase
             catch
             {
                 await transaction.RollbackAsync();
-                throw new Exception("Couldnr Rollback Transaction");
+                throw new Exception("Couldnt Rollback Transaction");
             }
            
         }
@@ -385,7 +373,6 @@ public class DeepDungeon : ControllerBase
         return Ok(existingGameRank.GetDTO());
     }
 
-    //MockData
 
     
 

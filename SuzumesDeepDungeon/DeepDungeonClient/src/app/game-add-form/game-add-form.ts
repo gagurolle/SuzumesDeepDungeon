@@ -1,15 +1,14 @@
 import { Component, Input, Output, EventEmitter, OnInit } from "@angular/core";
 import { FormGroup, FormBuilder, Validators, ReactiveFormsModule } from "@angular/forms";
-import { GameService } from "../api/game.service";
 import { GameRankDTO } from "../models/game-ranking";
 import { CommonModule } from "@angular/common";
-import { GameStatusService } from "../services/game-status.service";
+import { GameStatusService } from "../services/game-status/game-status.service";
 import { GameStatus } from "../models/game-status.enum";
 import { GameFindComponent } from "../game-find/game-find.component";
-import { AuthService } from "../auth/auth";
+import { AuthService } from "../services/auth/auth";
 import { User } from "../models/user";
-import { Store, StoresEnum } from "../models/store";
 import { DomSanitizer, SafeResourceUrl } from "@angular/platform-browser";
+import { GameService } from "../services/game.service/game.service";
 
 @Component({
   selector: 'app-game-add-form',
@@ -39,6 +38,7 @@ export class GameAddFormComponent implements OnInit {
     public auth: AuthService,
     private sanitizer: DomSanitizer
   ) {
+
     this.gameForm = this.fb.group({
       name: ['', Validators.required],
       rate: [null, [Validators.min(0), Validators.max(10)]],
@@ -134,7 +134,7 @@ export class GameAddFormComponent implements OnInit {
             this.gameSaved.emit(updatedGame);
             this.gameToEdit = updatedGame;
             this.close();
-            this.foundGame = null; // Сброс найденной игры после сохранения
+            this.foundGame = null; 
           },
           error: (err) => console.error(err)
         });
@@ -157,7 +157,7 @@ export class GameAddFormComponent implements OnInit {
           this.errorMessage = '';
           this.isSubmitting = false;
           this.gameSaved.emit(newGame);
-          this.foundGame = null; // Сброс найденной игры после добавления
+          this.foundGame = null; 
           this.close();
         },
         error: (err) => {
@@ -172,7 +172,6 @@ export class GameAddFormComponent implements OnInit {
 
 onGameFound(foundGame: GameRankDTO) {
 if(this.gameToEdit){
-  //this.gameToEdit.id = foundGame.id;
   this.gameToEdit.name = foundGame.name;
   this.gameToEdit.released = foundGame.released;
   this.gameToEdit.image = foundGame.image || this.gameForm.value.image;
@@ -180,8 +179,6 @@ if(this.gameToEdit){
   this.gameToEdit.stores = foundGame.stores || [];
   this.gameToEdit.screenshots = foundGame.screenshots;;
   this.gameToEdit.trailers = foundGame.trailers || [];
-  //this.gameToEdit.youtubeLink = foundGame.youtubeLink || this.gameForm.value.youtubeLink
-  //this.gameToEdit.review = foundGame.review || this.gameForm.value.review;
   this.gameToEdit.tags = foundGame.tags || [];
   this.gameToEdit.achievements = foundGame.achievements || [];
   this.gameToEdit.rawgId = foundGame.rawgId || null;
@@ -245,6 +242,7 @@ const gameDataPatch = {
   confirmDelete(): void {
     this.showDeleteConfirm = true;
   }
+
   onDelete(): void {
 
     if (this.gameToEdit?.id) {
@@ -264,20 +262,11 @@ const gameDataPatch = {
     this.closed.emit();
   }
 
-
-
   getSafeUrl(url: string): SafeResourceUrl {
     return this.sanitizer.bypassSecurityTrustResourceUrl(url);
   }
-
-  private formatTimeForInput(time: any): string {
-    if (!time) return '';
-    // Логика преобразования времени для input
-    return time; // Адаптируйте под ваш формат
-  }
-
+//TODO
   private formatGameTime(timeInput: any): string {
-    // Ваша существующая логика форматирования
     return timeInput;
   }
 }

@@ -17,7 +17,7 @@ namespace SuzumesDeepDungeon.Models
         public int? UserId { get; set; }
         public User? User { get; set; } = null!;
         public string? Image { get; set; } = string.Empty;
-        public string? YoutubeLink{ get; set; } = string.Empty;
+        public string? YoutubeLink { get; set; } = string.Empty;
         public double? MetacriticRate { get; set; }
         public string? Released { get; set; }
         public List<Stores> Stores { get; set; } = new List<Stores>();
@@ -25,7 +25,7 @@ namespace SuzumesDeepDungeon.Models
         public List<GameAchievement> Achievements { get; set; } = new List<GameAchievement>();
         public List<Trailer> Trailers { get; set; } = new List<Trailer>();
         public List<GameTag> Tags { get; set; } = new List<GameTag>();
-       
+
 
     }
 

@@ -9,9 +9,11 @@
         <label for="name">Название игры</label>
         <input id="name" formControlName="name" type="text" [class.invalid]="gameForm.get('name')?.invalid && gameForm.get('name')?.touched">
         
-        <div *ngIf="gameForm.get('name')?.invalid && gameForm.get('name')?.touched" class="error">
-          Обязательное поле
-        </div>
+        @if (gameForm.get('name')?.invalid && gameForm.get('name')?.touched) {
+          <div class="error">
+            Обязательное поле
+          </div>
+        }
       </div>
       
       @if (currentGameName.length>1) {
@@ -24,9 +26,11 @@
         <label for="rate">Рейтинг (0-10)</label>
         <input id="rate" formControlName="rate" type="number" min="0" max="10" 
                 [class.invalid]="gameForm.get('rate')?.invalid && gameForm.get('rate')?.touched">
-        <div *ngIf="gameForm.get('rate')?.invalid && gameForm.get('rate')?.touched" class="error">
-          Введите число от 0 до 10
-        </div>
+        @if (gameForm.get('rate')?.invalid && gameForm.get('rate')?.touched) {
+          <div class="error">
+            Введите число от 0 до 10
+          </div>
+        }
       </div>
 
      <div class="form-group">
@@ -35,56 +39,70 @@
           formControlName="status"
           [class.invalid]="gameForm.get('status')?.invalid && gameForm.get('status')?.touched">
     <option [ngValue]="null" disabled>Выберите статус</option>
-    <option *ngFor="let status of gameStatuses" [ngValue]="status.value">
+    @for (status of gameStatuses; track status.value) {
+      <option [ngValue]="status.value">
       {{ status.text }}
-    </option>
+      </option>
+    }
   </select>
   
-  <div *ngIf="gameForm.get('status')?.invalid && gameForm.get('status')?.touched" class="error">
-    Пожалуйста, выберите статус
-  </div>
+  @if (gameForm.get('status')?.invalid && gameForm.get('status')?.touched) {
+    <div class="error">
+      Пожалуйста, выберите статус
+    </div>
+  }
 </div>
 
       <div class="form-group">
         <label for="gameTime">Время в игре (часы:минуты)</label>
         <input id="gameTime" formControlName="gameTime" type="text" 
                [class.invalid]="gameForm.get('gameTime')?.invalid && gameForm.get('gameTime')?.touched">
-        <div *ngIf="gameForm.get('gameTime')?.invalid && gameForm.get('gameTime')?.touched" class="error">
-          Введите число 0 или больше
-        </div>
+        @if (gameForm.get('gameTime')?.invalid && gameForm.get('gameTime')?.touched) {
+          <div class="error">
+            Введите число 0 или больше
+          </div>
+        }
       </div>
 
       <div class="form-group">
         <label for="image">URL изображения</label>
         <input id="image" formControlName="image" type="url" 
                [class.invalid]="gameForm.get('image')?.invalid && gameForm.get('image')?.touched">
-        <div *ngIf="gameForm.get('image')?.invalid && gameForm.get('image')?.touched" class="error">
-          Введите корректный URL
-        </div>
+        @if (gameForm.get('image')?.invalid && gameForm.get('image')?.touched) {
+          <div class="error">
+            Введите корректный URL
+          </div>
+        }
       </div>
       <div class="form-group">
         <label for="youtubeLink">Ссылка на YouTube</label>
         <input id="youtubeLink" formControlName="youtubeLink" type="url" 
                [class.invalid]="gameForm.get('youtubeLink')?.invalid && gameForm.get('youtubeLink')?.touched">
-        <div *ngIf="gameForm.get('youtubeLink')?.invalid && gameForm.get('youtubeLink')?.touched" class="error">
-          Введите корректный URL
-        </div>
+        @if (gameForm.get('youtubeLink')?.invalid && gameForm.get('youtubeLink')?.touched) {
+          <div class="error">
+            Введите корректный URL
+          </div>
+        }
       </div>
       <div class="form-group">
         <label for="metacriticRate">Рейтинг Metacritic</label>
         <input id="metacriticRate" formControlName="metacriticRate" type="number" min="0" max="100" 
                [class.invalid]="gameForm.get('metacriticRate')?.invalid && gameForm.get('metacriticRate')?.touched">
-        <div *ngIf="gameForm.get('metacriticRate')?.invalid && gameForm.get('metacriticRate')?.touched" class="error">
-          Введите число от 0 до 100
-        </div>
+        @if (gameForm.get('metacriticRate')?.invalid && gameForm.get('metacriticRate')?.touched) {
+          <div class="error">
+            Введите число от 0 до 100
+          </div>
+        }
       </div>
       <div class="form-group">
         <label for="released">Дата выпуска</label>
         <input id="released" formControlName="released" type="date" 
                [class.invalid]="gameForm.get('released')?.invalid && gameForm.get('released')?.touched">
-        <div *ngIf="gameForm.get('released')?.invalid && gameForm.get('released')?.touched" class="error">
-          Пожалуйста, выберите дату
-        </div>
+        @if (gameForm.get('released')?.invalid && gameForm.get('released')?.touched) {
+          <div class="error">
+            Пожалуйста, выберите дату
+          </div>
+        }
       </div>
 
 
@@ -95,25 +113,31 @@
         <textarea id="review" formControlName="review" rows="4"></textarea>
       </div>
 
-      <div *ngIf="errorMessage" class="form-error">
-        {{ errorMessage }}
-      </div>
+      @if (errorMessage) {
+        <div class="form-error">
+          {{ errorMessage }}
+        </div>
+      }
 
       <div class="form-actions">
         <button type="button" class="cancel-button" (click)="close()">Отмена</button>
         
-        <button *ngIf="isEditMode" 
-                type="button" 
-                class="delete-button"
-                (click)="confirmDelete()">
+        @if (isEditMode) {
+        <button 
+          type="button" 
+          class="delete-button"
+          (click)="confirmDelete()">
           Удалить игру
         </button>
+        }
         
         <button type="submit" 
                 class="submit-button"
                 [disabled]="gameForm.invalid || isSubmitting"
                 (click)="onSave()">
-          <span *ngIf="isSubmitting" class="spinner"></span>
+            @if (isSubmitting) {
+            <span class="spinner"></span>
+            }
           {{ isSubmitting ? (isEditMode ? 'Сохранение...' : 'Добавление...') : (isEditMode ? 'Сохранить' : 'Добавить') }}
         </button>
       </div>
@@ -213,13 +237,15 @@
   </div>
 </div>
 
-<div *ngIf="showDeleteConfirm" class="confirm-dialog-overlay">
-  <div class="confirm-dialog">
-    <h3>Удалить игру?</h3>
-    <p>Вы уверены, что хотите удалить "{{ gameForm.get('name')?.value }}"?</p>
-    <div class="confirm-actions">
-      <button (click)="showDeleteConfirm = false" class="cancel-button">Отмена</button>
-      <button (click)="onDelete()" class="delete-button">Удалить</button>
+@if (showDeleteConfirm) {
+  <div class="confirm-dialog-overlay">
+    <div class="confirm-dialog">
+      <h3>Удалить игру?</h3>
+      <p>Вы уверены, что хотите удалить "{{ gameForm.get('name')?.value }}"?</p>
+      <div class="confirm-actions">
+        <button (click)="showDeleteConfirm = false" class="cancel-button">Отмена</button>
+        <button (click)="onDelete()" class="delete-button">Удалить</button>
+      </div>
     </div>
   </div>
-</div>
+}

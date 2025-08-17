@@ -21,93 +21,44 @@ namespace SuzumesDeepDungeon.Controllers
     [Route("api/gameService")]
     public class GameServiceController : ControllerBase
     {
-        private readonly IConfiguration _config;
         private readonly DatabaseContext _context;
+        private readonly ILogger<GameServiceController> _logger;
+        private readonly RawgApi _rawgApi;
+        private readonly CSVLoad _csvLoad;
 
-        public GameServiceController(IConfiguration config, DatabaseContext context)
+        public GameServiceController(ILogger<GameServiceController> logger, DatabaseContext context, RawgApi rawgApi, CSVLoad csvLoad)
         {
-            _config = config;
+            _logger = logger;
             _context = context;
-        }
+            _rawgApi = rawgApi;
+            _csvLoad = csvLoad;
 
-        [HttpGet("csvLoad1Game")]
-        public async Task<ActionResult<List<TwitchStatisticGames>>> CSVGameLoad1(string path, string game = null)
-        {
-            var k = CSVLoad.LoadGames(path);
-            TwitchStatisticGames? p = null;
-            var user = _context.Users.Where(x => x.IsAdmin == true).FirstOrDefault();
-            if (game != null && !string.IsNullOrEmpty(game))
-            {
-                 p = k.Where(x => x.gameName == game).FirstOrDefault();
-                if (p == null)
-                {
-                    return NotFound("Game not found in the provided CSV file.");
-                }
-            }
-            else
-            {
-                 p = k.FirstOrDefault();
-            }
-
-                List<GameRank> gameRanks = new List<GameRank>();
-            List<Exception> exceptions = new();
-
-                var existingGame = _context.GameRanks.FirstOrDefault(g => g.Name == p.gameName);
-                if (existingGame != null)
-                {
-                   return BadRequest("Game already exists in the database.");
-            }
-                Task.Delay(100).Wait();
-                try
-                {
-                    var rawgresponse = await GameAddService.RawgAPI.GetGameFullInfo(p.gameName);
-                    if (rawgresponse == null)
-                    {
-                         return NotFound("Game data not found in RAWG API.");
-                }
-                    var gameRankData = await GameAddService.RawgAPI.RawgDataToGameRank(rawgresponse, user);
-                    if (gameRankData == null)
-                    {
-                    return NotFound("Game data not found in RAWG API.");
-                }
-                    gameRankData.GameTime = TimeSpanExtensions.DecimalHoursToTimeSpan(p.StreamTime);
-                    gameRankData.Created = p.LastSeen;
-                    gameRanks.Add(gameRankData);
-                _context.GameRanks.Add(gameRankData);
-                await _context.SaveChangesAsync();
-            }
-                catch (Exception e)
-                {
-                    exceptions.Add(e);
-                }
-
-            return Ok(p);
         }
 
 
         [HttpGet("csvLoad")]
         public async Task<ActionResult<List<TwitchStatisticGames>>> CSVGameLoad(string path)
         {
-            var p = CSVLoad.LoadGames(path);
+            var p = _csvLoad.LoadGames(path);
             var user = _context.Users.Where(x => x.IsAdmin == true).FirstOrDefault();
             List<GameRank> gameRanks = new List<GameRank>();
             Dictionary<Exception, TwitchStatisticGames?> exceptions = new();
             foreach (var item in p)
             {
-                var existingGame = _context.GameRanks.FirstOrDefault(g => g.Name == item.gameName);
+                var existingGame = _context.GameRanks.FirstOrDefault(g => string.Equals(g.Name, item.gameName, StringComparison.InvariantCultureIgnoreCase));
                 if (existingGame != null)
                 {
-                    continue; // Game already exists, skip to the next one
+                    continue;
                 }
                 Task.Delay(100).Wait();
                 try
                 {
-                    var rawgresponse = await GameAddService.RawgAPI.GetGameFullInfo(item.gameName);
+                    var rawgresponse = await _rawgApi.GetGameFullInfo(item.gameName);
                     if (rawgresponse == null)
                     {
                         continue;
                     }
-                    var gameRankData = await GameAddService.RawgAPI.RawgDataToGameRank(rawgresponse, user);
+                    var gameRankData = await _rawgApi.RawgDataToGameRank(rawgresponse, user);
                     if (gameRankData == null)
                     {
                         continue;
@@ -128,7 +79,7 @@ namespace SuzumesDeepDungeon.Controllers
 
             foreach(var exception in exceptions)
             {
-                Console.WriteLine($"Error processing game '{exception.Value?.gameName}': {exception.Key.InnerException}");
+                _logger.LogWarning($"Error processing game '{exception.Value?.gameName}': {exception.Key.InnerException}");
             }
             return Ok(p);
         }
@@ -137,11 +88,9 @@ namespace SuzumesDeepDungeon.Controllers
         [HttpPost("addGame")]
         public async Task<ActionResult<GameRank>> AddGame([FromBody] string gameName)
         {
+            var t = await _rawgApi.GetGameFullInfo(gameName);
 
-            
-            var t = await GameAddService.RawgAPI.GetGameFullInfo(gameName);
-
-            var p = GameAddService.RawgAPI.RawgDataToGameRank(t).Result;
+            var p = _rawgApi.RawgDataToGameRank(t).Result;
             
             var user = _context.Users.FirstOrDefault(x => x.Username == "pansuzumi");
 
@@ -194,8 +143,7 @@ namespace SuzumesDeepDungeon.Controllers
         [HttpGet("findGameData")]
         public async Task<ActionResult<List<FindGameDTO>>> FindGameData(string gameName)
         {
-            var games = await GameAddService.RawgAPI.FindGames(gameName);
-            // обработать null
+            var games = await _rawgApi.FindGames(gameName);
             List<FindGameDTO> gamesDTO = new List<FindGameDTO>();
             foreach(var ent in games)
             {
@@ -216,9 +164,9 @@ namespace SuzumesDeepDungeon.Controllers
         [HttpPost("getGameData")]
         public async Task<ActionResult<GameRankDTO>> GetDataFromRawg([FromBody] FindGameDTO game)
         {
-           var t = await GameAddService.RawgAPI.GetGameFullInfo(gameName: game.Name,id: game.Id.ToString());
+           var t = await _rawgApi.GetGameFullInfo(gameName: game.Name,id: game.Id.ToString());
 
-           var p = GameAddService.RawgAPI.RawgDataToGameRank(t).Result;
+           var p = _rawgApi.RawgDataToGameRank(t).Result;
 
             return Ok(p);
         }

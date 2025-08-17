@@ -1,14 +1,13 @@
-﻿using Microsoft.AspNetCore.Identity.Data;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using SuzumesDeepDungeon.Data;
 using SuzumesDeepDungeon.DTO;
-using SuzumesDeepDungeon.MockData;
-using SuzumesDeepDungeon.Models;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using BCrypt.Net;
+using static SuzumesDeepDungeon.Models.User;
 
 namespace SuzumesDeepDungeon.Controllers
 {
@@ -25,6 +24,28 @@ namespace SuzumesDeepDungeon.Controllers
             _context = context;
         }
 
+        [HttpPost("registration")]
+        public async Task<IActionResult> Registration([FromBody] RegistrationDTO model)
+        {
+            if (model == null || string.IsNullOrEmpty(model.Username) || string.IsNullOrEmpty(model.Password))
+            {
+                return BadRequest("Username and password are required");
+            }
+            string hashedPassword = BCrypt.Net.BCrypt.HashPassword(model.Password, BCrypt.Net.BCrypt.GenerateSalt(12));
+
+            var isAdmin = model.IsAdmin ??= false;
+
+            _context.Users.Add(new Models.User
+            {
+                Username = model.Username,
+                Email = model?.Email ?? "",
+                Password = hashedPassword,
+                Role = isAdmin ? UserRole.Admin : UserRole.User
+            });
+            _context.SaveChanges();
+            return Ok();
+        }
+
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] LoginModel model)
         {
@@ -36,29 +57,30 @@ namespace SuzumesDeepDungeon.Controllers
             {
                 var user = await _context.Users
                     .FirstOrDefaultAsync(u => u.Username == model.Username);
-           
-            if (user == null)
-            {
 
-                return Unauthorized("Invalid username or password");
-            }
+                if (user == null)
+                {
 
-            //ToDo: использовать хеширование
-            if (user.Password != model.Password)
-            {
-                return Unauthorized("Invalid username or password");
-            }
-            
+                    return Unauthorized("Invalid username or password");
+                }
 
-            var token = GenerateJwtToken(user.Username, user.Role == UserRole.Admin);
+                bool isValid = BCrypt.Net.BCrypt.Verify(model.Password, user.Password);
 
-            return Ok(new
-            {
-                token,
-                username = user.Username,
-                role = user.Role.ToString(),
-                isAdmin = user.Role == UserRole.Admin
-            });
+                if (!isValid)
+                {
+                    return Unauthorized("Invalid username or password");
+                }
+
+
+                var token = GenerateJwtToken(user.Username, user.Role == UserRole.Admin);
+
+                return Ok(new
+                {
+                    token,
+                    username = user.Username,
+                    role = user.Role.ToString(),
+                    isAdmin = user.Role == UserRole.Admin
+                });
             }
             catch (Exception e)
             {
@@ -90,5 +112,5 @@ namespace SuzumesDeepDungeon.Controllers
         }
     }
 
-    
+
 }
