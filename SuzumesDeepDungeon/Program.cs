@@ -58,6 +58,17 @@ builder.Services.AddDbContext<DatabaseContext>(options =>
 
 var app = builder.Build();
 
+if (args.Contains("--migrate"))
+{
+    using (var scope = app.Services.CreateScope())
+    {
+        var dbContext = scope.ServiceProvider.GetRequiredService<DatabaseContext>();
+        dbContext.Database.Migrate();
+    }
+    return; // Завершаем после миграций
+}
+
+
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
