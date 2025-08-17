@@ -1,0 +1,46 @@
+version: '3.8'
+
+services:
+  frontend:
+    build:
+      context: ./angular-app
+      dockerfile: Dockerfile.prod
+    ports:
+      - "80:8080"  # Хост:80 → Контейнер:8080
+    networks:
+      - app-network
+    depends_on:
+      - backend
+
+  backend:
+    build:
+      context: ./SuzumesDeepDungeon
+    ports:
+      - "5000:8080"  # Хост:5000 → Контейнер:8080
+    volumes:
+      - db_data:/app/data
+      - logs:/app/logs
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - ASPNETCORE_HTTP_PORTS=8080
+    networks:
+      - app-network
+    restart: unless-stopped
+
+volumes:
+  db_data:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: /c/docker_data/db  # Путь для Windows
+  logs:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: /c/docker_data/logs  # Путь для Windows
+
+networks:
+  app-network:
+    driver: bridge
