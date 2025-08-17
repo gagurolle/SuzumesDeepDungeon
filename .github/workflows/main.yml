@@ -1,0 +1,42 @@
+name: Deploy to Production
+
+on:
+  push:
+    branches: [master]
+
+jobs:
+  build-and-deploy:
+    runs-on: self-hosted
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v3
+      with:
+        dotnet-version: 8.0.x
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: 20
+
+    - name: Build Angular app
+      working-directory: ./angular-app
+      run: |
+        npm ci
+        npm run build -- --configuration production
+
+    - name: Build ASP.NET app
+      working-directory: ./aspnet-app
+      run: dotnet publish -c Release -o ./out
+
+    - name: Build Docker images
+      run: |
+        docker compose build
+
+    - name: Deploy containers
+      run: |
+        docker compose down
+        docker compose up -d
