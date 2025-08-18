@@ -9,8 +9,12 @@ RUN dotnet restore "SuzumesDeepDungeon.csproj"
 # 2. Копируем остальные файлы проекта
 COPY . .
 
-# 3. Собираем и публикуем проект в одном этапе
+# 3. Собираем и публикуем проект
 RUN dotnet publish "SuzumesDeepDungeon.csproj" -c Release -o /app/publish
+
+# 4. Копируем и настраиваем entrypoint.sh на этапе build (где есть root-права)
+COPY entrypoint.sh /app/publish/
+RUN chmod +x /app/publish/entrypoint.sh
 
 # Финальный образ
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS final
@@ -24,11 +28,8 @@ USER appuser
 VOLUME /app/data
 VOLUME /app/logs
 
-# Копируем опубликованные файлы
+# Копируем опубликованные файлы (включая entrypoint.sh)
 COPY --from=build /app/publish .
 
-# Добавляем скрипт для применения миграций
-COPY entrypoint.sh .
-RUN chmod +x entrypoint.sh
-
+# Запускаем скрипт (уже исполняемый)
 ENTRYPOINT ["./entrypoint.sh"]
