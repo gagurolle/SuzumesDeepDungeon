@@ -1,10 +1,8 @@
 # Используем многостадийную сборку
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /src
-COPY ["SuzumesDeepDungeon/SuzumesDeepDungeon.csproj", "SuzumesDeepDungeon/"]
-RUN dotnet restore "SuzumesDeepDungeon/SuzumesDeepDungeon.csproj"
-COPY . .
-WORKDIR "/src/SuzumesDeepDungeon"
+COPY ["SuzumesDeepDungeon.csproj", "."]
+RUN dotnet restore "SuzumesDeepDungeon.csproj"
 RUN dotnet build "SuzumesDeepDungeon.csproj" -c Release -o /app/build
 
 FROM build AS publish
