@@ -14,23 +14,35 @@ jobs:
 
     - name: Create data directories
       run: |
-        # Создаем директории для данных и сертификатов
         New-Item -ItemType Directory -Force -Path C:\docker_data\db
         New-Item -ItemType Directory -Force -Path C:\docker_data\logs
         New-Item -ItemType Directory -Force -Path C:\certs
         
-        # Устанавливаем права доступа
-        icacls "C:\docker_data" /grant "Everyone:(OI)(CI)F" /T
-        icacls "C:\certs" /grant "Everyone:(OI)(CI)F" /T
+        # Альтернативная установка прав через PowerShell
+        $acl = Get-Acl C:\docker_data
+        $accessRule = New-Object System.Security.AccessControl.FileSystemAccessRule(
+            "Users",
+            "FullControl",
+            "ContainerInherit,ObjectInherit",
+            "None",
+            "Allow"
+        )
+        $acl.SetAccessRule($accessRule)
+        Set-Acl -Path C:\docker_data -AclObject $acl
+        
+        $acl = Get-Acl C:\certs
+        $acl.SetAccessRule($accessRule)
+        Set-Acl -Path C:\certs -AclObject $acl
 
-    - name: Copy certificate (if not exists)
+    - name: Copy certificate
       run: |
-        # Копируем сертификат из репозитория (если он там есть)
+        # Проверяем наличие сертификата в репозитории
         if (Test-Path -Path "certs\aspnetcert.pfx") {
             Copy-Item -Path "certs\aspnetcert.pfx" -Destination "C:\certs\" -Force
+            Write-Host "Certificate copied from repository"
         }
         else {
-            Write-Host "Certificate not found in repo, using existing on server"
+            Write-Host "Using existing certificate on server"
         }
 
     - name: Setup .NET
@@ -62,3 +74,8 @@ jobs:
         
     - name: Apply database migrations
       run: docker exec backend dotnet SuzumesDeepDungeon.dll --migrate
+      
+    - name: Verify deployment
+      run: |
+        Start-Sleep -Seconds 15
+        curl http://localhost:5000/api/health
