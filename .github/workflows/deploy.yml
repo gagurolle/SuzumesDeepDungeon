@@ -43,7 +43,12 @@ jobs:
     - name: Build Angular app
       working-directory: SuzumesDeepDungeon/DeepDungeonClient
       run: |
-        npm ci
+        # Умная установка зависимостей
+        if (Test-Path package-lock.json) {
+            npm ci
+        } else {
+            npm install
+        }
         npm run build -- --configuration production
 
     - name: Build ASP.NET app
