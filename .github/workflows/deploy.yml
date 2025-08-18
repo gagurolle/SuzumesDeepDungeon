@@ -5,7 +5,6 @@ on:
     branches: [master]
 
 jobs:
-
   deploy:
     runs-on: self-hosted
 
@@ -13,21 +12,49 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v4
 
-    - name: Identify current user
-      run: whoami
-  
-    # Создаем директории вместо volume create
     - name: Create data directories
       run: |
+        # Создаем директории для данных и сертификатов
         New-Item -ItemType Directory -Force -Path C:\docker_data\db
         New-Item -ItemType Directory -Force -Path C:\docker_data\logs
+        New-Item -ItemType Directory -Force -Path C:\certs
         
-    - name: Test Docker access
+        # Устанавливаем права доступа
+        icacls "C:\docker_data" /grant "Everyone:(OI)(CI)F" /T
+        icacls "C:\certs" /grant "Everyone:(OI)(CI)F" /T
+
+    - name: Copy certificate (if not exists)
       run: |
-        docker version
-        docker ps
-    # Исправленные команды для Windows
-    - name: Build and deploy containers
+        # Копируем сертификат из репозитория (если он там есть)
+        if (Test-Path -Path "certs\aspnetcert.pfx") {
+            Copy-Item -Path "certs\aspnetcert.pfx" -Destination "C:\certs\" -Force
+        }
+        else {
+            Write-Host "Certificate not found in repo, using existing on server"
+        }
+
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v3
+      with:
+        dotnet-version: 8.0.x
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: 20
+        cache: 'npm'
+
+    - name: Build Angular app
+      working-directory: SuzumesDeepDungeon/DeepDungeonClient
+      run: |
+        npm ci
+        npm run build -- --configuration production
+
+    - name: Build ASP.NET app
+      working-directory: SuzumesDeepDungeon
+      run: dotnet publish -c Release -o ./publish
+
+    - name: Deploy with Docker Compose
       run: |
         docker compose -f docker-compose.prod.yml down
         docker compose -f docker-compose.prod.yml build --no-cache
