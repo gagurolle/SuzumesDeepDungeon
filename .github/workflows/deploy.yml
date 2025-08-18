@@ -35,12 +35,6 @@ jobs:
         dotnet-version: 8.0.x
 
     - name: Build Angular app
-      working-directory: ./angular-app
-      run: |
-        npm ci
-        npm run build -- --configuration production
-
-    - name: Build Angular app
       working-directory: SuzumesDeepDungeon/DeepDungeonClient
       run: |
         # Устанавливаем Node.js и зависимости в рабочей директории
