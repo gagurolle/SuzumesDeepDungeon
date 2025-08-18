@@ -6,7 +6,7 @@ services:
       context: SuzumesDeepDungeon/DeepDungeonClient
       dockerfile: Dockerfile
     ports:
-      - "80:8080"  # Хост:80 → Контейнер:8080
+      - "4201:8080"  # Хост:80 → Контейнер:8080
     networks:
       - app-network
     depends_on:
