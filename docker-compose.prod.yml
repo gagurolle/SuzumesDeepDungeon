@@ -4,31 +4,28 @@ services:
   frontend:
     build:
       context: SuzumesDeepDungeon/DeepDungeonClient
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile.prod
     ports:
-      - "4201:8080"  # Хост:80 → Контейнер:8080
+      - "80:8080"
     networks:
       - app-network
-    depends_on:
-      - backend
 
   backend:
     build:
-      context: ./SuzumesDeepDungeon
+      context: SuzumesDeepDungeon
     ports:
-      - "5000:8080"  # Хост:5000 → Контейнер:8080
+      - "5000:8080"
     volumes:
       - db_data:/app/data
       - logs:/app/logs
+      - certs:/app/certs
     environment:
       - ASPNETCORE_ENVIRONMENT=Production
-      - ASPNETCORE_HTTP_PORTS=8080
-      - Kestrel__Certificates__Default__Path=/certs/aspnetcert.pfx
+      - ASPNETCORE_URLS=http://+:8080
+      - Kestrel__Certificates__Default__Path=/app/certs/aspnetcert.pfx
       - Kestrel__Certificates__Default__Password=123f7d_s12SAD_d_fd144f1
-      
     networks:
       - app-network
-    restart: unless-stopped
 
 volumes:
   db_data:
@@ -36,13 +33,19 @@ volumes:
     driver_opts:
       type: none
       o: bind
-      device: /c/docker_data/db  # Путь для Windows
+      device: C:\docker_data\db
   logs:
     driver: local
     driver_opts:
       type: none
       o: bind
-      device: /c/docker_data/logs  # Путь для Windows
+      device: C:\docker_data\logs
+  certs:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: C:\certs
 
 networks:
   app-network:
