@@ -6,10 +6,10 @@ WORKDIR /src
 COPY ["SuzumesDeepDungeon/SuzumesDeepDungeon.csproj", "SuzumesDeepDungeon/"]
 RUN dotnet restore "./SuzumesDeepDungeon/SuzumesDeepDungeon.csproj"
 
-# Копируем остальные файлы
+# Копируем остальные файлы (включая сертификаты)
 COPY . .
 
-# Сборка и публикация (режим определяется переменной BUILD_CONFIGURATION)
+# Сборка и публикация
 ARG BUILD_CONFIGURATION=Release
 RUN dotnet publish "SuzumesDeepDungeon/SuzumesDeepDungeon.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
 
@@ -28,9 +28,12 @@ VOLUME /app/logs
 # Копируем опубликованные файлы
 COPY --from=build /app/publish .
 
-# Открываем порты для локального дебага и продакшна
+# Копируем сертификат (исправленный путь)
+COPY --from=build /src/certs/aspnetcert.pfx ./certs/
+
+# Открываем порты
 EXPOSE 8080
 EXPOSE 8081
 
-# ENTRYPOINT для Visual Studio/CI/CD
+# ENTRYPOINT
 ENTRYPOINT ["dotnet", "SuzumesDeepDungeon.dll"]

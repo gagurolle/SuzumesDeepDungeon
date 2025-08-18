@@ -4,12 +4,32 @@ using Microsoft.IdentityModel.Tokens;
 using SuzumesDeepDungeon.Data;
 using SuzumesDeepDungeon.Services;
 using SuzumesDeepDungeon.Services.CSVLoad;
+using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
 
+var certificatePath = builder.Configuration["Kestrel:Certificates:Default:Path"];
+var certificatePassword = builder.Configuration["Kestrel:Certificates:Default:Password"];
 
+builder.WebHost.ConfigureKestrel(serverOptions => {
+    serverOptions.ConfigureHttpsDefaults(httpsOptions => {
+        if (!string.IsNullOrEmpty(certificatePath) && File.Exists(certificatePath))
+        {
+            httpsOptions.ServerCertificate = new X509Certificate2(
+                certificatePath,
+                certificatePassword
+            );
+        }
+        else
+        {
+            // Для разработки без сертификата
+            httpsOptions.ServerCertificate =
+                new X509Certificate2("/app/certs/aspnetcert.pfx", "123f7d_s12SAD_d_fd144f1");
+        }
+    });
+});
 
 // Add services to the container.
 

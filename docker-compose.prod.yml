@@ -23,6 +23,9 @@ services:
     environment:
       - ASPNETCORE_ENVIRONMENT=Production
       - ASPNETCORE_HTTP_PORTS=8080
+      - Kestrel__Certificates__Default__Path=/certs/aspnetcert.pfx
+      - Kestrel__Certificates__Default__Password=123f7d_s12SAD_d_fd144f1
+      
     networks:
       - app-network
     restart: unless-stopped
