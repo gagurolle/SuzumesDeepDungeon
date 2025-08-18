@@ -1,36 +1,36 @@
-# Используем многостадийную сборку
+# 1. Базовый образ для сборки и публикации
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /src
 
-# 1. Копируем только файл проекта для восстановления зависимостей
-COPY ["SuzumesDeepDungeon.csproj", "."]
-RUN dotnet restore "SuzumesDeepDungeon.csproj"
+# Копируем только файл проекта для ускорения restore
+COPY ["SuzumesDeepDungeon/SuzumesDeepDungeon.csproj", "SuzumesDeepDungeon/"]
+RUN dotnet restore "./SuzumesDeepDungeon/SuzumesDeepDungeon.csproj"
 
-# 2. Копируем остальные файлы проекта
+# Копируем остальные файлы
 COPY . .
 
-# 3. Собираем и публикуем проект
-RUN dotnet publish "SuzumesDeepDungeon.csproj" -c Release -o /app/publish
+# Сборка и публикация (режим определяется переменной BUILD_CONFIGURATION)
+ARG BUILD_CONFIGURATION=Release
+RUN dotnet publish "SuzumesDeepDungeon/SuzumesDeepDungeon.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
 
-# 4. Копируем и исправляем entrypoint.sh
-COPY entrypoint.sh /app/publish/
-RUN sed -i 's/\r$//' /app/publish/entrypoint.sh && \
-    chmod +x /app/publish/entrypoint.sh
-
-# Финальный образ
+# 2. Финальный образ для запуска приложения
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS final
 WORKDIR /app
 
-# Создаем пользователя и группу для безопасности
+# Для безопасности: отдельный пользователь
 RUN groupadd -r appgroup && useradd -r -g appgroup appuser
 USER appuser
 
-# Настройка томов для данных
+# Том для данных и логов
 VOLUME /app/data
 VOLUME /app/logs
 
-# Копируем опубликованные файлы (включая исправленный entrypoint.sh)
+# Копируем опубликованные файлы
 COPY --from=build /app/publish .
 
-# Запускаем скрипт
-ENTRYPOINT ["sh", "entrypoint.sh"]
+# Открываем порты для локального дебага и продакшна
+EXPOSE 8080
+EXPOSE 8081
+
+# ENTRYPOINT для Visual Studio/CI/CD
+ENTRYPOINT ["dotnet", "SuzumesDeepDungeon.dll"]
