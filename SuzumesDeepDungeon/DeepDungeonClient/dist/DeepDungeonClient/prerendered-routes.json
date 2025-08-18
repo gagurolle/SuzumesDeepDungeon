@@ -1,6 +1,7 @@
 {
   "routes": {
     "/": {},
-    "/login": {}
+    "/login": {},
+    "/profile": {}
   }
 }
