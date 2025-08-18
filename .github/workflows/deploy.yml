@@ -17,22 +17,6 @@ jobs:
         New-Item -ItemType Directory -Force -Path C:\docker_data\db
         New-Item -ItemType Directory -Force -Path C:\docker_data\logs
         New-Item -ItemType Directory -Force -Path C:\certs
-        
-        # Альтернативная установка прав через PowerShell
-        $acl = Get-Acl C:\docker_data
-        $accessRule = New-Object System.Security.AccessControl.FileSystemAccessRule(
-            "Users",
-            "FullControl",
-            "ContainerInherit,ObjectInherit",
-            "None",
-            "Allow"
-        )
-        $acl.SetAccessRule($accessRule)
-        Set-Acl -Path C:\docker_data -AclObject $acl
-        
-        $acl = Get-Acl C:\certs
-        $acl.SetAccessRule($accessRule)
-        Set-Acl -Path C:\certs -AclObject $acl
 
     - name: Copy certificate
       run: |
