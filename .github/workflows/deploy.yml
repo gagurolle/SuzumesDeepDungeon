@@ -12,20 +12,6 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v4
 
-    - name: Install Chocolatey
-      run: |
-        Set-ExecutionPolicy Bypass -Scope Process -Force
-        [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072
-        iex ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))
-        choco --version
-
-    - name: Install Node.js 20 via Chocolatey
-      run: |
-        choco install nodejs-lts --version=20.19.0 -y
-        refreshenv
-        node --version
-        npm --version
-
     - name: Create data directories
       run: |
         New-Item -ItemType Directory -Force -Path C:\docker_data\db
@@ -49,15 +35,22 @@ jobs:
         dotnet-version: 8.0.x
 
     - name: Build Angular app
-      working-directory: SuzumesDeepDungeon/DeepDungeonClient
+      working-directory: ./angular-app
       run: |
-        # Используем установленную версию npm
         npm ci
         npm run build -- --configuration production
 
-    - name: Build ASP.NET app
-      working-directory: SuzumesDeepDungeon
-      run: dotnet publish -c Release -o ./publish
+    - name: Build Angular app
+      working-directory: SuzumesDeepDungeon/DeepDungeonClient
+      run: |
+        # Устанавливаем Node.js и зависимости в рабочей директории
+        npm install -g npm@latest
+        if (Test-Path package-lock.json) {
+            npm ci
+        } else {
+            npm install
+        }
+        npm run build -- --configuration production
 
     - name: Deploy with Docker Compose
       run: |
