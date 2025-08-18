@@ -13,6 +13,9 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v4
 
+    - name: Identify current user
+      run: whoami
+  
     # Создаем директории вместо volume create
     - name: Create data directories
       run: |
