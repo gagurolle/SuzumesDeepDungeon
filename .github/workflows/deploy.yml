@@ -5,6 +5,7 @@ on:
     branches: [master]
 
 jobs:
+
   deploy:
     runs-on: self-hosted
 
@@ -17,7 +18,11 @@ jobs:
       run: |
         New-Item -ItemType Directory -Force -Path C:\docker_data\db
         New-Item -ItemType Directory -Force -Path C:\docker_data\logs
-
+        
+    - name: Test Docker access
+      run: |
+        docker version
+        docker ps
     # Исправленные команды для Windows
     - name: Build and deploy containers
       run: |
