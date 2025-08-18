@@ -34,16 +34,11 @@ jobs:
       with:
         dotnet-version: 8.0.x
 
-    - name: Setup Node.js
-      uses: actions/setup-node@v3
-      with:
-        node-version: 20
-        cache: 'npm'
-
     - name: Build Angular app
       working-directory: SuzumesDeepDungeon/DeepDungeonClient
       run: |
-        # Умная установка зависимостей
+        # Устанавливаем Node.js и зависимости в рабочей директории
+        npm install -g npm@latest
         if (Test-Path package-lock.json) {
             npm ci
         } else {
