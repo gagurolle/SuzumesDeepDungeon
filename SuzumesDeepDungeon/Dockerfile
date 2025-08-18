@@ -1,11 +1,15 @@
 # Используем многостадийную сборку
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /src
+
+# 1. Копируем только файл проекта для восстановления зависимостей
 COPY ["SuzumesDeepDungeon.csproj", "."]
 RUN dotnet restore "SuzumesDeepDungeon.csproj"
-RUN dotnet build "SuzumesDeepDungeon.csproj" -c Release -o /app/build
 
-FROM build AS publish
+# 2. Копируем остальные файлы проекта
+COPY . .
+
+# 3. Собираем и публикуем проект в одном этапе
 RUN dotnet publish "SuzumesDeepDungeon.csproj" -c Release -o /app/publish
 
 # Финальный образ
@@ -20,7 +24,8 @@ USER appuser
 VOLUME /app/data
 VOLUME /app/logs
 
-COPY --from=publish /app/publish .
+# Копируем опубликованные файлы
+COPY --from=build /app/publish .
 
 # Добавляем скрипт для применения миграций
 COPY entrypoint.sh .
