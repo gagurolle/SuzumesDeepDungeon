@@ -3,8 +3,8 @@ version: '3.8'
 services:
   frontend:
     build:
-      context: ./angular-app
-      dockerfile: Dockerfile.prod
+      context: SuzumesDeepDungeon/DeepDungeonClient
+      dockerfile: Dockerfile
     ports:
       - "80:8080"  # Хост:80 → Контейнер:8080
     networks:
