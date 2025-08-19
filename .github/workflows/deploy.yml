@@ -53,7 +53,7 @@ jobs:
         docker compose -f docker-compose.prod.yml up -d
         
     - name: Apply database migrations
-      run: docker exec backend dotnet SuzumesDeepDungeon.dll --migrate
+      run: docker exec backend-1 dotnet SuzumesDeepDungeon.dll --migrate
       
     - name: Verify deployment
       run: |
