@@ -60,7 +60,7 @@
         },
         "serve": {
           "options": {
-            "ssl": true,
+            "ssl": false,
             "sslKey": "C:/certs/angular.key",
             "sslCert": "C:/certs/angular.crt",
             "proxyConfig": "proxy.conf.json"
