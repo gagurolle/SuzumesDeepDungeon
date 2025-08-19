@@ -6,7 +6,13 @@ services:
       context: SuzumesDeepDungeon/DeepDungeonClient
       dockerfile: Dockerfile.prod
     ports:
-      - "80:8080"
+      - "4200:8080"
+      - "443:443"
+    volumes:
+      - angular_certs:/app/certs:ro
+    environment:
+      - SSL_CERT_PATH=/app/certs/angular.crt
+      - SSL_KEY_PATH=/app/certs/angular.key
     networks:
       - app-network
 
