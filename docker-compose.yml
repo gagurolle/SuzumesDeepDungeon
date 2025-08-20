@@ -2,8 +2,8 @@ services:
   nginx:
     image: nginx:alpine
     ports:
-      - "80:80"
-      - "443:443"
+      - "32765:80"
+      - "32766:443"
     volumes:
       - ./nginx-proxy.conf:/etc/nginx/nginx.conf:ro
       - C:/certs:/etc/nginx/ssl:ro
