@@ -12,7 +12,7 @@ using SuzumesDeepDungeon.Services.Rawg_Data;
 namespace SuzumesDeepDungeon.Controllers;
 
 [ApiController]
-[Route("[controller]")]
+[Route("api/[controller]")]
 public class DeepDungeon : ControllerBase
 {
     private readonly ILogger<DeepDungeon> _logger;

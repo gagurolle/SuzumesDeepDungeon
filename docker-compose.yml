@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   nginx:
     image: nginx:alpine
@@ -7,8 +5,8 @@ services:
       - "80:80"
       - "443:443"
     volumes:
-      - ./nginx.conf:/etc/nginx/nginx.conf:ro
-      - C:\certs:/etc/nginx/ssl:ro
+      - ./nginx-proxy.conf:/etc/nginx/nginx.conf:ro
+      - C:/certs:/etc/nginx/ssl:ro
     depends_on:
       - backend
       - frontend
@@ -17,19 +15,13 @@ services:
 
   frontend:
     build:
-      context: SuzumesDeepDungeon/DeepDungeonClient
-      dockerfile: Dockerfile.prod
-    environment:
-      - NGINX_HOST=nginx
-      - API_BASE_URL=/
-    ports:
-      - "4200:4200"
+      context: ./SuzumesDeepDungeon/DeepDungeonClient
     networks:
       - app-network
 
   backend:
     build:
-      context: SuzumesDeepDungeon
+      context: ./SuzumesDeepDungeon
     environment:
       - ASPNETCORE_ENVIRONMENT=Production
       - ASPNETCORE_URLS=http://+:8080

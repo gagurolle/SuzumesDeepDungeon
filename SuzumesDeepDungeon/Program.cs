@@ -10,26 +10,26 @@ using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
 
-var certificatePath = builder.Configuration["Kestrel:Certificates:Default:Path"];
-var certificatePassword = builder.Configuration["Kestrel:Certificates:Default:Password"];
+//var certificatePath = builder.Configuration["Kestrel:Certificates:Default:Path"];
+//var certificatePassword = builder.Configuration["Kestrel:Certificates:Default:Password"];
 
-builder.WebHost.ConfigureKestrel(serverOptions => {
-    serverOptions.ConfigureHttpsDefaults(httpsOptions => {
-        if (!string.IsNullOrEmpty(certificatePath) && File.Exists(certificatePath))
-        {
-            httpsOptions.ServerCertificate = new X509Certificate2(
-                certificatePath,
-                certificatePassword
-            );
-        }
-        else
-        {
-            // Для разработки без сертификата
-            httpsOptions.ServerCertificate =
-                new X509Certificate2("/app/certs/aspnetcert.pfx", "123f7d_s12SAD_d_fd144f1");
-        }
-    });
-});
+//builder.WebHost.ConfigureKestrel(serverOptions => {
+//    serverOptions.ConfigureHttpsDefaults(httpsOptions => {
+//        if (!string.IsNullOrEmpty(certificatePath) && File.Exists(certificatePath))
+//        {
+//            httpsOptions.ServerCertificate = new X509Certificate2(
+//                certificatePath,
+//                certificatePassword
+//            );
+//        }
+//        else
+//        {
+//            // Для разработки без сертификата
+//            httpsOptions.ServerCertificate =
+//                new X509Certificate2("/app/certs/aspnetcert.pfx", "123f7d_s12SAD_d_fd144f1");
+//        }
+//    });
+//});
 
 // Add services to the container.
 
@@ -98,10 +98,13 @@ if (app.Environment.IsDevelopment())
 app.UseCors("AllowAll"); // Применяем политику CORS
 
 
-app.UseHttpsRedirection();
+//app.UseHttpsRedirection();
 
 app.UseAuthorization();
 
 app.MapControllers();
+
+app.MapGet("/api/health", () => "Backend is healthy");
+app.MapGet("/api/test", () => "Test endpoint works");
 
 app.Run();
