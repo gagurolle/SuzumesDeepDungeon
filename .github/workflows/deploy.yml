@@ -48,6 +48,10 @@ jobs:
 
     - name: Deploy with Docker Compose
       run: |
-        docker compose -f docker-compose.yml down -V
-        docker compose -f docker-compose.yml build --no-cache
-        docker compose -f docker-compose.yml up -d -V
+            # Устанавливаем переменные окружения из GitHub Secrets
+            $env:JWT_KEY = "${{ secrets.JWT_KEY }}"
+            $env:RAWG_API_KEY = "${{ secrets.RAWG_API_KEY }}"
+        
+            docker compose -f docker-compose.yml down -V
+            docker compose -f docker-compose.yml build --no-cache
+            docker compose -f docker-compose.yml up -d -V
