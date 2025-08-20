@@ -10,6 +10,8 @@ using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Configuration.AddEnvironmentVariables();
+
 //var certificatePath = builder.Configuration["Kestrel:Certificates:Default:Path"];
 //var certificatePassword = builder.Configuration["Kestrel:Certificates:Default:Password"];
 

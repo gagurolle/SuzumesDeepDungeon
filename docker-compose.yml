@@ -25,6 +25,8 @@ services:
     environment:
       - ASPNETCORE_ENVIRONMENT=Production
       - ASPNETCORE_URLS=http://+:8080
+      - Jwt__Key=${JWT_KEY}
+      - rawgAPI=${RAWG_API_KEY}
     volumes:
       - db_data:/app/data
       - logs:/app/logs

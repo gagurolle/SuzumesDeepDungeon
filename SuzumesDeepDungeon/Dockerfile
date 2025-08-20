@@ -34,5 +34,9 @@ COPY --from=build /app/publish .
 # Открываем порты
 EXPOSE 8080
 
+# Установите переменные окружения по умолчанию (пустые значения)
+ENV Jwt__Key=""
+ENV rawgAPI=""
+
 # ENTRYPOINT
 ENTRYPOINT ["dotnet", "SuzumesDeepDungeon.dll"]

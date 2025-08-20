@@ -413,3 +413,4 @@ testem.log
 Thumbs.db
 /SuzumesDeepDungeon/Data/data.db-wal
 /SuzumesDeepDungeon/Data/data.db-shm
+docker.ps1
