@@ -17,7 +17,7 @@ const ClaimTypes = {
 export class AuthService {
   private currentUserSubject = new BehaviorSubject<User | null>(null);
   public currentUser$ = this.currentUserSubject.asObservable();
-  private apiUrl = 'api/auth/login';
+  private apiUrl = 'auth/login';
 
   public user: User | null = null;
 

@@ -8,7 +8,7 @@ import { GameRankDTO } from '../../models/game-ranking';
   providedIn: 'root'
 })
 export class GameFindServiceService {
-  private apiUrl = 'api/gameService/';
+  private apiUrl = 'gameService/';
   constructor(private http: HttpClient) {}
 
   getGames(gameName: string): Observable<FindGameDTO[]> {
