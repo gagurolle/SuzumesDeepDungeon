@@ -48,23 +48,9 @@ jobs:
 
     - name: Deploy with Docker Compose
       run: |
-        docker compose -f docker-compose.yml down
+        docker compose -f docker-compose.yml down -V
         docker compose -f docker-compose.yml build --no-cache
-        docker compose -f docker-compose.yml up -d
-        
-    - name: Apply database migrations
-      run: |
-        # Получаем ID контейнера backend
-        $containerId = docker ps -qf "name=backend"
-    
-        # Если контейнер найден, выполняем миграции
-        if ($null -ne $containerId) {
-          docker exec $containerId dotnet SuzumesDeepDungeon.dll --migrate
-        } else {
-          Write-Error "Backend container not found!"
-          docker ps -a
-          exit 1
-        }
+        docker compose -f docker-compose.yml up -d -V
       
     - name: Verify deployment
       run: |
