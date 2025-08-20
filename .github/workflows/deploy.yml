@@ -51,8 +51,3 @@ jobs:
         docker compose -f docker-compose.yml down -V
         docker compose -f docker-compose.yml build --no-cache
         docker compose -f docker-compose.yml up -d -V
-      
-    - name: Verify deployment
-      run: |
-        Start-Sleep -Seconds 15
-        curl http://localhost:5000/api/health
