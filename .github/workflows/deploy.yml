@@ -16,18 +16,8 @@ jobs:
       run: |
         New-Item -ItemType Directory -Force -Path C:\docker_data\db
         New-Item -ItemType Directory -Force -Path C:\docker_data\logs
-        New-Item -ItemType Directory -Force -Path C:\certs
+        New-Item -ItemType Directory -Force -Path C:\certbot\www
 
-    - name: Copy certificate
-      run: |
-        # Проверяем наличие сертификата в репозитории
-        if (Test-Path -Path "certs\aspnetcert.pfx") {
-            Copy-Item -Path "certs\aspnetcert.pfx" -Destination "C:\certs\" -Force
-            Write-Host "Certificate copied from repository"
-        }
-        else {
-            Write-Host "Using existing certificate on server"
-        }
 
     - name: Setup .NET
       uses: actions/setup-dotnet@v3
@@ -46,12 +36,53 @@ jobs:
         }
         npm run build -- --configuration production
 
+    - name: Prepare production environment
+      run: |
+        # Создаем production версию nginx конфига
+        $nginxConfig = Get-Content -Path "nginx-proxy-prod.conf" -Raw
+        $nginxConfig = $nginxConfig -replace '\${DOMAIN_NAME}', "${{ secrets.DOMAIN_NAME }}"
+        Set-Content -Path "nginx.conf" -Value $nginxConfig -NoNewline
+        
+        # Создаем .env файл для docker-compose
+        "DOMAIN_NAME=${{ secrets.DOMAIN_NAME }}`nADMIN_EMAIL=${{ secrets.ADMIN_EMAIL }}" | Out-File -FilePath ".env" -Encoding ASCII
+
+    - name: Initialize Let's Encrypt certificates
+      run: |
+        # Проверяем, есть ли уже сертификаты
+        if (-Not (Test-Path "C:\etc\letsencrypt\live\${{ secrets.DOMAIN_NAME }}\fullchain.pem")) {
+            Write-Host "Obtaining initial SSL certificates from Let's Encrypt..."
+            docker run --rm --name certbot `
+                -v "C:\etc\letsencrypt:/etc/letsencrypt" `
+                -v "C:\certbot\www:/var/www/certbot" `
+                certbot/certbot certonly `
+                --webroot -w /var/www/certbot `
+                -d "${{ secrets.DOMAIN_NAME }}" `
+                --email "${{ secrets.ADMIN_EMAIL }}" `
+                --agree-tos --no-eff-email --force-renewal
+        } else {
+            Write-Host "SSL certificates already exist, skipping initial obtainment"
+        }
+
     - name: Deploy with Docker Compose
       run: |
             # Устанавливаем переменные окружения из GitHub Secrets
             $env:JWT_KEY = "${{ secrets.JWT_KEY }}"
             $env:RAWG_API_KEY = "${{ secrets.RAWG_API_KEY }}"
+            $env:DOMAIN_NAME = "${{ secrets.DOMAIN_NAME }}"
+            $env:ADMIN_EMAIL = "${{ secrets.ADMIN_EMAIL }}"
         
-            docker compose -f docker-compose.yml down -V
-            docker compose -f docker-compose.yml build --no-cache
-            docker compose -f docker-compose.yml up -d -V
+            docker compose -f docker-compose.yml -f docker-compose.prod.yml down
+            docker compose -f docker-compose.yml -f docker-compose.prod.yml build --no-cache
+            docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d
+
+    - name: Setup SSL certificate renewal task
+      run: |
+        # Создаем задание в планировщике задач для автоматического обновления сертификатов
+        $action = New-ScheduledTaskAction -Execute "docker" -Argument "run --rm --name certbot-renew -v `"C:\etc\letsencrypt:/etc/letsencrypt`" -v `"C:\certbot\www:/var/www/certbot`" certbot/certbot renew --quiet"
+        $trigger = New-ScheduledTaskTrigger -Daily -At "2:00 AM"
+        $principal = New-ScheduledTaskPrincipal -UserId "SYSTEM" -LogonType ServiceAccount -RunLevel Highest
+        $settings = New-ScheduledTaskSettingsSet -AllowStartIfOnBatteries -DontStopIfGoingOnBatteries -StartWhenAvailable -WakeToRun
+        
+        Register-ScheduledTask -TaskName "LetsEncrypt Renewal" `
+            -Action $action -Trigger $trigger -Principal $principal -Settings $settings `
+            -Description "Automatically renew Let's Encrypt SSL certificates" -Force
