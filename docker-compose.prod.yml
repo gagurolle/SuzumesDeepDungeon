@@ -1,27 +1,58 @@
+version: '3.8'
+
 services:
-  nginx-proxy:
+  nginx:
     image: nginx:alpine
     ports:
       - "80:80"
       - "443:443"
     volumes:
       - ./nginx.conf:/etc/nginx/nginx.conf:ro
-      - C:\etc\letsencrypt:/etc/letsencrypt:ro
-      - C:\certbot\www:/var/www/certbot:ro
+      - C:\certs:/etc/nginx/ssl:ro
     depends_on:
       - backend
       - frontend
     networks:
       - app-network
-    restart: unless-stopped
 
-  certbot:
-    image: certbot/certbot
-    volumes:
-      - C:\etc\letsencrypt:/etc/letsencrypt
-      - C:\certbot\www:/var/www/certbot
-    command: certonly --webroot -w /var/www/certbot --email ${ADMIN_EMAIL} -d ${DOMAIN_NAME} --agree-tos --no-eff-email
+  frontend:
+    build:
+      context: SuzumesDeepDungeon/DeepDungeonClient
+      dockerfile: Dockerfile.prod
+    environment:
+      - NGINX_HOST=nginx
+      - API_BASE_URL=/
+    ports:
+      - "4200:4200"
     networks:
       - app-network
 
- 
+  backend:
+    build:
+      context: SuzumesDeepDungeon
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - ASPNETCORE_URLS=http://+:8080
+    volumes:
+      - db_data:/app/data
+      - logs:/app/logs
+    networks:
+      - app-network
+
+volumes:
+  db_data:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: C:\docker_data\db
+  logs:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: C:\docker_data\logs
+
+networks:
+  app-network:
+    driver: bridge
