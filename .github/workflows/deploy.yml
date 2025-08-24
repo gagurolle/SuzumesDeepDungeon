@@ -46,22 +46,19 @@ jobs:
         # Создаем .env файл для docker-compose
         "DOMAIN_NAME=${{ secrets.DOMAIN_NAME }}`nADMIN_EMAIL=${{ secrets.ADMIN_EMAIL }}" | Out-File -FilePath ".env" -Encoding ASCII
 
-    - name: Obtain SSL certificates using DNS challenge
+    - name: Check for existing SSL certificates
       run: |
-        Write-Host "Obtaining SSL certificates using DNS challenge..."
-        
-        # Получаем сертификаты с использованием ручной DNS verification
-        docker run --rm -it --name certbot `
-          -v "C:\etc\letsencrypt:/etc/letsencrypt" `
-          certbot/certbot certonly `
-          --manual `
-          --preferred-challenges dns `
-          --manual-auth-hook "/bin/true" `
-          -d "${{ secrets.DOMAIN_NAME }}" `
-          -d "*.${{ secrets.DOMAIN_NAME }}" `
-          --email "${{ secrets.ADMIN_EMAIL }}" `
-          --agree-tos --no-eff-email --non-interactive `
-          --manual-public-ip-logging-ok
+        # Проверяем, есть ли уже сертификаты
+        if (Test-Path "C:\etc\letsencrypt\live\${{ secrets.DOMAIN_NAME }}\fullchain.pem") {
+            Write-Host "SSL certificates already exist, skipping obtainment"
+        } else {
+            Write-Host "=================================================================="
+            Write-Host "SSL CERTIFICATES NOT FOUND!"
+            Write-Host "Please manually obtain SSL certificates by running on the server:"
+            Write-Host "docker run --rm -it --name certbot -v C:\etc\letsencrypt:/etc/letsencrypt certbot/certbot certonly --manual --preferred-challenges dns -d ${{ secrets.DOMAIN_NAME }} -d *.${{ secrets.DOMAIN_NAME }} --email ${{ secrets.ADMIN_EMAIL }} --agree-tos --no-eff-email --manual-public-ip-logging-ok"
+            Write-Host "=================================================================="
+            exit 1
+        }
 
     - name: Deploy with Docker Compose
       run: |
