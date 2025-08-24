@@ -1,4 +1,18 @@
 services:
+  nginx:
+    image: nginx:alpine
+    ports:
+      - "32765:8080"
+      - "32766:443"
+    volumes:
+      - ./nginx-proxy.conf:/etc/nginx/nginx.conf:ro
+      - C:/certs:/etc/nginx/ssl:ro
+    depends_on:
+      - backend
+      - frontend
+    networks:
+      - app-network
+
   frontend:
     build:
       context: ./SuzumesDeepDungeon/DeepDungeonClient
