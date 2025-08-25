@@ -17,6 +17,7 @@ jobs:
         New-Item -ItemType Directory -Force -Path C:\docker_data\db
         New-Item -ItemType Directory -Force -Path C:\docker_data\logs
         New-Item -ItemType Directory -Force -Path C:\certbot\www
+        New-Item -ItemType Directory -Force -Path C:\certs
 
 
     - name: Setup .NET
