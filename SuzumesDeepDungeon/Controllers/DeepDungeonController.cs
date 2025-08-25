@@ -23,9 +23,31 @@ public class DeepDungeon : ControllerBase
         _logger = logger;
         _context = context;
     }
-    
-    [HttpGet(Name = "GetGameRank")]
-    public async Task<ActionResult<IEnumerable<GameRankDTO>>> GetGameRank(
+
+    [HttpGet("GetGameRank")]
+    public async Task<ActionResult<GameRankDTO>> GetGameRank(
+    [FromQuery] int Id)
+    {
+
+        var query = await _context.GameRanks
+            .Include(x => x.Stores)
+            .Include(p => p.Screenshots)
+            .Include(f => f.Trailers)
+            .Include(t => t.Achievements)
+            .Include(u => u.User)
+            .Include(h => h.Tags).Where(x => x.Id == Id).FirstOrDefaultAsync();
+
+        if(query == null)
+        {
+            return NotFound();
+        }
+        var result = query.GetDTO();
+
+        return Ok(result);
+    }
+
+    [HttpGet(Name = "GetGameRanks")]
+    public async Task<ActionResult<IEnumerable<GameRankDTO>>> GetGameRanks(
     [FromQuery] string? status,      
     [FromQuery] int? minRate,        
     [FromQuery] int? maxRate,        
@@ -39,9 +61,6 @@ public class DeepDungeon : ControllerBase
 
         var query = _context.GameRanks
             .Include(x => x.Stores)
-            .Include(p => p.Screenshots)
-            .Include(f => f.Trailers)
-            .Include(t => t.Achievements)
             .Include(u => u.User)
             .Include(h => h.Tags)
             .AsQueryable();

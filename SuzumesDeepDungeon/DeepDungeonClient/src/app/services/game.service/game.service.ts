@@ -13,6 +13,13 @@ export class GameService {
 
   constructor(private http: HttpClient) {}
 
+  getGame(id: any): Observable<GameRankDTO> {
+
+    let httpParams = new HttpParams();
+    httpParams = httpParams.append('id', id);
+    return this.http.get<GameRankDTO>(this.apiUrl + "GetGameRank", {params: httpParams});
+  }
+
   getGames(params?: any): Observable<GameRankDTO[]> {
 
     let httpParams = new HttpParams();

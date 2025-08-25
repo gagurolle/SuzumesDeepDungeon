@@ -1,4 +1,4 @@
-import { Component, Input, Output, EventEmitter } from '@angular/core';
+import { Component, Input, Output, EventEmitter, OnInit, ChangeDetectorRef } from '@angular/core';
 import { GameRankDTO } from '../models/game-ranking';
 import { GameStatusService } from '../services/game-status/game-status.service';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
@@ -13,6 +13,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSelectModule } from '@angular/material/select';
 import { GameAddFormComponent } from '../game-add-form/game-add-form';
 import {MatProgressBarModule} from '@angular/material/progress-bar';
+import { GameService } from '../services/game.service/game.service';
 
 @Component({
   selector: 'app-game-details-view',
@@ -30,7 +31,7 @@ import {MatProgressBarModule} from '@angular/material/progress-bar';
     MatProgressBarModule
 ],
 })
-export class GameDetailsViewComponent {
+export class GameDetailsViewComponent implements OnInit{
   @Input() game!: GameRankDTO;
   @Output() close = new EventEmitter<void>();
 
@@ -38,8 +39,20 @@ export class GameDetailsViewComponent {
 
   constructor(
     public statusService: GameStatusService,
-    private sanitizer: DomSanitizer
+    private sanitizer: DomSanitizer,
+    private gameService: GameService,
+    private cdr: ChangeDetectorRef,
   ) {}
+
+  ngOnInit(): void {
+    this.gameService.getGame(this.game.id).subscribe({
+      next: (game) => {
+        this.game = game;
+        this.cdr.markForCheck();
+      },
+      error: (err) => console.error(err)  
+    });
+  }
 
   getStatusClass(status: string): string {
     return `status-${status}`;

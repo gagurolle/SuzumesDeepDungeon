@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { ChangeDetectorRef, Component, EventEmitter, Input, Output } from '@angular/core';
 import { GameFindServiceService } from '../services/game-find/game-find-service.service';
 import { FindGameDTO } from '../models/game-find';
 import { GameRankDTO } from '../models/game-ranking';
@@ -21,7 +21,7 @@ export class GameFindComponent {
   errorMessage: string | null = null;
 
 
-  constructor(private findService: GameFindServiceService) { }
+  constructor(private findService: GameFindServiceService, private cdr: ChangeDetectorRef) { }
 
   async findGame(): Promise<void> {
     if (!this.gameName.trim()) {
@@ -43,6 +43,7 @@ export class GameFindComponent {
       if (this.games.length === 0) {
         this.errorMessage = 'Игры не найдены';
       }
+      this.cdr.markForCheck();
     } catch (err) {
       console.error(err);
       this.errorMessage = 'Ошибка при поиске игр';

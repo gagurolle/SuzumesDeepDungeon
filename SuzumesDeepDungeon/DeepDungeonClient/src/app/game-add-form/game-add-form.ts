@@ -1,4 +1,4 @@
-import { Component, Input, Output, EventEmitter, OnInit } from "@angular/core";
+import { Component, Input, Output, EventEmitter, OnInit, ChangeDetectorRef } from "@angular/core";
 import { FormGroup, FormBuilder, Validators, ReactiveFormsModule } from "@angular/forms";
 import { GameRankDTO } from "../models/game-ranking";
 import { CommonModule } from "@angular/common";
@@ -36,7 +36,8 @@ export class GameAddFormComponent implements OnInit {
     private gameService: GameService,
     public statusService: GameStatusService,
     public auth: AuthService,
-    private sanitizer: DomSanitizer
+    private sanitizer: DomSanitizer,
+    private cdr: ChangeDetectorRef
   ) {
 
     this.gameForm = this.fb.group({
@@ -61,7 +62,17 @@ export class GameAddFormComponent implements OnInit {
   ngOnInit(): void {
 
     this.user = this.auth.checkUser();
+    if (this.isEditMode && this.gameToEdit?.id){
+    this.gameService.getGame(this.gameToEdit?.id).subscribe({
+      next: (game) => {
+        this.gameToEdit = game;
+        this.cdr.markForCheck();
+      },
+      error: (err) => console.error(err) 
+    });
   }
+  }
+
   ngOnChanges(): void {
 
     if (this.gameToEdit) {
