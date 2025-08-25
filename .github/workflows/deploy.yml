@@ -57,7 +57,6 @@ jobs:
             Write-Host "Please manually obtain SSL certificates by running on the server:"
             Write-Host "docker run --rm -it --name certbot -v C:\etc\letsencrypt:/etc/letsencrypt certbot/certbot certonly --manual --preferred-challenges dns -d ${{ secrets.DOMAIN_NAME }} -d *.${{ secrets.DOMAIN_NAME }} --email ${{ secrets.ADMIN_EMAIL }} --agree-tos --no-eff-email --manual-public-ip-logging-ok"
             Write-Host "=================================================================="
-            exit 1
         }
 
     - name: Deploy with Docker Compose
