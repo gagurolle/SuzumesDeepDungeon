@@ -5,8 +5,8 @@ services:
       - "32765:80"
       - "32766:443"
     volumes:
-      - ./nginx.conf:/etc/nginx/nginx.conf:ro
-      - C:\etc\letsencrypt:/etc/letsencrypt:ro
+      - ./nginx-proxy-prod.conf:/etc/nginx/nginx.conf:ro
+      - C:/certs:/etc/nginx/ssl:ro
       - C:\certbot\www:/var/www/certbot:ro
     depends_on:
       - backend
