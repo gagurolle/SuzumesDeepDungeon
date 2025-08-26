@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage.Json;
@@ -35,37 +36,7 @@ namespace SuzumesDeepDungeon.Controllers
             _csvLoad = csvLoad;
 
         }
-
-
-
-
-
-        //[HttpGet("migrateData")]
-        //public async Task MigrateDataAsync()
-        //{
-        //    using var sqliteContext = new DatabaseContext(\сюда надо что-то добавить\);
-        //    using var postgresContext = new DatabaseContext(\сюда надо что - то добавить\);
-
-        //    // Миграция GameRanks
-        //    var gameRanks = await sqliteContext.GameRanks.ToListAsync();
-        //    postgresContext.GameRanks.AddRange(gameRanks);
-
-        //    // Миграция Users
-        //    var users = await sqliteContext.Users.ToListAsync();
-        //    postgresContext.Users.AddRange(users);
-
-        //    // Миграция Stores
-        //    var stores = await sqliteContext.Stores.ToListAsync();
-        //    postgresContext.Stores.AddRange(stores);
-
-        //    // Миграция Tags
-        //    var tags = await sqliteContext.Tags.ToListAsync();
-        //    postgresContext.Tags.AddRange(tags);
-
-        //    await postgresContext.SaveChangesAsync();
-        //}
-
-
+        [Authorize(Roles = "Admin")]
         [HttpGet("csvLoad")]
         public async Task<ActionResult<List<TwitchStatisticGames>>> CSVGameLoad(string path)
         {
@@ -114,7 +85,7 @@ namespace SuzumesDeepDungeon.Controllers
             return Ok(p);
         }
 
-
+        [Authorize(Roles = "Admin")]
         [HttpPost("addGame")]
         public async Task<ActionResult<GameRank>> AddGame([FromBody] string gameName)
         {
@@ -137,7 +108,7 @@ namespace SuzumesDeepDungeon.Controllers
             await _context.SaveChangesAsync();
             return Ok("Ok");
         }
-
+        [Authorize(Roles = "Admin")]
         [HttpGet("getHLTBId")]
         public async Task<ActionResult<HltbSearchResult>> GetId(string gameName)
         {
@@ -169,7 +140,7 @@ namespace SuzumesDeepDungeon.Controllers
 
 
         }
-
+        [Authorize(Roles = "Admin")]
         [HttpGet("findGameData")]
         public async Task<ActionResult<List<FindGameDTO>>> FindGameData(string gameName)
         {
@@ -189,8 +160,7 @@ namespace SuzumesDeepDungeon.Controllers
             return Ok(gamesDTO);
         }
 
-
-
+        [Authorize(Roles = "Admin")]
         [HttpPost("getGameData")]
         public async Task<ActionResult<GameRankDTO>> GetDataFromRawg([FromBody] FindGameDTO game)
         {

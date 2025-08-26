@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using BCrypt.Net;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using SuzumesDeepDungeon.Data;
@@ -6,7 +8,6 @@ using SuzumesDeepDungeon.DTO;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
-using BCrypt.Net;
 using static SuzumesDeepDungeon.Models.User;
 
 namespace SuzumesDeepDungeon.Controllers
@@ -24,6 +25,7 @@ namespace SuzumesDeepDungeon.Controllers
             _context = context;
         }
 
+        [Authorize(Roles = "Admin")]
         [HttpPost("registration")]
         public async Task<IActionResult> Registration([FromBody] RegistrationDTO model)
         {

@@ -52,13 +52,6 @@ builder.Services.AddScoped<SteamApi>();
 builder.Services.AddScoped<RawgApi>();
 builder.Services.AddScoped<CSVLoad>();
 
-
-//builder.Services.AddDbContext<DatabaseContext>(options =>
-//    options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
-
-//builder.Services.AddDbContext<DatabaseContext>(options =>
-//    options.UseSqlite("Data Source=/app/data/data.db"));
-
 builder.Services.AddDbContext<DatabaseContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
@@ -82,17 +75,6 @@ using (var scope = app.Services.CreateScope())
     }
 }
 
-//if (args.Contains("--migrate"))
-//{
-//    using (var scope = app.Services.CreateScope())
-//    {
-//        var dbContext = scope.ServiceProvider.GetRequiredService<DatabaseContext>();
-//        dbContext.Database.Migrate();
-//    }
-//    return; // Завершаем после миграций
-//}
-
-
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
@@ -107,6 +89,5 @@ app.UseAuthorization();
 app.MapControllers();
 
 app.MapGet("/api/health", () => "Backend is healthy");
-app.MapGet("/api/test", () => "Test endpoint works");
 
 app.Run();

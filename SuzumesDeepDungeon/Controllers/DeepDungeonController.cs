@@ -120,6 +120,7 @@ public class DeepDungeon : ControllerBase
 
         return Ok(result);
     }
+
     [Authorize(Roles = "Admin")]
     [HttpDelete("{id}")]
     public async Task<IActionResult> DeleteGameRank(int id)
@@ -135,6 +136,7 @@ public class DeepDungeon : ControllerBase
         await _context.SaveChangesAsync();
         return NoContent();
     }
+
     [Authorize(Roles = "Admin")]
     [HttpPost(Name = "AddGameRank")]
     public async Task<ActionResult<GameRankDTO>> AddGameRank([FromBody] GameRankDTO newGameRank)
