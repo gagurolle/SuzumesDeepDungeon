@@ -48,6 +48,18 @@ jobs:
         # Создаем .env файл для docker-compose
         "DOMAIN_NAME=${{ secrets.DOMAIN_NAME }}`nADMIN_EMAIL=${{ secrets.ADMIN_EMAIL }}" | Out-File -FilePath ".env" -Encoding ASCII
 
+    - name: Check for existing SSL certificates
+      run: |
+        # Проверяем, есть ли уже сертификаты
+        if (Test-Path "C:\etc\letsencrypt\live\${{ secrets.DOMAIN_NAME }}\fullchain.pem") {
+            Write-Host "SSL certificates already exist, skipping obtainment"
+        } else {
+            Write-Host "=================================================================="
+            Write-Host "SSL CERTIFICATES NOT FOUND!"
+            Write-Host "Please manually obtain SSL certificates by running on the server:"
+            Write-Host "docker run --rm -it --name certbot -v C:\etc\letsencrypt:/etc/letsencrypt certbot/certbot certonly --manual --preferred-challenges dns -d ${{ secrets.DOMAIN_NAME }} -d *.${{ secrets.DOMAIN_NAME }} --email ${{ secrets.ADMIN_EMAIL }} --agree-tos --no-eff-email --manual-public-ip-logging-ok"
+            Write-Host "=================================================================="
+
     - name: Deploy with Docker Compose
       run: |
             # Устанавливаем переменные окружения из GitHub Secrets
@@ -65,3 +77,10 @@ jobs:
             docker compose -f docker-compose.yml -f docker-compose.prod.yml build --no-cache
             docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d
 
+    - name: Setup SSL certificate renewal reminder
+      run: |
+        Write-Host "=================================================================="
+        Write-Host "IMPORTANT: SSL certificates need to be renewed manually every 90 days"
+        Write-Host "Run this command to renew:"
+        Write-Host "docker run --rm -it --name certbot -v C:\etc\letsencrypt:/etc/letsencrypt certbot/certbot renew --manual --preferred-challenges dns --manual-auth-hook /bin/true --manual-public-ip-logging-ok"
+        Write-Host "=================================================================="
