@@ -363,7 +363,7 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
-/SuzumesDeepDungeon/DeepDungeonClient
+
 /SuzumesDeepDungeon/appsettings.json
 /SuzumesDeepDungeon/data.db
 /SuzumesDeepDungeon/data.db-shm
@@ -416,3 +416,6 @@ Thumbs.db
 docker.ps1
 Documentation - installation for DeepDungeon Appli
 dotnet.ps1
+SuzumesDeepDungeon/DeepDungeonClient/public/favicon1.ico
+/SuzumesDeepDungeon/appsettings.Development.json
+/SuzumesDeepDungeon/DeepDungeonClient/.vscode
