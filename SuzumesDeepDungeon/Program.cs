@@ -4,42 +4,19 @@ using Microsoft.IdentityModel.Tokens;
 using SuzumesDeepDungeon.Data;
 using SuzumesDeepDungeon.Services;
 using SuzumesDeepDungeon.Services.CSVLoad;
-using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Text.Json.Serialization;
+
+AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Configuration.AddEnvironmentVariables();
 
-//var certificatePath = builder.Configuration["Kestrel:Certificates:Default:Path"];
-//var certificatePassword = builder.Configuration["Kestrel:Certificates:Default:Password"];
-
-//builder.WebHost.ConfigureKestrel(serverOptions => {
-//    serverOptions.ConfigureHttpsDefaults(httpsOptions => {
-//        if (!string.IsNullOrEmpty(certificatePath) && File.Exists(certificatePath))
-//        {
-//            httpsOptions.ServerCertificate = new X509Certificate2(
-//                certificatePath,
-//                certificatePassword
-//            );
-//        }
-//        else
-//        {
-//            // Для разработки без сертификата
-//            httpsOptions.ServerCertificate =
-//                new X509Certificate2("/app/certs/aspnetcert.pfx", "123f7d_s12SAD_d_fd144f1");
-//        }
-//    });
-//});
-
-// Add services to the container.
-
 builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-Console.WriteLine(builder.Configuration["rawgAPI"]);
+
 RawgApi.rawgApi = builder.Configuration["rawgAPI"] ?? "";
 builder.Services.AddCors(options => {
     options.AddPolicy("AllowAll", policy => {
@@ -76,30 +53,52 @@ builder.Services.AddScoped<RawgApi>();
 builder.Services.AddScoped<CSVLoad>();
 
 
+//builder.Services.AddDbContext<DatabaseContext>(options =>
+//    options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+//builder.Services.AddDbContext<DatabaseContext>(options =>
+//    options.UseSqlite("Data Source=/app/data/data.db"));
+
 builder.Services.AddDbContext<DatabaseContext>(options =>
-    options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
+    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+
+
 
 var app = builder.Build();
 
-if (args.Contains("--migrate"))
+using (var scope = app.Services.CreateScope())
 {
-    using (var scope = app.Services.CreateScope())
+    var services = scope.ServiceProvider;
+    try
     {
-        var dbContext = scope.ServiceProvider.GetRequiredService<DatabaseContext>();
-        dbContext.Database.Migrate();
+        var context = services.GetRequiredService<DatabaseContext>(); // Замените на ваш DbContext
+        context.Database.Migrate(); // Применяем миграции
+        Console.WriteLine("Migrations applied successfully.");
     }
-    return; // Завершаем после миграций
+    catch (Exception ex)
+    {
+        Console.WriteLine($"An error occurred while applying migrations: {ex.Message}");
+    }
 }
 
+//if (args.Contains("--migrate"))
+//{
+//    using (var scope = app.Services.CreateScope())
+//    {
+//        var dbContext = scope.ServiceProvider.GetRequiredService<DatabaseContext>();
+//        dbContext.Database.Migrate();
+//    }
+//    return; // Завершаем после миграций
+//}
 
-// Configure the HTTP request pipeline.
+
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
 }
-app.UseCors("AllowAll"); // Применяем политику CORS
-
+app.UseCors("AllowAll");
 
 //app.UseHttpsRedirection();
 

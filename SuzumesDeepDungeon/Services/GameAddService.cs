@@ -159,8 +159,8 @@ namespace SuzumesDeepDungeon.Services
                 User = user,
                 MetacriticRate = data?.game?.Metacritic,
                 Released = data?.game?.Released,
-                Created = DateTime.Now,
-                Updated = DateTime.Now,
+                Created = DateTime.UtcNow,
+                Updated = DateTime.UtcNow,
                 RawgId = data?.game?.Id.ToString() ?? string.Empty,
             };
 
@@ -174,8 +174,8 @@ namespace SuzumesDeepDungeon.Services
                     PreviewImageUrl = tr.PreviewImageUrl,
                     Video480p = tr.Data.Video480p,
                     VideoMaxQuality = tr.Data.VideoMaxQuality,
-                    Created = DateTime.Now,
-                    Updated = DateTime.Now
+                    Created = DateTime.UtcNow,
+                    Updated = DateTime.UtcNow
                 });
             }
             var stores = new List<Stores>();
@@ -186,8 +186,8 @@ namespace SuzumesDeepDungeon.Services
                     RawgId = data.game.Id.ToString(),
                     StoreId = (StoresEnum)store.StoreId,
                     Url = store.Url,
-                    Created = DateTime.Now,
-                    Updated = DateTime.Now
+                    Created = DateTime.UtcNow,
+                    Updated = DateTime.UtcNow
                 });
             }
             var achievements = new List<GameAchievement>();
@@ -199,8 +199,8 @@ namespace SuzumesDeepDungeon.Services
                     Description = ach.Description ?? "",
                     ImageUrl = ach.ImageUrl ?? "",
                     CompletionPercent = ach.CompletionPercent ?? "",
-                    Created = DateTime.Now,
-                    Updated = DateTime.Now
+                    Created = DateTime.UtcNow,
+                    Updated = DateTime.UtcNow
                 });
             }
 
@@ -215,8 +215,8 @@ namespace SuzumesDeepDungeon.Services
                     Language = tag.Language,
                     GamesCount = tag.GamesCount,
                     ImageBackground = tag.ImageBackground,
-                    Created = DateTime.Now,
-                    Updated = DateTime.Now
+                    Created = DateTime.UtcNow,
+                    Updated = DateTime.UtcNow
 
                 });
             }
@@ -238,8 +238,8 @@ namespace SuzumesDeepDungeon.Services
                         SteamCapsuleUrl = await _steamApi.GetGameCoverAsync(steamIdFromurl, SteamApi.SteamImageBaseUrl_capsule) ?? "",
                         Steam600x900Url = await _steamApi.GetGameCoverAsync(steamIdFromurl, SteamApi.SteamImageBaseUrl_600x900) ?? "",
                         RawgBackgroundUrl = data.game.BackgroundImage ?? "",
-                        Created = DateTime.Now,
-                        Updated = DateTime.Now
+                        Created = DateTime.UtcNow,
+                        Updated = DateTime.UtcNow
                     };
 
                     gameRank.Image = gameRank.Screenshots.Steam600x900Url;

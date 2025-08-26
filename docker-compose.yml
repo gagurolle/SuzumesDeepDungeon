@@ -1,4 +1,21 @@
 services:
+  db:
+    image: postgres:17
+    container_name: postgres_db
+    environment:
+      POSTGRES_DB: gameDB
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 130171
+    ports:
+      - "5433:5432"  # Нестандартный порт 5433 на хосте -> стандартный 5432 в контейнере
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql  # Файл инициализации (если нужен)
+    networks:
+      - app-network
+    restart: unless-stopped
+    
+    
   frontend:
     build:
       context: ./SuzumesDeepDungeon/DeepDungeonClient
@@ -13,19 +30,21 @@ services:
       - ASPNETCORE_URLS=http://+:8080
       - Jwt__Key=${JWT_KEY}
       - rawgAPI=${RAWG_API_KEY}
+      - ConnectionStrings__DefaultConnection=Host=db;Port=5432;Database=gameDB;Username=postgres;Password=130171
+    depends_on:
+      - db
     volumes:
-      - db_data:/app/data
       - logs:/app/logs
     networks:
       - app-network
 
 volumes:
-  db_data:
+  postgres_data:
     driver: local
     driver_opts:
       type: none
       o: bind
-      device: C:\docker_data\db
+      device: C:\docker_data\postgres  # Путь для данных PostgreSQL
   logs:
     driver: local
     driver_opts:

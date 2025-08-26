@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage.Json;
 using Microsoft.IdentityModel.Tokens;
 using SuzumesDeepDungeon.Data;
@@ -36,6 +37,35 @@ namespace SuzumesDeepDungeon.Controllers
         }
 
 
+
+
+
+        //[HttpGet("migrateData")]
+        //public async Task MigrateDataAsync()
+        //{
+        //    using var sqliteContext = new DatabaseContext(\сюда надо что-то добавить\);
+        //    using var postgresContext = new DatabaseContext(\сюда надо что - то добавить\);
+
+        //    // Миграция GameRanks
+        //    var gameRanks = await sqliteContext.GameRanks.ToListAsync();
+        //    postgresContext.GameRanks.AddRange(gameRanks);
+
+        //    // Миграция Users
+        //    var users = await sqliteContext.Users.ToListAsync();
+        //    postgresContext.Users.AddRange(users);
+
+        //    // Миграция Stores
+        //    var stores = await sqliteContext.Stores.ToListAsync();
+        //    postgresContext.Stores.AddRange(stores);
+
+        //    // Миграция Tags
+        //    var tags = await sqliteContext.Tags.ToListAsync();
+        //    postgresContext.Tags.AddRange(tags);
+
+        //    await postgresContext.SaveChangesAsync();
+        //}
+
+
         [HttpGet("csvLoad")]
         public async Task<ActionResult<List<TwitchStatisticGames>>> CSVGameLoad(string path)
         {
@@ -45,7 +75,7 @@ namespace SuzumesDeepDungeon.Controllers
             Dictionary<Exception, TwitchStatisticGames?> exceptions = new();
             foreach (var item in p)
             {
-                var existingGame = _context.GameRanks.FirstOrDefault(g => string.Equals(g.Name, item.gameName, StringComparison.InvariantCultureIgnoreCase));
+                var existingGame = _context.GameRanks.FirstOrDefault(g => EF.Functions.ILike(g.Name, item.gameName));
                 if (existingGame != null)
                 {
                     continue;

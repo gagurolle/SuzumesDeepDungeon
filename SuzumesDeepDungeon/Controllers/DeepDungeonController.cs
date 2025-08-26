@@ -171,8 +171,8 @@ public class DeepDungeon : ControllerBase
             RawgId = s.RawgId,
             StoreId = (StoresEnum)s.StoreId,
             Url = s.Url,
-            Created = DateTime.Now,
-            Updated = DateTime.Now
+            Created = DateTime.UtcNow,
+            Updated = DateTime.UtcNow
 
         }).ToList() ?? new List<Stores>();
 
@@ -184,8 +184,8 @@ public class DeepDungeon : ControllerBase
             Status = (newGameRank.Status != null ? (GameStatus)Enum.Parse(typeof(GameStatus), newGameRank.Status) : GameStatus.Unknown),
             GameTime = TimeSpanExtensions.DecimalHoursToTimeSpan(newGameRank.GameTime ?? 0.0),
             Review = newGameRank.Review ?? "",
-            Created = DateTime.Now,
-            Updated = DateTime.Now,
+            Created = DateTime.UtcNow,
+            Updated = DateTime.UtcNow,
             User = User,
             Image = newGameRank.Image,
             YoutubeLink = newGameRank.YoutubeLink ?? "",
@@ -201,8 +201,8 @@ public class DeepDungeon : ControllerBase
                 SteamCapsuleUrl = newGameRank.Screenshots?.SteamCapsuleUrl,
                 Steam600x900Url = newGameRank.Screenshots?.Steam600x900Url,
                 RawgBackgroundUrl = newGameRank.Screenshots?.RawgBackgroundUrl,
-                Created = DateTime.Now,
-                Updated = DateTime.Now
+                Created = DateTime.UtcNow,
+                Updated = DateTime.UtcNow
             } : null,
 
             Tags = newGameRank.Tags?.Select(t => new GameTag
@@ -213,8 +213,8 @@ public class DeepDungeon : ControllerBase
                 Language = t.Language,
                 GamesCount = (int)t.GamesCount,
                 ImageBackground = t.ImageBackground,
-                Created = DateTime.Now,
-                Updated = DateTime.Now
+                Created = DateTime.UtcNow,
+                Updated = DateTime.UtcNow
 
             }).ToList() ?? new List<GameTag>(),
             Achievements = newGameRank.Achievements?.Select(a => new GameAchievement
@@ -223,8 +223,8 @@ public class DeepDungeon : ControllerBase
                 Description = a.Description,
                 ImageUrl = a.ImageUrl,
                 CompletionPercent = a.CompletionPercent,
-                Created = DateTime.Now,
-                Updated = DateTime.Now
+                Created = DateTime.UtcNow,
+                Updated = DateTime.UtcNow
             }).ToList() ?? new List<GameAchievement>(),
 
             Trailers = newGameRank.Trailers?.Select(t => new Trailer
@@ -233,8 +233,8 @@ public class DeepDungeon : ControllerBase
                 PreviewImageUrl = t.PreviewImageUrl,
                 Video480p = t.Video480p,
                 VideoMaxQuality = t.VideoMaxQuality,
-                Created = DateTime.Now,
-                Updated = DateTime.Now
+                Created = DateTime.UtcNow,
+                Updated = DateTime.UtcNow
             }).ToList() ?? new List<Trailer>(),
         };
 
@@ -267,7 +267,7 @@ public class DeepDungeon : ControllerBase
         existingGameRank.Status = (updatedGameRank.Status != null ? (GameStatus)Enum.Parse(typeof(GameStatus), updatedGameRank.Status) : existingGameRank.Status);
         existingGameRank.GameTime = TimeSpanExtensions.DecimalHoursToTimeSpan(updatedGameRank.GameTime ?? 0.0);
         existingGameRank.Review = updatedGameRank.Review ?? existingGameRank.Review;
-        existingGameRank.Updated = DateTime.Now;
+        existingGameRank.Updated = DateTime.UtcNow;
         existingGameRank.Image = updatedGameRank.Image ?? existingGameRank.Image;
         existingGameRank.YoutubeLink = updatedGameRank.YoutubeLink ?? "";
         existingGameRank.MetacriticRate = updatedGameRank.MetacriticRate;
@@ -305,8 +305,8 @@ public class DeepDungeon : ControllerBase
                     RawgId = store.RawgId,
                     StoreId = (StoresEnum)store.StoreId,
                     Url = store.Url,
-                    Created = DateTime.Now,
-                    Updated = DateTime.Now
+                    Created = DateTime.UtcNow,
+                    Updated = DateTime.UtcNow
                 });
             }
         }
@@ -324,8 +324,8 @@ public class DeepDungeon : ControllerBase
                     Language = tag.Language,
                     GamesCount = (int)tag.GamesCount,
                     ImageBackground = tag.ImageBackground,
-                    Created = DateTime.Now,
-                    Updated = DateTime.Now
+                    Created = DateTime.UtcNow,
+                    Updated = DateTime.UtcNow
                 });
             }
         }
@@ -340,8 +340,8 @@ public class DeepDungeon : ControllerBase
                     Description = achievement.Description,
                     ImageUrl = achievement.ImageUrl,
                     CompletionPercent = achievement.CompletionPercent,
-                    Created = DateTime.Now,
-                    Updated = DateTime.Now
+                    Created = DateTime.UtcNow,
+                    Updated = DateTime.UtcNow
                 });
             }
         }
@@ -356,8 +356,8 @@ public class DeepDungeon : ControllerBase
                     PreviewImageUrl = trailer.PreviewImageUrl,
                     Video480p = trailer.Video480p,
                     VideoMaxQuality = trailer.VideoMaxQuality,
-                    Created = DateTime.Now,
-                    Updated = DateTime.Now
+                    Created = DateTime.UtcNow,
+                    Updated = DateTime.UtcNow
                 });
             }
         }
