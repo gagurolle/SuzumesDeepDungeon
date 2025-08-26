@@ -15,4 +15,11 @@ services:
       - app-network
     restart: unless-stopped
 
- 
+  certbot:
+    image: certbot/certbot
+    volumes:
+      - C:\etc\letsencrypt:/etc/letsencrypt
+      - C:\certbot\www:/var/www/certbot
+    command: certonly --webroot -w /var/www/certbot --email ${ADMIN_EMAIL} -d ${DOMAIN_NAME} --agree-tos --no-eff-email
+    networks:
+      - app-network
