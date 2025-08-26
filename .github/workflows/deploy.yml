@@ -67,6 +67,11 @@ jobs:
             $env:RAWG_API_KEY = "${{ secrets.RAWG_API_KEY }}"
             $env:DOMAIN_NAME = "${{ secrets.DOMAIN_NAME }}"
             $env:ADMIN_EMAIL = "${{ secrets.ADMIN_EMAIL }}"
+            $env:DB_HOST = ${{ secrets.DB_HOST }}
+            $env:DB_PORT = ${{ secrets.DB_PORT }}
+            $env:DB_NAME = ${{ secrets.DB_NAME }}
+            $env:DB_USER = ${{ secrets.DB_USER }}
+            $env:DB_PASSWORD = ${{ secrets.DB_PASSWORD }}
         
             docker compose -f docker-compose.yml -f docker-compose.prod.yml down
             docker compose -f docker-compose.yml -f docker-compose.prod.yml build --no-cache
