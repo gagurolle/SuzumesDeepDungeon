@@ -196,6 +196,18 @@ export class GameListComponent implements OnInit, OnDestroy {
     this.router.navigate(['/profile']);
   }
 
+  navigateToMinecraft() {
+  this.router.navigate(['/minecraft']);
+}
+
+navigateToDonateLink() {
+  this.router.navigate(['/donate-link']);
+}
+
+navigateToGameListFollowers() {
+  this.router.navigate(['/game-list-followers']);
+}
+
   getPlayTime(date: Date | undefined): string {
     if (!date) return '0 часов';
     return this.datePipe.transform(date, 'HH часов mm минут') || '0 часов';
