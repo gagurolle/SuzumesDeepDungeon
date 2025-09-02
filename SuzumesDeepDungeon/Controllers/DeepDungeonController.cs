@@ -46,16 +46,18 @@ public class DeepDungeon : ControllerBase
         return Ok(result);
     }
 
+
+
     [HttpGet(Name = "GetGameRanks")]
     public async Task<ActionResult<IEnumerable<GameRankDTO>>> GetGameRanks(
-    [FromQuery] string? status,      
-    [FromQuery] int? minRate,        
-    [FromQuery] int? maxRate,        
-    [FromQuery] string? name,
-    [FromQuery] string? tags,        
-    [FromQuery] string? sortBy,
-    [FromQuery] DateTime? created,
-    [FromQuery] DateTime? updated,
+    [FromQuery] string? status = null,      
+    [FromQuery] int? minRate = null,        
+    [FromQuery] int? maxRate = null,        
+    [FromQuery] string? name = null,
+    [FromQuery] string? tags = null,        
+    [FromQuery] string? sortBy = null,
+    [FromQuery] DateTime? created = null,
+    [FromQuery] DateTime? updated = null,
     [FromQuery] bool desc = false)   
     {
 
@@ -77,6 +79,7 @@ public class DeepDungeon : ControllerBase
         {
             if (Enum.TryParse<GameStatus>(status, true, out var statusFilter))
             {
+                var t = statusFilter;
                 query = query.Where(g => g.Status == statusFilter);
             }
         }

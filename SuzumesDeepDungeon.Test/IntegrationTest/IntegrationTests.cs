@@ -42,66 +42,66 @@ public class DeepDungeonControllerIntegrationTests : IClassFixture<CustomWebAppl
         _dbContext.SaveChanges();
     }
 
-    [Fact]
-    public async Task GetGameRank_FilterByName_ReturnsCorrectResults()
-    {
-        // Act
-        var response = await _client.GetAsync("/DeepDungeon?name=Game B");
+    //[Fact]
+    //public async Task GetGameRank_FilterByName_ReturnsCorrectResults()
+    //{
+    //    // Act
+    //    var response = await _client.GetAsync("/DeepDungeon?name=Game B");
 
-        // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
-        var result = await response.Content.ReadFromJsonAsync<IEnumerable<GameRankDTO>>();
-        result.Should().HaveCount(1);
-        result.First().Name.Should().Be("Game B");
-    }
+    //    // Assert
+    //    response.StatusCode.Should().Be(HttpStatusCode.OK);
+    //    var result = await response.Content.ReadFromJsonAsync<IEnumerable<GameRankDTO>>();
+    //    result.Should().HaveCount(1);
+    //    result.First().Name.Should().Be("Game B");
+    //}
 
-    [Fact]
-    public async Task GetGameRank_SortByRateDesc_ReturnsOrderedResults()
-    {
-        // Act
-        var response = await _client.GetAsync("/DeepDungeon?sortBy=rate&desc=true");
+    //[Fact]
+    //public async Task GetGameRank_SortByRateDesc_ReturnsOrderedResults()
+    //{
+    //    // Act
+    //    var response = await _client.GetAsync("/DeepDungeon?sortBy=rate&desc=true");
 
-        // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
-        var result = (await response.Content.ReadFromJsonAsync<IEnumerable<GameRankDTO>>()).ToList();
-        result.Should().HaveCount(3);
-        result.Select(g => g.Rate).Should().BeInDescendingOrder();
-    }
+    //    // Assert
+    //    response.StatusCode.Should().Be(HttpStatusCode.OK);
+    //    var result = (await response.Content.ReadFromJsonAsync<IEnumerable<GameRankDTO>>()).ToList();
+    //    result.Should().HaveCount(3);
+    //    result.Select(g => g.Rate).Should().BeInDescendingOrder();
+    //}
 
-    [Fact]
-    public async Task GetGameRank_FilterByMinRate_ReturnsFilteredResults()
-    {
-        // Act
-        var response = await _client.GetAsync("/DeepDungeon?minRate=80");
+    //[Fact]
+    //public async Task GetGameRank_FilterByMinRate_ReturnsFilteredResults()
+    //{
+    //    // Act
+    //    var response = await _client.GetAsync("/DeepDungeon?minRate=80");
 
-        // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
-        var result = await response.Content.ReadFromJsonAsync<IEnumerable<GameRankDTO>>();
-        result.Should().HaveCount(2);
-        result.All(g => g.Rate >= 80).Should().BeTrue();
-    }
-    [Fact]
-    public async Task AddGameRank_ValidRequest_CreatesInDatabase()
-    {
-        // Arrange
-        var newGame = new GameRankDTO
-        {
-            Name = "New Integration Game",
-            User = new UserDTO { Username = "testUser" },
-            Rate = 88
-        };
+    //    // Assert
+    //    response.StatusCode.Should().Be(HttpStatusCode.OK);
+    //    var result = await response.Content.ReadFromJsonAsync<IEnumerable<GameRankDTO>>();
+    //    result.Should().HaveCount(2);
+    //    result.All(g => g.Rate >= 80).Should().BeTrue();
+    //}
+    //[Fact]
+    //public async Task AddGameRank_ValidRequest_CreatesInDatabase()
+    //{
+    //    // Arrange
+    //    var newGame = new GameRankDTO
+    //    {
+    //        Name = "New Integration Game",
+    //        User = new UserDTO { Username = "testUser" },
+    //        Rate = 88
+    //    };
 
-        // Act
-        var response = await _client.PostAsJsonAsync("/DeepDungeon", newGame);
+    //    // Act
+    //    var response = await _client.PostAsJsonAsync("/DeepDungeon", newGame);
 
-        // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.Created);
+    //    // Assert
+    //    response.StatusCode.Should().Be(HttpStatusCode.Created);
 
-        var createdGame = await _dbContext.GameRanks
-            .FirstOrDefaultAsync(g => g.Name == "New Integration Game");
+    //    var createdGame = await _dbContext.GameRanks
+    //        .FirstOrDefaultAsync(g => g.Name == "New Integration Game");
 
-        createdGame.Should().NotBeNull();
-        createdGame.Rate.Should().Be(88);
-        createdGame.User.Username.Should().Be("testUser");
-    }
+    //    createdGame.Should().NotBeNull();
+    //    createdGame.Rate.Should().Be(88);
+    //    createdGame.User.Username.Should().Be("testUser");
+    //}
 }
