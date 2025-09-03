@@ -6,6 +6,7 @@ import { AuthGuard } from './services/auth/auth-guard/auth-guard';
 import { MinecraftServerComponent } from './minecraft-server/minecraft-server.component';
 import { DonateLinksComponent } from './donate-links/donate-links.component';
 import { GameListFollowersComponent } from './game-list-followers/game-list-followers.component';
+import { MainPageComponent } from './main-page/main-page.component';
 
 
 
@@ -16,6 +17,10 @@ export const routes: Routes = [
   },
   {
     path: '',
+    component: MainPageComponent
+  },
+  {
+    path: 'game-ranking',
     component: GameListComponent
   },
   { path: 'profile', component: ProfileComponent, canActivate: [AuthGuard] },

@@ -1,6 +1,7 @@
 .game-list-container {
   background-color: #121212; 
   color: #423c3c;
+  max-width: 400;
   min-height: 100vh;
   padding: 32px;
   font-family: 'Roboto', sans-serif;

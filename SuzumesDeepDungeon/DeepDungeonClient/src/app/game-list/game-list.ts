@@ -21,6 +21,7 @@ import { Subject } from 'rxjs';
 import { debounceTime, distinctUntilChanged, takeUntil } from 'rxjs/operators';
 import { GameDetailsViewComponent } from "../game-details-view/game-details-view.component";
 import { GameService } from '../services/game.service/game.service';
+import { AppMenuComponent } from "../app-menu/app-menu.component";
 
 @Component({
   selector: 'app-game-list',
@@ -35,8 +36,9 @@ import { GameService } from '../services/game.service/game.service';
     FormsModule,
     MatSelectModule,
     MatOptionModule,
-    GameDetailsViewComponent
-  ],
+    GameDetailsViewComponent,
+    AppMenuComponent
+],
   templateUrl: './game-list.html',
   styleUrls: ['./game-list.css'],
   providers: [DatePipe]

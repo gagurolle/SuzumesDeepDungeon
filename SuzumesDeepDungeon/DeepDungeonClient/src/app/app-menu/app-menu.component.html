@@ -1,0 +1,55 @@
+
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500&display=swap" rel="stylesheet">
+
+    <!-- Компонент навигационного меню -->
+    <div class="nav-container">
+    <nav class="navbar">
+        <ul class="nav-items">
+            <li class="nav-item">
+                <a class="nav-link" 
+                   routerLink="/" 
+                   routerLinkActive="active"
+                   [routerLinkActiveOptions]="{ exact: true }">Главная</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" 
+                   routerLink="/game-ranking" 
+                   routerLinkActive="active">Топ игр</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" 
+                   routerLink="/donate-link" 
+                   routerLinkActive="active">Донат</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" 
+                   routerLink="/minecraft" 
+                   routerLinkActive="active">Minecraft</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" 
+                   routerLink="/game-list-followers" 
+                   routerLinkActive="active">Доп. страница</a>
+            </li>
+        </ul>
+         
+        
+             <div *ngIf="(auth.currentUser$ | async) as user">
+      @if (user) {
+        <div class="profile-item">
+            <a class="profile-link" 
+               routerLink="/profile" 
+               routerLinkActive="active">
+                <i class="material-icons">account_circle</i>
+            </a>
+        </div>
+        
+    } 
+      
+        @else {
+        <a routerLink="/login">Вход</a>
+      }
+             </div>
+    </nav>
+</div>

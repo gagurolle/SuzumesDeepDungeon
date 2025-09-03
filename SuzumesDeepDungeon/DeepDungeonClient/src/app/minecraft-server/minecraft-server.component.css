@@ -1,14 +1,4 @@
-.game-list-container {
-  background-color: #121212; 
-  color: #423c3c;
-  min-height: 100vh;
-  padding: 32px;
-  font-family: 'Roboto', sans-serif;
 
-  background-image: url('../../assets/background.png');
-  background-repeat: repeat;
-  background-attachment: fixed;
-}
 
 .crop {
         width: 100%;
