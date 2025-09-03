@@ -64,7 +64,7 @@ public class DeepDungeon : ControllerBase
         var query = _context.GameRanks
             .Include(x => x.Stores)
             .Include(u => u.User)
-            .Include(h => h.Tags)
+            //.Include(h => h.Tags)
             .AsQueryable();
 
 
