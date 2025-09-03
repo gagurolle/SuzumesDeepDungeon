@@ -49,7 +49,7 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
 
 .background {
   background-color: #121212; 
-  color: #423c3c;
+  
   min-height: 100vh;
   padding: 32px;
   font-family: 'Roboto', sans-serif;

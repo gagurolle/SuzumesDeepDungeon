@@ -18,7 +18,7 @@
     color: #bb86fc;
     text-align: center;
     margin-bottom: 32px;
-    font-weight: 300;
+    font-weight: 400;
 }
 
 .hero p {
@@ -84,7 +84,7 @@
 }
 
 .code-section {
-    background-color: #1e1e1e;
+    background-color: #2c2c2cec;
     padding: 2rem;
     border-radius: 8px;
     margin-bottom: 3rem;
@@ -123,7 +123,7 @@ code {
     text-align: center;
     padding: 2rem;
     margin: 4rem 0;;
-    background-color: #1e1e1e;
+    background-color: #2c2c2cec;
     border-radius: 8px;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
 }
