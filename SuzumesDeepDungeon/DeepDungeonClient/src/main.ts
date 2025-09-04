@@ -9,7 +9,7 @@ console.log('Environment:', environment);
 
 if (environment.production) {
   enableProdMode();
-  console.log('Production mode enabled');
+  //console.log('Production mode enabled');
 }
 
 bootstrapApplication(App, appConfig)

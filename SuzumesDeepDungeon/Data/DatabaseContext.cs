@@ -65,6 +65,14 @@ public class DatabaseContext : DbContext
                 .HasForeignKey(s => s.GameId)
                 .OnDelete(DeleteBehavior.Cascade)
                 .IsRequired(false);
+            
+            entity.HasIndex(e => e.Status);
+            entity.HasIndex(e => e.Rate);
+            entity.HasIndex(e => e.Created);
+            entity.HasIndex(e => e.Updated);
+            entity.HasIndex(e => e.Released);
+            
+            
         });
 
         modelBuilder.Entity<User>(entity =>
@@ -90,6 +98,9 @@ public class DatabaseContext : DbContext
                 .HasForeignKey(g => g.UserId);
 
             entity.Navigation(s => s.GameRanks).AutoInclude(false);
+            
+            entity.HasIndex(e => e.Username);
+            entity.HasIndex(e => e.Email);
         });
 
         modelBuilder.Entity<Screenshot>(entity =>
@@ -106,6 +117,8 @@ public class DatabaseContext : DbContext
                   .HasDefaultValueSql("CURRENT_TIMESTAMP")
                   .ValueGeneratedOnAddOrUpdate()
                   .Metadata.SetAfterSaveBehavior(Microsoft.EntityFrameworkCore.Metadata.PropertySaveBehavior.Save);
+            
+            
         });
 
         modelBuilder.Entity<Screenshot>()
@@ -130,6 +143,8 @@ public class DatabaseContext : DbContext
                 .WithMany(g => g.Trailers)
                 .HasForeignKey(t => t.GameId)
                 .OnDelete(DeleteBehavior.Cascade);
+            
+            entity.HasIndex(e => e.GameId);
         });
 
         modelBuilder.Entity<GameAchievement>(entity =>
@@ -148,6 +163,8 @@ public class DatabaseContext : DbContext
                 .WithMany(g => g.Achievements)
                 .HasForeignKey(a => a.GameId)
                 .OnDelete(DeleteBehavior.Cascade);
+            
+            entity.HasIndex(e => e.GameId);
         });
 
         modelBuilder.Entity<GameTag>(entity =>
@@ -166,6 +183,8 @@ public class DatabaseContext : DbContext
                 .WithMany(g => g.Tags)
                 .HasForeignKey(t => t.GameId)
                 .OnDelete(DeleteBehavior.Cascade);
+            
+            entity.HasIndex(e => e.GameId);
         });
 
         modelBuilder.Entity<Stores>(entity =>
@@ -184,6 +203,8 @@ public class DatabaseContext : DbContext
                 .WithMany(g => g.Stores)
                 .HasForeignKey(t => t.GameId)
                 .OnDelete(DeleteBehavior.Cascade);
+            
+            entity.HasIndex(e => e.GameId);
         });
 
         // Для PostgreSQL рекомендуется явно указать имена таблиц и столбцов в нижнем регистре

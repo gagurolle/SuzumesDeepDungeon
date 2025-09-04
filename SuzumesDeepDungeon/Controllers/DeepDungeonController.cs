@@ -46,10 +46,9 @@ public class DeepDungeon : ControllerBase
         return Ok(result);
     }
 
-
-
+    
     [HttpGet(Name = "GetGameRanks")]
-    public async Task<ActionResult<IEnumerable<GameRankDTO>>> GetGameRanks(
+    public async Task<ActionResult<PagedResponse<IEnumerable<GameRankDTO>>>> GetGameRanks(
     [FromQuery] string? status = null,      
     [FromQuery] int? minRate = null,        
     [FromQuery] int? maxRate = null,        
@@ -58,9 +57,15 @@ public class DeepDungeon : ControllerBase
     [FromQuery] string? sortBy = null,
     [FromQuery] DateTime? created = null,
     [FromQuery] DateTime? updated = null,
-    [FromQuery] bool desc = false)   
+    [FromQuery] bool desc = false,
+    [FromQuery] int page = 1,               
+    [FromQuery] int pageSize = 30)
     {
-
+        
+        if (page < 1) page = 1;
+        if (pageSize < 1) pageSize = 30;
+        if (pageSize > 100) pageSize = 100;
+        
         var query = _context.GameRanks
             .Include(x => x.Stores)
             .Include(u => u.User)
@@ -117,11 +122,31 @@ public class DeepDungeon : ControllerBase
             ("created", true) => query.OrderByDescending(g => g.Created),
             _ => query.OrderByDescending(g => g.Created) 
         };
+            
+        var totalCount = await query.CountAsync();
 
-        var gameRanks = await query.ToListAsync();
-        var result = gameRanks.Select(x => x.GetDTO());
 
-        return Ok(result);
+        var withoutPaging = await query.ToListAsync();
+        // Применяем пагинацию
+        var items = await query
+            .Skip((page - 1) * pageSize)
+            .Take(pageSize)
+            .ToListAsync();
+
+        // Преобразуем в DTO
+        var result = items.Select(x => x.GetDTO());
+
+        // Создаем ответ с пагинацией
+        var response = new PagedResponse<GameRankDTO>
+        {
+            Items = result,
+            Page = page,
+            PageSize = pageSize,
+            TotalCount = totalCount,
+            TotalPages = (int)Math.Ceiling(totalCount / (double)pageSize)
+        };
+
+        return Ok(response);
     }
 
     [Authorize(Roles = "Admin")]
@@ -398,6 +423,13 @@ public class DeepDungeon : ControllerBase
     }
 
 
-    
+    public class PagedResponse<T>
+    {
+        public IEnumerable<T> Items { get; set; }
+        public int Page { get; set; }
+        public int PageSize { get; set; }
+        public int TotalCount { get; set; }
+        public int TotalPages { get; set; }
+    }
 
 }

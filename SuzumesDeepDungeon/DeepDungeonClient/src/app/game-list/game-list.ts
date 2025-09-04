@@ -1,5 +1,5 @@
 // game-list.component.ts
-import { ChangeDetectorRef, Component, NgZone, OnDestroy, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, HostListener, NgZone, OnDestroy, OnInit } from '@angular/core';
 
 import { CommonModule } from '@angular/common';
 import { DatePipe } from '@angular/common';
@@ -47,6 +47,7 @@ export class GameListComponent implements OnInit, OnDestroy {
 
   games: GameRankDTO[] = [];
   isLoading = true;
+  isLoadingMore = false;
   errorMessage = '';
   showAddForm = false;
   showForm = false;
@@ -56,6 +57,10 @@ export class GameListComponent implements OnInit, OnDestroy {
   sortField: string = 'created';
   sortDesc: boolean = true;
   selectedGame: GameRankDTO | null = null;
+  page = 1;
+  pageSize = 30;
+  totalCount = 0;
+  hasMore = true;
 
   private searchSubject = new Subject<string>();
   private destroy$ = new Subject<void>();
@@ -82,13 +87,38 @@ export class GameListComponent implements OnInit, OnDestroy {
       takeUntil(this.destroy$)
     ).subscribe(searchTerm => {
       this.searchName = searchTerm;
-      this.loadGames();
+      this.page = 1;
+      this.loadGames(true);
     });
   }
 
   ngOnDestroy(): void {
     this.destroy$.next();
     this.destroy$.complete();
+  }
+
+  // Обработчик скролла
+  @HostListener('window:scroll')
+  onWindowScroll(): void {
+    //if (this.isLoading || this.isLoadingMore || !this.hasMore) return;
+
+    // Вычисляем, достигли ли мы низа страницы
+    const threshold = 100; // Загружать за 100px до конца
+    const position = window.scrollY + window.innerHeight;
+    const height = document.body.scrollHeight;
+
+    if (position > height - threshold) {
+      this.loadMore();
+    }
+  }
+
+  // Загрузка дополнительных элементов
+  loadMore(): void {
+    if (this.isLoadingMore || !this.hasMore) return;
+
+    this.isLoadingMore = true;
+    this.page++;
+    this.loadGames(false);
   }
 
   openGameDetails(game: GameRankDTO): void {
@@ -168,7 +198,18 @@ export class GameListComponent implements OnInit, OnDestroy {
     }, ...this.games];
   }
 
-  loadGames(): void {
+  loadGames(reset: boolean = false): void {
+if (reset) {
+      this.page = 1;
+      this.games = [];
+      this.hasMore = true;
+      this.isLoading = true;
+    } else {
+      this.isLoadingMore = true;
+    }
+
+
+
     this.isLoading = true;
     this.errorMessage;
     const params: any = {};
@@ -178,37 +219,34 @@ export class GameListComponent implements OnInit, OnDestroy {
     if (this.sortField) params.sortBy = this.sortField;
     if (this.sortDesc !== undefined) params.desc = this.sortDesc;
 
+    params.page = this.page;
+    params.pageSize = this.pageSize;
+    
     this.gameService.getGames(params).subscribe({
-      next: (data) => {
-        this.isLoading = false;
-        this.games = data;
+      next: (data: any) => {
+        if (reset) {
+          this.isLoading = false;
+        } else {
+          this.isLoadingMore = false;
+        }
+        
+
+        this.games = [...this.games, ...data.items];
+        this.totalCount = data.totalCount;
+        this.hasMore = this.page < data.totalPages;
+        
+        
         this.cdr.markForCheck();
       },
       error: (err) => {
         this.errorMessage = 'Ошибка загрузки списка игр';
         this.isLoading = false;
+        this.isLoadingMore = false;
         this.cdr.detectChanges();
         console.error(err);
       }
     });
   }
-
-
-  goToProfile(): void {
-    this.router.navigate(['/profile']);
-  }
-
-  navigateToMinecraft() {
-  this.router.navigate(['/minecraft']);
-}
-
-navigateToDonateLink() {
-  this.router.navigate(['/donate-link']);
-}
-
-navigateToGameListFollowers() {
-  this.router.navigate(['/game-list-followers']);
-}
 
   getPlayTime(date: Date | undefined): string {
     if (!date) return '0 часов';

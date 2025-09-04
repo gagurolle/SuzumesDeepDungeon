@@ -19,7 +19,7 @@
       <!-- Фильтр по статусу -->
       <mat-form-field appearance="fill" class="filter-field">
         <mat-label>Статус</mat-label>
-        <mat-select [(ngModel)]="selectedStatus" (selectionChange)="loadGames()">
+        <mat-select [(ngModel)]="selectedStatus" (selectionChange)="loadGames(true)">
           <mat-option [value]="null">Все статусы</mat-option>
             @for (status of statuses; track status) {
             <mat-option [value]="status.value">
@@ -32,7 +32,7 @@
       <!-- Сортировка -->
       <mat-form-field appearance="fill" class="filter-field">
         <mat-label>Сортировка</mat-label>
-        <mat-select [(ngModel)]="sortField" (selectionChange)="loadGames()">
+        <mat-select [(ngModel)]="sortField" (selectionChange)="loadGames(true)">
           <mat-option value="created">По дате добавления</mat-option>
           <mat-option value="name">По названию</mat-option>
           <mat-option value="rate">По рейтингу</mat-option>
@@ -43,15 +43,15 @@
       <!-- Направление сортировки -->
       <mat-form-field appearance="fill" class="filter-field">
         <mat-label>Порядок</mat-label>
-        <mat-select [(ngModel)]="sortDesc" (selectionChange)="loadGames()">
+        <mat-select [(ngModel)]="sortDesc" (selectionChange)="loadGames(true)">
           <mat-option [value]="true">По убыванию</mat-option>
           <mat-option [value]="false">По возрастанию</mat-option>
         </mat-select>
       </mat-form-field>
 
-      <div *ngIf="isLoading" class="loading-spinner" class="filter-field">
+      <!-- <div *ngIf="isLoading" class="loading-spinner" class="filter-field">
       <mat-spinner diameter="50"></mat-spinner>
-    </div>
+    </div> -->
 
     
     </div>
@@ -169,6 +169,20 @@
       </div>
       }
     </div>
+     <!-- Индикатор загрузки дополнительных элементов -->
+    @if (isLoadingMore) {
+      <div class="loading-more">
+        <mat-spinner diameter="40"></mat-spinner>
+        <span>Загрузка...</span>
+      </div>
+    }
+
+    <!-- Сообщение о том, что все игры загружены -->
+    @if (!hasMore && games.length > 0) {
+      <div class="end-of-list">
+        <p>Все игры загружены</p>
+      </div>
+    }
     </div>
     @if (selectedGame) {
     <app-game-details-view 
