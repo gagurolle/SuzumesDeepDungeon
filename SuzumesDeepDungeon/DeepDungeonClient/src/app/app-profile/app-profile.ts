@@ -1,10 +1,11 @@
 import { Component } from '@angular/core';
 import { AuthService } from '../services/auth/auth';
 import { Router } from '@angular/router';
+import { ApiFormComponent } from "../api-form/api-form.component";
 
 @Component({
   selector: 'app-profile',
-  imports: [],
+  imports: [ApiFormComponent],
   templateUrl: './app-profile.html',
   styleUrl: './app-profile.css'
 })

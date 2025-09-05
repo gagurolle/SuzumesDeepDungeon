@@ -18,6 +18,8 @@ public class DatabaseContext : DbContext
     public DbSet<GameAchievement> Achievements { get; set; }
     public DbSet<Stores> Stores { get; set; }
 
+    public DbSet<ExternalApi> Api { get; set; }
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         // Указываем схему по умолчанию (опционально)
@@ -101,6 +103,12 @@ public class DatabaseContext : DbContext
             
             entity.HasIndex(e => e.Username);
             entity.HasIndex(e => e.Email);
+
+            entity.HasMany(g => g.ExternalApi)
+                .WithOne(s => s.User)
+                .HasForeignKey(s => s.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
+
         });
 
         modelBuilder.Entity<Screenshot>(entity =>
@@ -207,8 +215,14 @@ public class DatabaseContext : DbContext
             entity.HasIndex(e => e.GameId);
         });
 
-        // Для PostgreSQL рекомендуется явно указать имена таблиц и столбцов в нижнем регистре
-        // чтобы избежать проблем с чувствительностью к регистру
+        modelBuilder.Entity<ExternalApi>(entity => 
+        { 
+            entity.HasKey(e => e.Id);
+            entity.Property(e => e.Id).ValueGeneratedOnAdd();
+            entity.Property(e => e.Created).HasDefaultValueSql("CURRENT_TIMESTAMP");
+
+        });
+
         foreach (var entityType in modelBuilder.Model.GetEntityTypes())
         {
             entityType.SetTableName(entityType.GetTableName().ToLower());

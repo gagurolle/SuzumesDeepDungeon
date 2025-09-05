@@ -12,6 +12,8 @@ namespace SuzumesDeepDungeon.Models
         public bool IsAdmin { get; set; }
         [JsonIgnore]
         public List<GameRank> GameRanks { get; set; } = new List<GameRank>();
+
+        public List<ExternalApi> ExternalApi { get; set; } = new List<ExternalApi>();
         public DateTime Created { get; set; }
         public DateTime Updated { get; set; }
 

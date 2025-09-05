@@ -1,0 +1,72 @@
+<div class="toggle-container">
+    <mat-slide-toggle [(ngModel)]="showPage" color="primary">
+        {{ showPage ? 'Скрыть страницу' : 'Показать страницу' }}
+    </mat-slide-toggle>
+</div>
+<div class="profile-container" *ngIf="showPage">
+    <div class="profile-card">
+        <h2 class="profile-title">Управление API ключами</h2>
+
+        <div class="api-form">
+            <h3 class="form-title">Добавить новый API ключ</h3>
+            <form [formGroup]="apiForm" (ngSubmit)="onSubmit()">
+                <div class="form-group">
+                    <label class="form-label">Название ключа</label>
+                    <input type="text" class="form-input" formControlName="name" placeholder="Введите название ключа">
+                    @if(apiForm.get('name')?.invalid && apiForm.get('name')?.touched){
+                    <div class="error-message">
+                        Название обязательно и должно содержать не менее 3 символов
+                    </div>
+                    }
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Описание (опционально)</label>
+                    <input type="text" class="form-input" formControlName="description"
+                        placeholder="Введите описание ключа">
+                </div>
+                <button type="submit" class="btn-primary" [disabled]="!apiForm.valid || isSubmitting">
+                    <span class="material-icons">add</span>
+                    {{ isSubmitting ? 'Добавление...' : 'Добавить ключ' }}
+                </button>
+            </form>
+        </div>
+
+        <div class="api-list">
+            <h3 class="form-title">Мои API ключи</h3>
+
+            <div class="empty-state" *ngIf="apiKeys.length === 0">
+                <span class="material-icons">vpn_key</span>
+                <p>У вас пока нет API ключей</p>
+            </div>
+            @for(apiKey of apiKeys; track apiKey) {
+            <div class="api-item">
+                <div class="api-header">
+                    <h4 class="api-name">{{ apiKey.name }}</h4>
+                    <span class="status-badge" [ngClass]="apiKey.isActive ? 'status-active' : 'status-inactive'">
+                        {{ apiKey.isActive ? 'Активный' : 'Неактивный' }}
+                    </span>
+                </div>
+                @if(apiKey.description){
+                <p class="api-description">{{ apiKey.description }}</p>
+                }
+                @if(apiKey.key){
+                <div class="api-key">
+                    {{ apiKey.key }}
+                    <button class="btn-copy" (click)="copyToClipboard(apiKey.key)">
+                        <span class="material-icons">content_copy</span>
+                    </button>
+                </div>
+                }
+
+                <div class="api-meta">
+                    <span>Создан: {{ apiKey.created | date:'dd.MM.yyyy' }}</span>
+                    <button class="btn-delete" (click)="deleteApiKey(apiKey.id)">
+                        <span class="material-icons">delete</span>
+                        Удалить
+                    </button>
+                </div>
+            </div>
+            }
+        </div>
+    </div>
+</div>

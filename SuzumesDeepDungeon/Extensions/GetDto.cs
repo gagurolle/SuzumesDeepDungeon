@@ -116,5 +116,18 @@ namespace SuzumesDeepDungeon.Extensions
                 IsAdmin = user.IsAdmin
             };
         }
+
+        public static ExternalApiDTO GetDTO(this ExternalApi api)
+        {
+            return new ExternalApiDTO
+            {
+                Id = api.Id,
+                Name = api.Name,
+                Description = api.Description,
+                UserId = api.UserId,
+                Created = api.Created,
+                IsActive = api.IsActive,
+            };
+        }
     }
 }

@@ -1,0 +1,260 @@
+/* Глобальные стили для Angular Material компонентов */
+app-api-form .mat-slide-toggle .mat-slide-toggle-bar {
+  background-color: #333 !important;
+  border: 1px solid #444 !important;
+}
+
+app-api-form .mat-slide-toggle.mat-checked .mat-slide-toggle-bar {
+  background-color: rgba(187, 134, 252, 0.3) !important;
+  border: 1px solid #bb86fc !important;
+}
+
+app-api-form .mat-slide-toggle .mat-slide-toggle-thumb {
+  background-color: #e0e0e0 !important;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3) !important;
+}
+
+app-api-form .mat-slide-toggle.mat-checked .mat-slide-toggle-thumb {
+  background-color: #bb86fc !important;
+}
+
+app-api-form .mat-slide-toggle .mat-slide-toggle-content {
+  color: #e0e0e0 !important;
+  font-weight: 500;
+  margin-left: 8px;
+  font-family: 'Roboto', sans-serif;
+}
+
+/* Контейнер переключателя */
+.toggle-container {
+  display: flex;
+  justify-content: center;
+  padding: 20px;
+  background-color: #121212;
+}
+.profile-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background-color: #121212;
+  padding: 20px;
+}
+
+.profile-card {
+  background-color: #1e1e1e;
+  border-radius: 8px;
+  padding: 40px;
+  width: 100%;
+  max-width: 800px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+
+.profile-title {
+  color: #bb86fc;
+  text-align: center;
+  margin-bottom: 30px;
+  font-weight: 300;
+  font-size: 28px;
+}
+
+.api-form {
+  background-color: #252525;
+  padding: 20px;
+  border-radius: 8px;
+  margin-bottom: 30px;
+}
+
+.form-title {
+  color: #bb86fc;
+  margin-bottom: 20px;
+  font-weight: 500;
+  font-size: 18px;
+}
+
+.form-group {
+  margin-bottom: 20px;
+}
+
+.form-label {
+  display: block;
+  color: #bb86fc;
+  margin-bottom: 8px;
+  font-weight: 500;
+}
+
+.form-input {
+  width: 100%;
+  padding: 12px;
+  background-color: #333;
+  border: 1px solid #444;
+  border-radius: 4px;
+  color: #e0e0e0;
+  font-size: 16px;
+}
+
+.form-input:focus {
+  outline: none;
+  border-color: #bb86fc;
+}
+
+.error-message {
+  color: #cf6679;
+  font-size: 14px;
+  margin-top: 5px;
+}
+
+.btn-primary {
+  background-color: #bb86fc;
+  color: #000;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.btn-primary:hover {
+  background-color: #9965f4;
+}
+
+.btn-primary:disabled {
+  background-color: #444;
+  color: #777;
+  cursor: not-allowed;
+}
+
+.api-list {
+  margin-top: 30px;
+}
+
+.api-item {
+  background-color: #252525;
+  padding: 20px;
+  border-radius: 8px;
+  margin-bottom: 15px;
+  position: relative;
+}
+
+.api-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+.api-name {
+  color: #bb86fc;
+  font-weight: 500;
+  font-size: 18px;
+}
+
+.api-description {
+  color: #e0e0e0;
+  margin-bottom: 15px;
+  line-height: 1.5;
+}
+
+.api-key {
+  background-color: #333;
+  padding: 12px;
+  border-radius: 4px;
+  font-family: monospace;
+  color: #e0e0e0;
+  margin-bottom: 15px;
+  word-break: break-all;
+  position: relative;
+  padding-right: 40px;
+}
+
+.btn-copy {
+  position: absolute;
+  right: 8px;
+  top: 8px;
+  background: transparent;
+  border: none;
+  color: #bb86fc;
+  cursor: pointer;
+}
+
+.api-meta {
+  display: flex;
+  justify-content: space-between;
+  color: #999;
+  font-size: 14px;
+  border-top: 1px solid #333;
+  padding-top: 15px;
+  align-items: center;
+}
+
+.btn-delete {
+  background-color: #cf6679;
+  color: #fff;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.btn-delete:hover {
+  background-color: #ba4d5f;
+}
+
+.status-badge {
+  display: inline-block;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.status-active {
+  background-color: #1b5e20;
+  color: #4caf50;
+}
+
+.status-inactive {
+  background-color: #7f0000;
+  color: #f44336;
+}
+
+.empty-state {
+  text-align: center;
+  color: #999;
+  padding: 40px 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+}
+
+.empty-state .material-icons {
+  font-size: 48px;
+}
+
+
+
+
+@media (max-width: 768px) {
+  .profile-card {
+    padding: 20px;
+  }
+  
+  .api-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+  
+  .api-meta {
+    flex-direction: column;
+    gap: 10px;
+  }
+}
