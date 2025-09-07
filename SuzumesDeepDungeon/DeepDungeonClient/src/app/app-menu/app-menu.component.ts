@@ -29,8 +29,9 @@ navigateToDonateLink() {
 }
 
 navigateToGameListFollowers() {
-  this.router.navigate(['/game-list-followers']);
+  this.router.navigate(['/twitch/gamelist']);
 }
+
 
   isActive(page: string): boolean {
     return this.activePage === page;
