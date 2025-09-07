@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using SuzumesDeepDungeon.Data;
@@ -11,9 +12,11 @@ using SuzumesDeepDungeon.Data;
 namespace SuzumesDeepDungeon.Migrations
 {
     [DbContext(typeof(DatabaseContext))]
-    partial class DatabaseContextModelSnapshot : ModelSnapshot
+    [Migration("20250907162617_NewTwitchSystemActionsTable")]
+    partial class NewTwitchSystemActionsTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -414,94 +417,6 @@ namespace SuzumesDeepDungeon.Migrations
                     b.ToTable("trailers", "public");
                 });
 
-            modelBuilder.Entity("SuzumesDeepDungeon.Models.Twitch.TwitchAction", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer")
-                        .HasColumnName("id");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<int?>("CommandTriggeredId")
-                        .HasColumnType("integer")
-                        .HasColumnName("commandtriggeredid");
-
-                    b.Property<int?>("RewardRedemptionId")
-                        .HasColumnType("integer")
-                        .HasColumnName("rewardredemptionid");
-
-                    b.Property<string>("RowData")
-                        .HasColumnType("text")
-                        .HasColumnName("rowdata");
-
-                    b.Property<int?>("SystemActionId")
-                        .HasColumnType("integer")
-                        .HasColumnName("systemactionid");
-
-                    b.Property<int?>("UserId")
-                        .HasColumnType("integer")
-                        .HasColumnName("userid");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CommandTriggeredId")
-                        .IsUnique();
-
-                    b.HasIndex("RewardRedemptionId")
-                        .IsUnique();
-
-                    b.HasIndex("SystemActionId");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("twitchactions", "public");
-                });
-
-            modelBuilder.Entity("SuzumesDeepDungeon.Models.Twitch.TwitchActionBase", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer")
-                        .HasColumnName("id");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("ActionType")
-                        .IsRequired()
-                        .HasMaxLength(21)
-                        .HasColumnType("character varying(21)")
-                        .HasColumnName("actiontype");
-
-                    b.Property<DateTime>("Created")
-                        .HasColumnType("timestamp without time zone")
-                        .HasColumnName("created");
-
-                    b.Property<int?>("SystemActionId")
-                        .HasColumnType("integer")
-                        .HasColumnName("systemactionid");
-
-                    b.Property<DateTime>("Updated")
-                        .HasColumnType("timestamp without time zone")
-                        .HasColumnName("updated");
-
-                    b.Property<int?>("UserId")
-                        .HasColumnType("integer")
-                        .HasColumnName("userid");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("SystemActionId");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("twitchactionbase", "public");
-
-                    b.HasDiscriminator<string>("ActionType").HasValue("TwitchActionBase");
-
-                    b.UseTphMappingStrategy();
-                });
-
             modelBuilder.Entity("SuzumesDeepDungeon.Models.Twitch.TwitchSystemAction", b =>
                 {
                     b.Property<int>("Id")
@@ -688,64 +603,6 @@ namespace SuzumesDeepDungeon.Migrations
                     b.ToTable("users", "public");
                 });
 
-            modelBuilder.Entity("SuzumesDeepDungeon.Models.Twitch.TwitchCommandTriggered", b =>
-                {
-                    b.HasBaseType("SuzumesDeepDungeon.Models.Twitch.TwitchActionBase");
-
-                    b.Property<string>("Command")
-                        .HasColumnType("text")
-                        .HasColumnName("command");
-
-                    b.Property<string>("CommandName")
-                        .HasColumnType("text")
-                        .HasColumnName("commandname");
-
-                    b.Property<string>("CommandSource")
-                        .HasColumnType("text")
-                        .HasColumnName("commandsource");
-
-                    b.Property<string>("CommandType")
-                        .HasColumnType("text")
-                        .HasColumnName("commandtype");
-
-                    b.Property<bool?>("IsReply")
-                        .HasColumnType("boolean")
-                        .HasColumnName("isreply");
-
-                    b.ToTable("twitchactionbase", "public");
-
-                    b.HasDiscriminator().HasValue("CommandTriggered");
-                });
-
-            modelBuilder.Entity("SuzumesDeepDungeon.Models.Twitch.TwitchRewardRedemption", b =>
-                {
-                    b.HasBaseType("SuzumesDeepDungeon.Models.Twitch.TwitchActionBase");
-
-                    b.Property<string>("Counter")
-                        .HasColumnType("text")
-                        .HasColumnName("counter");
-
-                    b.Property<string>("RewardCost")
-                        .HasColumnType("text")
-                        .HasColumnName("rewardcost");
-
-                    b.Property<string>("RewardName")
-                        .HasColumnType("text")
-                        .HasColumnName("rewardname");
-
-                    b.Property<string>("RewardPrompt")
-                        .HasColumnType("text")
-                        .HasColumnName("rewardprompt");
-
-                    b.Property<bool?>("UserCounter")
-                        .HasColumnType("boolean")
-                        .HasColumnName("usercounter");
-
-                    b.ToTable("twitchactionbase", "public");
-
-                    b.HasDiscriminator().HasValue("RewardRedemption");
-                });
-
             modelBuilder.Entity("SuzumesDeepDungeon.Models.ExternalApi", b =>
                 {
                     b.HasOne("SuzumesDeepDungeon.Models.User", "User")
@@ -818,54 +675,6 @@ namespace SuzumesDeepDungeon.Migrations
                         .IsRequired();
 
                     b.Navigation("GameRank");
-                });
-
-            modelBuilder.Entity("SuzumesDeepDungeon.Models.Twitch.TwitchAction", b =>
-                {
-                    b.HasOne("SuzumesDeepDungeon.Models.Twitch.TwitchCommandTriggered", "CommandTriggered")
-                        .WithOne()
-                        .HasForeignKey("SuzumesDeepDungeon.Models.Twitch.TwitchAction", "CommandTriggeredId")
-                        .OnDelete(DeleteBehavior.SetNull);
-
-                    b.HasOne("SuzumesDeepDungeon.Models.Twitch.TwitchRewardRedemption", "RewardRedemption")
-                        .WithOne()
-                        .HasForeignKey("SuzumesDeepDungeon.Models.Twitch.TwitchAction", "RewardRedemptionId")
-                        .OnDelete(DeleteBehavior.SetNull);
-
-                    b.HasOne("SuzumesDeepDungeon.Models.Twitch.TwitchSystemAction", "SystemAction")
-                        .WithMany()
-                        .HasForeignKey("SystemActionId")
-                        .OnDelete(DeleteBehavior.Restrict);
-
-                    b.HasOne("SuzumesDeepDungeon.Models.Twitch.TwitchUser", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Restrict);
-
-                    b.Navigation("CommandTriggered");
-
-                    b.Navigation("RewardRedemption");
-
-                    b.Navigation("SystemAction");
-
-                    b.Navigation("User");
-                });
-
-            modelBuilder.Entity("SuzumesDeepDungeon.Models.Twitch.TwitchActionBase", b =>
-                {
-                    b.HasOne("SuzumesDeepDungeon.Models.Twitch.TwitchSystemAction", "SystemAction")
-                        .WithMany()
-                        .HasForeignKey("SystemActionId")
-                        .OnDelete(DeleteBehavior.Restrict);
-
-                    b.HasOne("SuzumesDeepDungeon.Models.Twitch.TwitchUser", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Restrict);
-
-                    b.Navigation("SystemAction");
-
-                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("SuzumesDeepDungeon.Models.GameRank", b =>

@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using SuzumesDeepDungeon.Data;
@@ -11,9 +12,11 @@ using SuzumesDeepDungeon.Data;
 namespace SuzumesDeepDungeon.Migrations
 {
     [DbContext(typeof(DatabaseContext))]
-    partial class DatabaseContextModelSnapshot : ModelSnapshot
+    [Migration("20250907183110_NewEntities2")]
+    partial class NewEntities2
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -481,6 +484,10 @@ namespace SuzumesDeepDungeon.Migrations
                         .HasColumnType("integer")
                         .HasColumnName("systemactionid");
 
+                    b.Property<int>("TwitchActionId")
+                        .HasColumnType("integer")
+                        .HasColumnName("twitchactionid");
+
                     b.Property<DateTime>("Updated")
                         .HasColumnType("timestamp without time zone")
                         .HasColumnName("updated");
@@ -712,6 +719,8 @@ namespace SuzumesDeepDungeon.Migrations
                         .HasColumnType("boolean")
                         .HasColumnName("isreply");
 
+                    b.HasIndex("TwitchActionId");
+
                     b.ToTable("twitchactionbase", "public");
 
                     b.HasDiscriminator().HasValue("CommandTriggered");
@@ -740,6 +749,8 @@ namespace SuzumesDeepDungeon.Migrations
                     b.Property<bool?>("UserCounter")
                         .HasColumnType("boolean")
                         .HasColumnName("usercounter");
+
+                    b.HasIndex("TwitchActionId");
 
                     b.ToTable("twitchactionbase", "public");
 
@@ -866,6 +877,28 @@ namespace SuzumesDeepDungeon.Migrations
                     b.Navigation("SystemAction");
 
                     b.Navigation("User");
+                });
+
+            modelBuilder.Entity("SuzumesDeepDungeon.Models.Twitch.TwitchCommandTriggered", b =>
+                {
+                    b.HasOne("SuzumesDeepDungeon.Models.Twitch.TwitchAction", "TwitchAction")
+                        .WithMany()
+                        .HasForeignKey("TwitchActionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("TwitchAction");
+                });
+
+            modelBuilder.Entity("SuzumesDeepDungeon.Models.Twitch.TwitchRewardRedemption", b =>
+                {
+                    b.HasOne("SuzumesDeepDungeon.Models.Twitch.TwitchAction", "TwitchAction")
+                        .WithMany()
+                        .HasForeignKey("TwitchActionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("TwitchAction");
                 });
 
             modelBuilder.Entity("SuzumesDeepDungeon.Models.GameRank", b =>

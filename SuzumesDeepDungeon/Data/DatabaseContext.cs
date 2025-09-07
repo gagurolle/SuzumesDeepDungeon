@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using SuzumesDeepDungeon.Models;
+using SuzumesDeepDungeon.Models.Twitch;
 
 namespace SuzumesDeepDungeon.Data;
 
@@ -17,13 +18,96 @@ public class DatabaseContext : DbContext
     public DbSet<GameTag> Tag { get; set; }
     public DbSet<GameAchievement> Achievements { get; set; }
     public DbSet<Stores> Stores { get; set; }
-
     public DbSet<ExternalApi> Api { get; set; }
+    public DbSet<TwitchUser> TwitchUsers { get; set; }
+    public DbSet<TwitchSystemAction> TwitchSystemActions { get; set; }
+
+    public DbSet<TwitchRewardRedemption> TwitchRewardRedemptions { get; set; }
+    public DbSet<TwitchCommandTriggered> TwitchCommandTriggereds { get; set; }
+    public DbSet<TwitchAction> TwitchActions { get; set; }
+
+
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        // Указываем схему по умолчанию (опционально)
         modelBuilder.HasDefaultSchema("public");
+
+        modelBuilder.Entity<TwitchUser>(entity =>
+        {
+           entity.HasKey(e => e.Id);
+            entity.Property(e => e.Id).ValueGeneratedOnAdd();
+
+            entity.Property(e => e.Created).HasDefaultValueSql("CURRENT_TIMESTAMP");
+            entity.Property(s => s.Updated)
+                  .HasDefaultValueSql("CURRENT_TIMESTAMP")
+                  .ValueGeneratedOnAddOrUpdate()
+                  .Metadata.SetAfterSaveBehavior(Microsoft.EntityFrameworkCore.Metadata.PropertySaveBehavior.Save);
+
+        });
+
+        modelBuilder.Entity<TwitchSystemAction>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.Property(e => e.Id).ValueGeneratedOnAdd();
+
+            entity.Property(e => e.Created).HasDefaultValueSql("CURRENT_TIMESTAMP");
+            entity.Property(s => s.Updated)
+                  .HasDefaultValueSql("CURRENT_TIMESTAMP")
+                  .ValueGeneratedOnAddOrUpdate()
+                  .Metadata.SetAfterSaveBehavior(Microsoft.EntityFrameworkCore.Metadata.PropertySaveBehavior.Save);
+
+        });
+
+        modelBuilder.Entity<TwitchActionBase>()
+            .HasDiscriminator<string>("ActionType")
+            .HasValue<TwitchRewardRedemption>("RewardRedemption")
+            .HasValue<TwitchCommandTriggered>("CommandTriggered");
+
+        modelBuilder.Entity<TwitchActionBase>()
+            .HasOne(t => t.User)
+            .WithMany()
+            .HasForeignKey(t => t.UserId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        modelBuilder.Entity<TwitchActionBase>()
+            .HasOne(t => t.SystemAction)
+            .WithMany()
+            .HasForeignKey(t => t.SystemActionId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        modelBuilder.Entity<TwitchAction>(entity =>
+        {
+            entity.HasKey(a => a.Id);
+
+            entity.HasOne(a => a.User)
+                .WithMany()
+                .HasForeignKey(a => a.UserId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            entity.HasOne(a => a.SystemAction)
+                .WithMany()
+                .HasForeignKey(a => a.SystemActionId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            entity.HasOne(a => a.RewardRedemption)
+                .WithOne()
+                .HasForeignKey<TwitchAction>(a => a.RewardRedemptionId)
+                .IsRequired(false)
+                .OnDelete(DeleteBehavior.SetNull);
+
+
+            entity.HasOne(a => a.CommandTriggered)
+                .WithOne()
+                .HasForeignKey<TwitchAction>(a => a.CommandTriggeredId)
+                .IsRequired(false)
+                .OnDelete(DeleteBehavior.SetNull);
+        });
+
+
+
+
+        ////////////////////////////////////////////////////////////
+
 
         modelBuilder.Entity<GameRank>(entity =>
         {

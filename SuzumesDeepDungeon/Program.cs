@@ -51,6 +51,7 @@ builder.Services.AddAuthorization();
 builder.Services.AddScoped<SteamApi>();
 builder.Services.AddScoped<RawgApi>();
 builder.Services.AddScoped<CSVLoad>();
+builder.Services.AddScoped<TwitchService>();
 
 builder.Services.AddDbContext<DatabaseContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));

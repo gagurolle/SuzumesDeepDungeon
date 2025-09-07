@@ -34,7 +34,7 @@ namespace SuzumesDeepDungeon.Attributes
 
             // Получаем все активные ключи
             var apiKeys = await dbContext.Api
-                //.Where(k => k.IsActive)
+                .Where(k => k.IsActive)
                 .Select(k => k.HashKey).ToListAsync();
 
             // Проверяем ключ

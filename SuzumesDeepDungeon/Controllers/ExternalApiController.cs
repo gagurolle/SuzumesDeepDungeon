@@ -30,7 +30,7 @@ namespace SuzumesDeepDungeon.Controllers
             _context = context;
         }
 
-        //[Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin")]
         [HttpPost(Name = "AddApiKey")]
         public async Task<ActionResult<ExternalApiDTO>> AddApiKey([FromBody] ExternalApiDTO api)
         {
@@ -69,10 +69,11 @@ namespace SuzumesDeepDungeon.Controllers
             });
             await _context.SaveChangesAsync();
             api.Key = key;
+            api.IsActive = true;
             return Ok(api);
         }
 
-        //[Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin")]
         [HttpGet(Name = "GetApiKeys")]
         public async Task<ActionResult<List<ExternalApiDTO>>> GetApiKeys([FromQuery] string username)
         {
@@ -86,7 +87,7 @@ namespace SuzumesDeepDungeon.Controllers
         }
 
 
-        //[Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin")]
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteKey(int id)
         {
