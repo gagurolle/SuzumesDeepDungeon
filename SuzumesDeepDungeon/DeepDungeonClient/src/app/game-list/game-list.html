@@ -2,197 +2,222 @@
 
 
 <div class="game-list-container background">
-  
+<div class="main-page-container">
   <div class="list-header">
-    <h1 class="page-title">Рейтинг моих игр</h1>
-    
+    <div  class="page-title-info">
+    <h1>Рейтинг моих игр</h1>
+   </div>
+   <div class="top-page-info">
+     <h2 >Здесь показаны игры, которые я поиграл на стриме, либо прошел сам, либо запланировал их к прохождению</h2>
+     <p>В синем овале стоит моя личная оценка, в бардовом (если она есть) оценка метакритик. При нажатии на название игры - откроется доп инфа</p>
+      </div>
+
     <div class="filters-container">
+      
 
- <mat-form-field appearance="fill" class="search-field">
-  <mat-label>Поиск</mat-label>
-  <input matInput 
-         [value]="searchName" 
-         (input)="onSearchInput($event)"
-         placeholder="Введите название...">
-  <mat-icon matSuffix>search</mat-icon>
-</mat-form-field>
-      <!-- Фильтр по статусу -->
-      <mat-form-field appearance="fill" class="filter-field">
-        <mat-label>Статус</mat-label>
-        <mat-select [(ngModel)]="selectedStatus" (selectionChange)="loadGames(true)">
-          <mat-option [value]="null">Все статусы</mat-option>
-            @for (status of statuses; track status) {
-            <mat-option [value]="status.value">
-              {{ status.text }}
-            </mat-option>
-            }
-        </mat-select>
-      </mat-form-field>
+      <button class="filters-toggle-btn" (click)="toggleFiltersPanel()">
+        <mat-icon>filter_list</mat-icon>
+        {{ isFiltersPanelOpen ? '' : '' }}
+      </button>
 
-      <!-- Сортировка -->
-      <mat-form-field appearance="fill" class="filter-field">
-        <mat-label>Сортировка</mat-label>
-        <mat-select [(ngModel)]="sortField" (selectionChange)="loadGames(true)">
-          <mat-option value="created">По дате добавления</mat-option>
-          <mat-option value="name">По названию</mat-option>
-          <mat-option value="rate">По рейтингу</mat-option>
-          <mat-option value="released">По дате выхода</mat-option>
-        </mat-select>
-      </mat-form-field>
+      <div class="filters-panel" [class.open]="isFiltersPanelOpen">
+        <div class="filters-header">
+          <h2 class="filters-title">Фильтры и сортировка</h2>
+          <button class="close-filters" (click)="closeFiltersPanel()">
+            <mat-icon>close</mat-icon>
+          </button>
+        </div>
 
-      <!-- Направление сортировки -->
-      <mat-form-field appearance="fill" class="filter-field">
-        <mat-label>Порядок</mat-label>
-        <mat-select [(ngModel)]="sortDesc" (selectionChange)="loadGames(true)">
-          <mat-option [value]="true">По убыванию</mat-option>
-          <mat-option [value]="false">По возрастанию</mat-option>
-        </mat-select>
-      </mat-form-field>
+        <!-- Поиск -->
+        <div class="filter-group">
+          <label class="filter-label">Поиск по названию</label>
+          <input class="filter-input" type="text" placeholder="Введите название игры" [ngModel]="searchName"
+            (input)="onSearchInput($event)">
+        </div>
+
+        <!-- Фильтр по статусу -->
+        <div class="filter-group">
+          <label class="filter-label">Статус игры</label>
+          <select class="filter-select" [(ngModel)]="selectedStatus" (change)="loadGames(true)">
+            <option [ngValue]="null">Все статусы</option>
+            <option *ngFor="let status of statuses" [value]="status.value">{{ status.text }}</option>
+          </select>
+        </div>
+
+        <!-- Сортировка -->
+        <div class="filter-group">
+          <label class="filter-label">Сортировка</label>
+          <div class="sort-buttons">
+            <button class="sort-btn" [class.active]="sortField === 'created' && sortDesc"
+              (click)="setSort('created', true)">
+              По дате добавления (сначала новые)
+              <mat-icon *ngIf="sortField === 'created' && sortDesc">check</mat-icon>
+            </button>
+            <button class="sort-btn" [class.active]="sortField === 'created' && !sortDesc"
+              (click)="setSort('created', false)">
+              По дате добавления (сначала старые)
+              <mat-icon *ngIf="sortField === 'created' && !sortDesc">check</mat-icon>
+            </button>
+            <button class="sort-btn" [class.active]="sortField === 'rate' && sortDesc" (click)="setSort('rate', true)">
+              По оценке (высокая сначала)
+              <mat-icon *ngIf="sortField === 'rate' && sortDesc">check</mat-icon>
+            </button>
+            <button class="sort-btn" [class.active]="sortField === 'rate' && !sortDesc"
+              (click)="setSort('rate', false)">
+              По оценке (низкая сначала)
+              <mat-icon *ngIf="sortField === 'rate' && !sortDesc">check</mat-icon>
+            </button>
+          </div>
+        </div>
+
+        <button class="apply-filters" (click)="applyFilters()">Применить фильтры</button>
+
+        <div class="add-button-place">
+      @if (auth.isAdmin) {
+      <button class="add-button" (click)="openAddForm()">
+        <mat-icon>add</mat-icon> Добавить игру
+      </button>
+      }
+    </div>
+      </div>
 
       <!-- <div *ngIf="isLoading" class="loading-spinner" class="filter-field">
       <mat-spinner diameter="50"></mat-spinner>
     </div> -->
 
+
+    </div>
+
     
-    </div>
-
-
-    @if (auth.isAdmin) {
-      <button class="add-button" (click)="openAddForm()">
-      <mat-icon>add</mat-icon> Добавить игру
-      </button>
-    }
-    </div>
-    <div class="game-list-container">
+  </div>
+  <div class="game-list-container">
     <h1 class="page-title">Мои игры</h1>
 
     @if (!isLoading && games.length === 0) {
-      <div class="empty-list">
+    <div class="empty-list">
       <mat-icon>sports_esports</mat-icon>
       <p>Список игр пуст</p>
-      </div>
+    </div>
     }
 
     <div class="game-cards">
       @for (game of games; track game) {
       <div class="game-card">
         <div class="game-image-container">
-        <img [src]="game.image || 'assets/default-game.jpg'" alt="{{ game.name }}" class="game-image"
-          (error)="handleImageError($event)">
+          <img [src]="game.image || 'assets/default-game.jpg'" alt="{{ game.name }}" class="game-image"
+            (error)="handleImageError($event)">
         </div>
 
         <div class="game-info">
-        <div class="game-header">
-          <h2 class="game-name clickable" (click)="openGameDetails(game)">{{ game.name || 'Без названия' }}</h2>
-          <div class="game-rating">
-          <span class="rating-value">{{ game.rate?.toFixed(1) || '0.0' }}</span>
-          <span class="rating-max">/10</span>
-          <mat-icon class="star-icon">star</mat-icon>
-          </div>
-        </div>
-
-        <div class="game-meta">
-          <div class="meta-row">
-          <div class="meta-item">
-            <mat-icon>play_circle</mat-icon>
-            <span class="status-badge" [class]="'status-' + game.status">
-            {{ statusService.getStatusText(game.status) }}
-            </span>
-          </div>
-          @if (game.metacriticRate) {
-            <span class="metacritic-rating">
-            <span class="rating-value">{{ game.metacriticRate }}</span>
-            <span class="rating-max">/100</span>
-            <mat-icon class="metacritic-icon">star</mat-icon>
-            </span>
-          }
-          </div>
-
-          <div class="meta-row">
-          <div class="meta-item">
-            <mat-icon>schedule</mat-icon>
-            <span>Время в игре: {{ formatPlayTime(game.gameTime + "" || "0") }}</span>
-          </div>
-
-          @if (game.youtubeLink) {
-            <div class="meta-item youtube-icon">
-            <a [href]="game.youtubeLink" target="_blank">
-              <mat-icon>play_circle</mat-icon> Запись YouTube
-            </a>
+          <div class="game-header">
+            <h2 class="game-name clickable" (click)="openGameDetails(game)">{{ game.name || 'Без названия' }}</h2>
+            <div class="game-rating">
+              <span class="rating-value">{{ game.rate?.toFixed(1) || '0.0' }}</span>
+              <span class="rating-max">/10</span>
+              <mat-icon class="star-icon">star</mat-icon>
             </div>
-          }
           </div>
 
-          <div class="meta-item">
-          @if (game.released) {
-            <div class="meta-item released-date">
-            <mat-icon>event</mat-icon>
-            <span>Вышла: {{ game.released | date:'dd.MM.yyyy' }}</span>
+          <div class="game-meta">
+            <div class="meta-row">
+              <div class="meta-item">
+                <mat-icon>play_circle</mat-icon>
+                <span class="status-badge" [class]="'status-' + game.status">
+                  {{ statusService.getStatusText(game.status) }}
+                </span>
+              </div>
+              @if (game.metacriticRate) {
+              <span class="metacritic-rating">
+                <span class="rating-value">{{ game.metacriticRate }}</span>
+                <span class="rating-max">/100</span>
+                <mat-icon class="metacritic-icon">star</mat-icon>
+              </span>
+              }
             </div>
-          }
+
+            <div class="meta-row">
+              <div class="meta-item">
+                <mat-icon>schedule</mat-icon>
+                <span>Время в игре: {{ formatPlayTime(game.gameTime + "" || "0") }}</span>
+              </div>
+
+              @if (game.youtubeLink) {
+              <div class="meta-item youtube-icon">
+                <a [href]="game.youtubeLink" target="_blank">
+                  <mat-icon>play_circle</mat-icon> Запись YouTube
+                </a>
+              </div>
+              }
+            </div>
+
+            <div class="meta-item">
+              @if (game.released) {
+              <div class="meta-item released-date">
+                <mat-icon>event</mat-icon>
+                <span>Вышла: {{ game.released | date:'dd.MM.yyyy' }}</span>
+              </div>
+              }
+            </div>
           </div>
-        </div>
 
-        <div class="review-header">
-          <h3 class="review-title">Мой отзыв:</h3>
-          @if (auth.isAdmin) {
-          <button mat-icon-button class="edit-button" (click)="openEditForm(game)">
-            <mat-icon>edit</mat-icon>
-          </button>
-          }
-        </div>
+          <div class="review-header">
+            <h3 class="review-title">Мой отзыв:</h3>
+            @if (auth.isAdmin) {
+            <button mat-icon-button class="edit-button" (click)="openEditForm(game)">
+              <mat-icon>edit</mat-icon>
+            </button>
+            }
+          </div>
 
-        <div class="review-text">
-          {{ game.review || 'Отзыв отсутствует' }}
-        </div>
+          <div class="review-text">
+            {{ game.review || 'Отзыв отсутствует' }}
+          </div>
 
-        <div class="game-footer">
-          <span class="date-added">Добавлено: {{ game.created | date:'dd.MM.yyyy' }}</span>
-          @if (game.updated) {
-          <span class="date-updated">
-            (Обновлено: {{ game.updated | date:'dd.MM.yyyy' }})
-          </span>
-          }
-        </div>
+          <div class="game-footer">
+            <span class="date-added">Добавлено: {{ game.created | date:'dd.MM.yyyy' }}</span>
+            @if (game.updated) {
+            <span class="date-updated">
+              (Обновлено: {{ game.updated | date:'dd.MM.yyyy' }})
+            </span>
+            }
+          </div>
 
-        @if (game.stores && game.stores.length > 0) {
+          @if (game.stores && game.stores.length > 0) {
           <div class="stores-container">
-          @for (store of game.stores; track store) {
-            <a [href]="store.url" target="_blank" class="store-badge"
-            [class]="'store-' + store.storeId">
-            {{ statusService.getStoreName(store) }}
+            @for (store of game.stores; track store) {
+            <a [href]="store.url" target="_blank" class="store-badge" [class]="'store-' + store.storeId">
+              {{ statusService.getStoreName(store) }}
             </a>
-          }
+            }
           </div>
-        }
+          }
         </div>
       </div>
       }
     </div>
-     <!-- Индикатор загрузки дополнительных элементов -->
+    <!-- Индикатор загрузки дополнительных элементов -->
     @if (isLoadingMore) {
-      <div class="loading-more">
-        <mat-spinner diameter="40"></mat-spinner>
-        <span>Загрузка...</span>
-      </div>
+    <div class="loading-more">
+      <mat-spinner diameter="40"></mat-spinner>
+      <span>Загрузка...</span>
+    </div>
     }
 
     <!-- Сообщение о том, что все игры загружены -->
     @if (!hasMore && games.length > 0) {
-      <div class="end-of-list">
-        <p>Все игры загружены</p>
-      </div>
-    }
+    <div class="end-of-list">
+      <p>Все игры загружены</p>
     </div>
-    @if (selectedGame) {
-    <app-game-details-view 
-      [game]="selectedGame"
-      (close)="closeGameDetails()">
-    </app-game-details-view>
-    }
-    @if (showForm) {
-    <app-game-add-form [gameToEdit]="currentGame" (gameSaved)="onGameSaved($event)"
-      (gameDeleted)="onGameDeleted($event)" (closed)="showForm = false">
-    </app-game-add-form>
     }
   </div>
+  @if (selectedGame) {
+  <app-game-details-view [game]="selectedGame" (close)="closeGameDetails()">
+  </app-game-details-view>
+  }
+  @if (showForm) {
+  <app-game-add-form [gameToEdit]="currentGame" (gameSaved)="onGameSaved($event)" (gameDeleted)="onGameDeleted($event)"
+    (closed)="showForm = false">
+  </app-game-add-form>
+  }
+</div>
+</div>

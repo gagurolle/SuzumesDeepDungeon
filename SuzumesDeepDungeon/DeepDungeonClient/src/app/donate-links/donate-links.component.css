@@ -2,13 +2,10 @@
   color: #e0e0e0;
 }
 
-.donate-main-card {
-  background-color: #2c2c2cec;
-  border-radius: 12px;
-  padding: 32px;
-  text-align: center;
-  margin-bottom: 32px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.4);
+.main-page-container {
+    max-width: 1200px;
+    margin: 2rem auto;
+    padding: 0 1.5rem;
 }
 
 .donate-title {

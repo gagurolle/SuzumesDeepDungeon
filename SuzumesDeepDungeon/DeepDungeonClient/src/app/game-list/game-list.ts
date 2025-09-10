@@ -248,6 +248,29 @@ if (reset) {
     });
   }
 
+  isFiltersPanelOpen = false;
+
+// Методы для управления панелью фильтров
+toggleFiltersPanel(): void {
+  this.isFiltersPanelOpen = !this.isFiltersPanelOpen;
+}
+
+closeFiltersPanel(): void {
+  this.isFiltersPanelOpen = false;
+}
+
+applyFilters(): void {
+  this.closeFiltersPanel();
+  this.loadGames(true);
+}
+
+setSort(field: string, desc: boolean): void {
+  this.sortField = field;
+  this.sortDesc = desc;
+  this.loadGames(true);
+}
+
+
   getPlayTime(date: Date | undefined): string {
     if (!date) return '0 часов';
     return this.datePipe.transform(date, 'HH часов mm минут') || '0 часов';
