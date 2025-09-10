@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using SuzumesDeepDungeon.Data;
 using SuzumesDeepDungeon.DTO;
 using SuzumesDeepDungeon.Extensions;
+using SuzumesDeepDungeon.HelpClasses;
 using SuzumesDeepDungeon.Models;
 using SuzumesDeepDungeon.Services;
 using SuzumesDeepDungeon.Services.Rawg_Data;
@@ -127,16 +128,14 @@ public class DeepDungeon : ControllerBase
 
 
         var withoutPaging = await query.ToListAsync();
-        // Применяем пагинацию
+
         var items = await query
             .Skip((page - 1) * pageSize)
             .Take(pageSize)
             .ToListAsync();
-
-        // Преобразуем в DTO
+        
         var result = items.Select(x => x.GetDTO());
-
-        // Создаем ответ с пагинацией
+        
         var response = new PagedResponse<GameRankDTO>
         {
             Items = result,
@@ -421,15 +420,4 @@ public class DeepDungeon : ControllerBase
 
         return Ok(existingGameRank.GetDTO());
     }
-
-
-    public class PagedResponse<T>
-    {
-        public IEnumerable<T> Items { get; set; }
-        public int Page { get; set; }
-        public int PageSize { get; set; }
-        public int TotalCount { get; set; }
-        public int TotalPages { get; set; }
-    }
-
 }

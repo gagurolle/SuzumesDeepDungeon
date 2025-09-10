@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using SuzumesDeepDungeon.Models;
+using SuzumesDeepDungeon.Models.Minecraft;
 using SuzumesDeepDungeon.Models.Twitch;
 
 namespace SuzumesDeepDungeon.Data;
@@ -25,6 +26,9 @@ public class DatabaseContext : DbContext
     public DbSet<TwitchRewardRedemption> TwitchRewardRedemptions { get; set; }
     public DbSet<TwitchCommandTriggered> TwitchCommandTriggereds { get; set; }
     public DbSet<TwitchAction> TwitchActions { get; set; }
+    
+    public DbSet<MinecraftContent>  MinecraftContents { get; set; }
+    public DbSet<MinecraftMainContent> MinecraftMainContents { get; set; }
 
 
 
@@ -32,6 +36,45 @@ public class DatabaseContext : DbContext
     {
         modelBuilder.HasDefaultSchema("public");
 
+        modelBuilder.Entity<MinecraftContent>(entity =>
+        {
+
+            entity.HasKey(x => x.Id);
+            entity.Property(e => e.Id).ValueGeneratedOnAdd();
+            entity.Navigation(s => s.User).AutoInclude(false);
+            
+            entity.HasOne(a => a.User)
+                .WithMany()
+                .HasForeignKey(a => a.UserId)
+                .OnDelete(DeleteBehavior.Restrict);
+            
+            entity.Property(e => e.Created).HasDefaultValueSql("CURRENT_TIMESTAMP");
+            entity.Property(s => s.Updated)
+                .HasDefaultValueSql("CURRENT_TIMESTAMP")
+                .ValueGeneratedOnAddOrUpdate()
+                .Metadata.SetAfterSaveBehavior(Microsoft.EntityFrameworkCore.Metadata.PropertySaveBehavior.Save);
+        });
+        
+        modelBuilder.Entity<MinecraftMainContent>(entity =>
+        {
+
+            entity.HasKey(x => x.Id);
+            entity.Property(e => e.Id).ValueGeneratedOnAdd();
+            entity.Navigation(s => s.User).AutoInclude(false);
+            
+            entity.HasOne(a => a.User)
+                .WithMany()
+                .HasForeignKey(a => a.UserId)
+                .OnDelete(DeleteBehavior.Restrict);
+            
+            entity.Property(e => e.Created).HasDefaultValueSql("CURRENT_TIMESTAMP");
+            entity.Property(s => s.Updated)
+                .HasDefaultValueSql("CURRENT_TIMESTAMP")
+                .ValueGeneratedOnAddOrUpdate()
+                .Metadata.SetAfterSaveBehavior(Microsoft.EntityFrameworkCore.Metadata.PropertySaveBehavior.Save);
+        });
+        
+        
         modelBuilder.Entity<TwitchUser>(entity =>
         {
            entity.HasKey(e => e.Id);
