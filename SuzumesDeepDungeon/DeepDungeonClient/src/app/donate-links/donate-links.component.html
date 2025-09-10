@@ -1,24 +1,35 @@
-<div class="background"> <mat-card appearance="outlined">
+<div class="donate-container background">
+  <!-- Верхняя карточка -->
+  <div class="donate-main-card">
+    <h1 class="donate-title">Поддержите меня</h1>
+    <p class="donate-text">
+      Здесь вы можете поддержать меня.  
+      Это не обязательно, но очень приветствуется ❤️
+      Донаты дают мотивацию и возможность заниматься творчеством, жаль что мир так устроен :(
+      Пока что доступна поддержка в виде Donation alerts (будет показано сообщение на экране) и мемов, в будущем можно будет оплатить криптовалютой и другими сервисами.
+    </p>
+  </div>
 
-<img mat-card-image class="crop" src="https://i.pinimg.com/originals/1b/0b/d0/1b0bd0a53e1a82234d8535fa4e164cbd.gif" alt="Morshu">
+  <!-- Карточки донат-сервисов -->
+  <div class="donate-cards">
+    <a class="donate-card donation-alerts" href="https://www.donationalerts.com/r/pan_suzume" target="_blank">
+      <div class="donate-header">Donation Alerts</div>
+      <div class="donate-body">Оплата для рублей и других валют</div>
+    </a>
 
+    <a class="donate-card meme-alerts" href="https://memealerts.com/672aa1b01135f4340a473d8f" target="_blank">
+      <div class="donate-header">Meme Alerts</div>
+      <div class="donate-body">Отправь мемчик</div>
+    </a>
 
-  <mat-card-header>
-    <mat-card-title>Тут донат типа </mat-card-title>
-    <mat-card-subtitle>донейшн алертс</mat-card-subtitle>
-  </mat-card-header>
-  <mat-card-actions>
-    <a matButton href="https://www.donationalerts.com/r/pan_suzume" target="_blank">донейшн алертс</a>
-    <button matButton>донат пей</button>
-    <button matButton>крипта</button>
-  </mat-card-actions>
-</mat-card>
-<br>
-<mat-card appearance="outlined">
-  <mat-card-header>
-    <mat-card-title>Большие планы</mat-card-title>
-    <mat-card-subtitle>написать собственный сервис по отслеживанию крипты и алерты по ней</mat-card-subtitle>
-  </mat-card-header>
-  <mat-card-actions align="end">
-  </mat-card-actions>
-</mat-card> </div>
+    <a class="donate-card streamlabs" href="https://streamlabs.com" target="_blank">
+      <div class="donate-header">Streamlabs Pay</div>
+      <div class="donate-body">Для ЕС и других стран предпочтительно(пока не работает)</div>
+    </a>
+
+    <div class="donate-card crypto">
+      <div class="donate-header">Криптовалюта</div>
+      <div class="donate-body">Без комиссии (скоро)</div>
+    </div>
+  </div>
+</div>

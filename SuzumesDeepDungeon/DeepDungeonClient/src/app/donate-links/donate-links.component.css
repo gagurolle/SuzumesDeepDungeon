@@ -1,18 +1,79 @@
-.game-list-container {
-  background-color: #121212; 
-  color: #423c3c;
-  max-width: 400;
-  min-height: 100vh;
-  padding: 32px;
-  font-family: 'Roboto', sans-serif;
-
-  background-image: url('../../assets/background.png');
-  background-repeat: repeat;
-  background-attachment: fixed;
+.donate-container {
+  color: #e0e0e0;
 }
 
-.crop {
-        width: 100%;
-        height: 300px;
-   object-position: center;
-    }
+.donate-main-card {
+  background-color: #1e1e1e;
+  border-radius: 12px;
+  padding: 32px;
+  text-align: center;
+  margin-bottom: 32px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.4);
+}
+
+.donate-title {
+  color: #bb86fc;
+  font-size: 28px;
+  margin-bottom: 16px;
+}
+
+.donate-text {
+  font-size: 18px;
+  line-height: 1.6;
+  color: #b0bec5;
+}
+
+.donate-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 24px;
+}
+
+.donate-card {
+  display: flex;
+  flex-direction: column;
+  background-color: #2a2a2a;
+  border-radius: 10px;
+  overflow: hidden;
+  text-decoration: none;
+  color: inherit;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  min-height: 180px;
+}
+
+.donate-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 6px 12px rgba(0,0,0,0.5);
+}
+
+.donate-header {
+  padding: 12px;
+  font-weight: bold;
+  text-align: center;
+  color: #fff;
+}
+
+.donate-body {
+  flex: 1;
+  padding: 20px;
+  background-color: #2b2a2a;
+  font-size: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+/* Индивидуальные цвета сервисов */
+.donation-alerts .donate-header {
+  background-color: #f58c07;
+}
+.meme-alerts .donate-header {
+  background-color: #fe4c0c;
+}
+.streamlabs .donate-header {
+  background-color: #00a86b;
+}
+.crypto .donate-header {
+  background-color: #6a5acd;
+}
