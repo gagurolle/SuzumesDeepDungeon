@@ -3,7 +3,7 @@
 }
 
 .donate-main-card {
-  background-color: #1e1e1e;
+  background-color: #2c2c2cec;
   border-radius: 12px;
   padding: 32px;
   text-align: center;
@@ -39,6 +39,7 @@
   color: inherit;
   transition: transform 0.3s ease, box-shadow 0.3s ease;
   min-height: 180px;
+  position: relative;
 }
 
 .donate-card:hover {
@@ -56,12 +57,32 @@
 .donate-body {
   flex: 1;
   padding: 20px;
+  
   background-color: #2b2a2a;
   font-size: 16px;
   display: flex;
   align-items: center;
   justify-content: center;
   text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.donate-body span {
+  position: relative;
+  z-index: 2;
+}
+
+.donate-logo {
+  position: absolute;
+  width: 100%;
+  height: auto;
+  opacity: 0.08;
+  z-index: 1;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
 }
 
 /* Индивидуальные цвета сервисов */
@@ -69,11 +90,31 @@
   background-color: #f58c07;
 }
 .meme-alerts .donate-header {
-  background-color: #fe4c0c;
+  background-color: #5548a7;
 }
 .streamlabs .donate-header {
-  background-color: #00a86b;
+  background-color: #008856;
 }
 .crypto .donate-header {
-  background-color: #6a5acd;
+  background-color: #b34c08;
 }
+
+.donate-container {
+  color: #e0e0e0;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* Индивидуальные цвета сервисов */
