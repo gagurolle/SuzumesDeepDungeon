@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity.Data;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -6,12 +7,12 @@ using SuzumesDeepDungeon.Attributes;
 using SuzumesDeepDungeon.Data;
 using SuzumesDeepDungeon.DTO;
 using SuzumesDeepDungeon.DTO.Twitch;
-using SuzumesDeepDungeon.Models.Twitch;
-using SuzumesDeepDungeon.Services;
-using System.Diagnostics;
 using SuzumesDeepDungeon.Extensions;
 using SuzumesDeepDungeon.HelpClasses;
 using SuzumesDeepDungeon.Models.Minecraft;
+using SuzumesDeepDungeon.Models.Twitch;
+using SuzumesDeepDungeon.Services;
+using System.Diagnostics;
 
 namespace SuzumesDeepDungeon.Controllers
 {
@@ -65,7 +66,7 @@ namespace SuzumesDeepDungeon.Controllers
 
             return Ok(response);
         }
-
+        [Authorize(Roles = "Admin")]
         [HttpPost("NewContent")]
         public async Task<IActionResult> InsertNewMinecraftContent([FromBody] MinecraftContentDTO minecraftContent)
         {
@@ -91,7 +92,7 @@ namespace SuzumesDeepDungeon.Controllers
             await _context.SaveChangesAsync();
             return Ok(newMinecraftContent);
         }
-
+        [Authorize(Roles = "Admin")]
         [HttpPatch("UpdateContent")]
         public async Task<IActionResult> UpdateContent([FromBody] MinecraftContentDTO minecraftContent)
         {
@@ -104,7 +105,7 @@ namespace SuzumesDeepDungeon.Controllers
             await _context.SaveChangesAsync();
             return Ok(item);
         }
-
+        [Authorize(Roles = "Admin")]
         [HttpDelete("DeleteContent")]
         public async Task<IActionResult> DeleteContent(int id)
         {
@@ -113,7 +114,7 @@ namespace SuzumesDeepDungeon.Controllers
             await _context.SaveChangesAsync();
             return Ok();
         }
-
+        [Authorize(Roles = "Admin")]
         [HttpPost("UpdateMainContent")]
         public async Task<ActionResult<MinecraftMainContent>> EditMainContent([FromBody] MinecraftMainContentDTO minecraftContent)
         {
@@ -161,7 +162,7 @@ namespace SuzumesDeepDungeon.Controllers
         [HttpGet("GetMainContent")]
         public async Task<ActionResult<MinecraftMainContentDTO>> GetMainContent()
         {
-            var minecraftMainContent = await _context.MinecraftMainContents.FirstOrDefaultAsync();
+            var minecraftMainContent = await _context.MinecraftMainContents.Include(p => p.User).FirstOrDefaultAsync();
             if (minecraftMainContent == null)
             {
                 return NotFound();
