@@ -1,53 +1,194 @@
-<div class="game-list-container background">
+<div class="background">
+  <div class="minecraft-blog-container">
+    <!-- Статическая карточка с общей информацией -->
+    <div class="deafult-card-style">
+      <div class="card-image">
+        <img mat-card-image class="crop"
+          src="../assets/minecraft-flowered-hills-with-logo.jpeg"
+          alt="Minecraft">
+      </div>
 
-  <div class="main-page-container">
+      <div class="card-content">
+        <!-- Режим просмотра -->
+        <div *ngIf="!isEditingMain">
+          <h1 class="main-title">{{ mainContent.header || 'Название сервера' }}</h1>
 
-  <mat-card appearance="outlined">
+          <div class="main-description">
+            {{ mainContent.headerInfo || 'Описание сервера' }}
+          </div>
 
-    <img mat-card-image class="crop"
-      src="https://static0.gamerantimages.com/wordpress/wp-content/uploads/2023/02/minecraft-flowered-hills-with-logo.jpg"
-      alt="Minecraft">
+          <div class="info-frame">
+            <div class="info-item">
+              <strong>Версия:</strong> {{ mainContent.version || 'Не указана' }}
+            </div>
+            <div class="info-item">
+              <strong>Мод:</strong>
+              <a *ngIf="mainContent.mod" [href]="mainContent.mod" target="_blank">Скачать</a>
+              <span *ngIf="!mainContent.mod">Не указано</span>
+            </div>
+            <div class="info-item">
+              <strong>Адрес:</strong>
+              <span class="spoiler" (click)="toggleAddressVisibility()">
+                <span *ngIf="!showAddress" class="spoiler-hidden">{{ getObfuscatedAddress() || 'Не указан'}}</span>
+                <span *ngIf="showAddress" class="spoiler-visible">{{ mainContent.adres || 'Не указан' }} <i
+                    *ngIf="mainContent.adres" class="material-icons copy-icon"
+                    (click)="$event.stopPropagation(); copyToClipboard(mainContent.adres)">
+                    content_copy </i></span>
+              </span>
+            </div>
+            <div class="info-item">
+              <strong>Discord</strong>
+              <a href="https://discord.com/invite/88SUnpA35K" target="_blank">Ссылка-приглашение</a>
+            </div>
+          </div>
+          @if (auth.isAdmin) {
+          <button class="edit-btn" (click)="toggleEditMain()">
+            <i class="material-icons">edit</i> Изменить данные
+          </button>
+          }
+        </div>
 
+        <!-- Режим редактирования -->
+        <div *ngIf="isEditingMain">
+          <h1 class="main-title">Редактирование информации</h1>
 
-    <mat-card-header>
-      <mat-card-title> МАЙНКРАФТ СЕРВЕР</mat-card-title>
-      <mat-card-subtitle>На данный момент - предрелизная версия, можно пробовать тестировать</mat-card-subtitle>
-    </mat-card-header>
-    <mat-card-actions>
-      Версия 1.21.4 - Neoforge 21.4.133 | Обязательно докачать ->
-      <a matButton href="https://drive.google.com/file/d/1UG4_rzGp03-BYbcRFfuZV4x2WI3zSuhu/view?usp=drive_link">Моды</a>
-      |||
-      Адрес сервера пока что в дискорде --><a matButton href="https://discord.com/invite/88SUnpA35K">Discord</a>
-    </mat-card-actions>
-  </mat-card>
-  <br>
-  <mat-card appearance="outlined">
-    <mat-card-header>
-      <mat-card-title>Доп: инфа</mat-card-title>
+          <div class="edit-form">
+            <div class="form-group">
+              <label>Заголовок:</label>
+              <input type="text" [(ngModel)]="mainContent.header" class="form-input" placeholder="Название сервера">
+            </div>
 
+            <div class="form-group">
+              <label>Описание:</label>
+              <textarea [(ngModel)]="mainContent.headerInfo" class="form-textarea"
+                placeholder="Описание сервера"></textarea>
+            </div>
 
-    </mat-card-header>
-    <mat-card-subtitle>Конкретные цели и планы:</mat-card-subtitle>
-    <mat-card-content>1. После полного релиза проходка будет за баллы канала</mat-card-content>
-    <mat-card-content>2. В планах построить город, хочу панельки, замки, заводы, храмы и тд</mat-card-content>
-    <mat-card-content>3. Добавление новых модов будет решаться путем предложения в дс и голосования, 80% актива должно
-      быть за</mat-card-content>
-    <mat-card-content>4. Сделать интерактив, доделать квест, паркур и тд</mat-card-content>
-    <mat-card-content>5. Надо отстроить спавн\лобби - выбрать место еще надо</mat-card-content>
-    <mat-card-content>6. Подумать про фракции, нужны ли они или можно самоорганизоваться</mat-card-content>
-    <mat-card-subtitle>Че было добавлено:</mat-card-subtitle>
-    <mat-card-content>1. Новые биомы</mat-card-content>
-    <mat-card-content>2. Приваты</mat-card-content>
-    <mat-card-content>3. времена года</mat-card-content>
-    <mat-card-content>4. Дракон теперь жестко сложный</mat-card-content>
-    <mat-card-content>5. Презервация старых построек: их можно найти рандомно + с ними будет связан
-      квест</mat-card-content>
-    <mat-card-content>6. Войсчат</mat-card-content>
-    <mat-card-content>7. !!! РЕГИСТРАЦИЯ - когда только войдете - читайте что написано красным, вне чата. Там надо будет
-      ввести командой сначала "/trigger register set password" и потом каждый раз вводить /trigger login set
-      password</mat-card-content>
-    <mat-card-actions align="end">
-    </mat-card-actions>
-  </mat-card>
-</div>
+            <div class="form-group">
+              <label>Версия:</label>
+              <input type="text" [(ngModel)]="mainContent.version" class="form-input" placeholder="Версия Minecraft">
+            </div>
+
+            <div class="form-group">
+              <label>Ссылка на мод:</label>
+              <input type="text" [(ngModel)]="mainContent.mod" class="form-input"
+                placeholder="Ссылка для скачивания мода">
+            </div>
+
+            <div class="form-group">
+              <label>Адрес:</label>
+              <input type="text" [(ngModel)]="mainContent.adres" class="form-input" placeholder="Адрес сервера">
+            </div>
+            @if (auth.isAdmin) {
+            <div class="form-actions">
+              <button class="btn btn-primary" (click)="saveMainContent()">Сохранить</button>
+              <button class="btn btn-secondary" (click)="toggleEditMain()">Отмена</button>
+            </div>
+            }
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Раздел блога -->
+    <div class="blog-section">
+      <h2 class="blog-title">Блог сервера</h2>
+
+      <!-- Кнопка добавления новой записи -->
+      @if (auth.isAdmin) {
+      <div class="add-content-btn-container">
+        <button class="add-content-btn" (click)="toggleAddContent()">
+          <i class="material-icons">add</i> Добавить запись
+        </button>
+      </div>
+      }
+      <!-- Форма добавления новой записи -->
+      <div class="add-content-form" *ngIf="isAddingContent">
+        <h3>Добавление новой записи</h3>
+
+        <div class="form-group">
+          <label>Заголовок:</label>
+          <input type="text" [(ngModel)]="newContent.header" class="form-input" placeholder="Заголовок записи" required>
+        </div>
+
+        <div class="form-group">
+          <label>Содержание:</label>
+          <textarea [(ngModel)]="newContent.content" class="form-textarea" rows="6" placeholder="Текст записи"
+            required></textarea>
+        </div>
+        @if (auth.isAdmin) {
+        <div class="form-actions">
+          <button class="btn btn-primary" (click)="addContent()"
+            [disabled]="!newContent.header || !newContent.content">Добавить</button>
+          <button class="btn btn-secondary" (click)="toggleAddContent()">Отмена</button>
+        </div>
+        }
+      </div>
+
+      <!-- Лента записей -->
+      <div class="content-cards">
+        <div class="content-card" *ngFor="let content of contents">
+          <!-- Режим просмотра -->
+          <div *ngIf="editingContentId !== content.id">
+            <div class="card-header">
+              <h2 class="content-title">{{ content.header }}</h2>
+              <div class="content-meta">
+                <span class="content-date">{{ content.created | date:'medium' }}</span>
+              </div>
+            </div>
+
+            <div class="card-body">
+              <div class="content-text" [innerHTML]="(content.content || '') | formatText"></div>
+            </div>
+            @if (auth.isAdmin) {
+            <div class="card-actions">
+              <button class="action-btn edit" (click)="startEditContent(content)">
+                <i class="material-icons">edit</i> Изменить
+              </button>
+              <button class="action-btn delete" (click)="deleteContent(content.id!)">
+                <i class="material-icons">delete</i> Удалить
+              </button>
+            </div>
+            }
+          </div>
+
+          <!-- Режим редактирования -->
+          <div *ngIf="editingContentId === content.id && editContentData">
+            <div class="edit-form">
+              <div class="form-group">
+                <label>Заголовок:</label>
+                <input type="text" [(ngModel)]="editContentData.header" class="form-input"
+                  placeholder="Заголовок записи">
+              </div>
+
+              <div class="form-group">
+                <label>Содержание:</label>
+                <textarea [(ngModel)]="editContentData.content" class="form-textarea" rows="6"
+                  placeholder="Текст записи"></textarea>
+              </div>
+
+              <div class="form-actions">
+                <button class="btn btn-primary" (click)="saveContent()">Сохранить</button>
+                <button class="btn btn-secondary" (click)="cancelEditContent()">Отмена</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Сообщение, если записей нет -->
+        <div class="empty-state" *ngIf="contents.length === 0">
+          <i class="material-icons">article</i>
+          <p>Пока нет записей в блоге. Будьте первым, кто добавит запись!</p>
+        </div>
+      </div>
+
+      <!-- Пагинация -->
+      <div class="pagination" *ngIf="totalPages > 1">
+        <button class="page-btn" [class.active]="currentPage === i + 1"
+          *ngFor="let page of getPagesArray(); let i = index" (click)="changePage(i + 1)">
+          {{ i + 1 }}
+        </button>
+      </div>
+    </div>
+  </div>
 </div>

@@ -4,9 +4,11 @@
     <section class="hero">
        <h1 class="page-title"><img src="https://cdn.7tv.app/emote/01J88SYDS00009MAMR2DZMGAFZ/1x.avif" alt="0">Добро пожаловать на сайт pan_suzume<img src="https://cdn.7tv.app/emote/01J88SYDS00009MAMR2DZMGAFZ/1x.avif" alt="0"></h1>
         <p>Это мой мини-сайт, связанный с моей стримерской деятельностью и не только.</p>
-        <a class="menu-button" href="https://www.twitch.tv/pan_suzume">TWICH</a>
+        <a class="menu-button" href="https://www.twitch.tv/pan_suzume" target="_blank">TWITCH</a>
+        <a class="menu-button" href="https://www.youtube.com/@pansuzume" target="_blank">YOUTUBE</a>
+        <a class="menu-button" href="https://discord.com/invite/88SUnpA35K" target="_blank">DISCORD</a>
+        <a class="menu-button" href="https://t.me/pan_suzume" target="_blank">TG</a>
     </section>
-
     <!-- Особенности -->
     <section class="features">
         <div class="feature-card">
@@ -29,6 +31,32 @@
         </div>
     </section>
 
+    <div class="twitch-section hero">
+  <h2 class="twitch-title">Twitch трансляции</h2>
+  
+  <div class="twitch-container">
+    <div class="twitch-option">
+      <h3>Прямая трансляция</h3>
+      <div class="twitch-preview">
+        <iframe
+          [src]="streamUrl | safeUrl"
+          allowfullscreen>
+        </iframe>
+      </div>
+    </div>
+    
+    <div class="twitch-option">
+      <h3>Twitch клип</h3>
+      <div class="twitch-preview">
+        <iframe
+          [src]="clipUrl | safeUrl"
+          allowfullscreen>
+        </iframe>
+      </div>
+      <button class="twitch-btn" (click)="getRandomClip()">Рандомный клип</button>
+    </div>
+  </div>
+</div>
     <!-- Пример кода -->
     <section class="code-section">
         <h2 class="section-title">ЕЩЕ НЕМНОГО ИНФОРМАЦИИ</h2>
@@ -63,10 +91,10 @@
     <section class="after-code-section">
         <h2 class="section-title">Если хотите помощи в настройке Наград, Команд и Интеграций TWITCH (Streamer.bot)</h2>
         <h2 class="section-title">Или подобный сайт ИЛИ любая автомазицаия</h2>
-        <p>Пишите на почту: </p><h2>deepdungeon.fun@ud.me</h2><p> или хз ищите по ссылкам</p>
+        <p>Пишите на почту: </p><h2>pansuzumi@gmail.com</h2><p> или хз ищите по ссылкам</p>
     </section>
     <!-- Соцсети -->
-    <section class="social-section">
+    <!-- <section class="social-section">
         <h2 class="section-title">Ссылки</h2>
         <div class="social-icons">
             <a href="#" class="social-icon"><i class="fab fa-vk"></i></a>
@@ -75,7 +103,7 @@
             <a href="#" class="social-icon"><i class="fab fa-youtube"></i></a>
             <a href="#" class="social-icon"><i class="fab fa-twitch"></i></a>
         </div>
-    </section>
+    </section> -->
 </div>
 </div>
 

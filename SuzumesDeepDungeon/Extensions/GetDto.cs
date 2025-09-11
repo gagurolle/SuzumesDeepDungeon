@@ -1,5 +1,6 @@
 ﻿using SuzumesDeepDungeon.DTO;
 using SuzumesDeepDungeon.Models;
+using SuzumesDeepDungeon.Models.Minecraft;
 using SuzumesDeepDungeon.Services.Rawg_Data;
 
 namespace SuzumesDeepDungeon.Extensions
@@ -127,6 +128,35 @@ namespace SuzumesDeepDungeon.Extensions
                 UserId = api.UserId,
                 Created = api.Created,
                 IsActive = api.IsActive,
+            };
+        }
+
+        public static MinecraftContentDTO GetDTO(this MinecraftContent content)
+        {
+            return new MinecraftContentDTO
+            {
+                Id = content.Id,
+                Content = content.Content,
+                Header = content.Header,
+                Created = content.Created,
+                Updated = content.Updated,
+                User = content.User.GetDTO(),
+            };
+        }
+        
+        public static MinecraftMainContentDTO GetDTO(this MinecraftMainContent content)
+        {
+            return new MinecraftMainContentDTO
+            {
+                Id = content.Id,
+                Header = content.Header,
+                HeaderInfo = content.HeaderInfo,
+                Adres  = content.Adres,
+                Version = content.Version,
+                Mod = content.Mod,
+                Created = content.Created,
+                Updated = content.Updated,
+                User = content.User.GetDTO(),
             };
         }
     }
