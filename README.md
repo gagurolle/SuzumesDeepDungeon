@@ -11,8 +11,8 @@ This is my passion project: a web application designed to support my streaming c
 - Nginx (reverse proxy)
 - Docker (containerization)
 - GitHub Actions (CI/CD)
-- Cloudflare (SSL/TLS termination)
-- Domain: [https://deepdungeon.fun](https://deepdungeon.fun) ($2 registration)
+- Cloudflare (SSL/TLS termination)https://unstoppabledomains.com/
+- Domain: [https://deepdungeon.fun](https://deepdungeon.fun) ($2 registration on [https://unstoppabledomains.com](https://unstoppabledomains.com))
 
 ## ✨ Features
 
