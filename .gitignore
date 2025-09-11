@@ -419,3 +419,5 @@ dotnet.ps1
 SuzumesDeepDungeon/DeepDungeonClient/public/favicon1.ico
 /SuzumesDeepDungeon/appsettings.Development.json
 /SuzumesDeepDungeon/DeepDungeonClient/.vscode
+/SuzumesDeepDungeon/game1.csv
+/SuzumesDeepDungeon/games.csv
