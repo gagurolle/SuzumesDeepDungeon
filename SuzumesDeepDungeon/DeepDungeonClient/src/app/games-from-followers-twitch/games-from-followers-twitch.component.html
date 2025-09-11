@@ -1,27 +1,27 @@
 
 <div class="background">
   <div class="main-page-container">
+    <div class="deafult-card-style">
     <!-- Герой-секция -->
     <section class="hero">
       <h1 class="page-title"><img src="https://cdn.7tv.app/emote/01F9V0VY58000AJG70JGM8SMF1/2x.avif" alt="0">Twitch Игры от пользователей<img src="https://cdn.7tv.app/emote/01HD92YYE8000DW97PFPF49BZG/1x.avif" alt="0"></h1>
-      <p>Здесь представлен список игр, которые добавили через команды</p>
+      <p>Когда вы на стриме, с  помощью награды ( за баллы канала ) можно добавить в этот список игру. То есть вы советуете игры, они тут сохраняются, а я потом делаю выводы - играть мне во что-то из этого или нет</p>
     </section>
+    </div>
 
     <!-- Таблица действий -->
     <section class="code-section">
-      <h2 class="section-title">Actions Log</h2>
-      
       <div class="table-container">
         <table class="actions-table">
           <thead>
             <tr>
               <th>#</th>
-              <th>User</th>
-              <th>Action</th>
-              <th>Type</th>
-              <th>Command/Reward</th>
-              <th>Cost</th>
-              <th>Data</th>
+              <th>Пользователь</th>
+              <!-- <th>Событие</th> -->
+              <th>Тип</th>
+              <th>Команда/награда</th>
+              <th>Стоимость</th>
+              <th>Данные</th>
             </tr>
           </thead>
           <tbody>
@@ -36,7 +36,7 @@
                   <span class="user-type">{{ action.user.userType || 'Viewer' }}</span>
                 </div>
               </td>
-              <td class="action-name">{{ action.systemAction?.actionName || 'N/A' }}</td>
+              <!-- <td class="action-name">{{ action.systemAction?.actionName || 'N/A' }}</td> -->
               <td class="action-type">
                 <span class="type-badge" [class.reward]="action.rewardRedemption" [class.command]="action.commandTriggered">
                   {{ action.rewardRedemption ? 'Reward' : (action.commandTriggered ? 'Command' : 'Unknown') }}
@@ -62,25 +62,8 @@
 
     <!-- Дополнительная информация -->
     <section class="after-code-section">
-      <h2 class="section-title">About Actions Tracking</h2>
-      <p class="section-title">This log shows all tracked events from your Twitch channel including reward redemptions, command usage, and other system actions.</p>
+      <h2 class="section-title">Что тут происходит</h2>
+      <p class="section-title">Интеграция со Streamer.bot | Когда подписчик забирает награду - это обрабатывает Streamer.Bot и делает запрос к сайту по api ключу и добавляет информацию о том, какая награда и кем была тригернута.</p>
     </section>
   </div>
 </div>
-
-<div id="twitch-embed"></div>
-
-<script src="https://embed.twitch.tv/embed/v1.js"></script>
-<script>
-  new Twitch.Embed("twitch-embed", {
-    width: 300,
-    height: 300,
-    channel: "pan_suzume",
-    layout: "video",
-    autoplay: false
-  });
-</script>
-
-<footer>
-  <p>Twitch Actions Log &copy; 2025</p>
-</footer>
