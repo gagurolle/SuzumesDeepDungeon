@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, Inject, OnInit, PLATFORM_ID } from '@angular/core';
 import { SafeHtml } from '@angular/platform-browser';
 import { SafeUrlPipe } from "../Pipes/safe-url.pipe";
 import { CommonModule } from '@angular/common';
@@ -15,8 +15,40 @@ import { FormsModule } from '@angular/forms';
 export class MainPageComponent implements OnInit {
 
   iterator: number = 0;
+  domain: string = '';
+  channelName: string = 'pan_suzume';
+  clipId: string = 'DirtyCrepuscularMallardRlyTho-wCVRyNm8RTBEbCJy';
+  streamUrl: string = '';
+  clipUrl: string = '';
+
+
+
+  clipsId: string[] = [
+    "AssiduousYawningRedpandaHassanChop-ZMK-VX5etf4TxYDO", 
+    "DirtyCrepuscularMallardRlyTho-wCVRyNm8RTBEbCJy",
+    "RockyBetterKleeDxCat-bBOdomh4LHQtjtTp",
+    "CuriousPatientWatercressDeIlluminati-DB_shPsKn1ECR_Dm",
+    "StrangeHealthyKleeSMOrc-oyv3lkhKlxVXltwU",
+    "EmpathicTentativeMallardDancingBaby-VFrLj9P6sbo3ZNt_",
+    "TallWittySpiderChefFrank-jUOkopbCDKC6S4Ke",
+    "PunchyExuberantPresidentOSsloth-IX8M03qR0qsZh3-i",
+    "CleanIgnorantMeerkatWow-cxaX7aV2HWkx2zfQ",
+    "AnimatedBrightPoultryCoolCat-oqZm6Od2QM_gSSCn",
+    "DirtyBillowingSkunkBabyRage-LUY3nhG56Mgjt1Vp",
+    "SaltyFaintGarlicOneHand-8rOjrzeMhz9o1heX",
+    "JollyDeafGoshawkOhMyDog-2dbhpSdsA7CewDaD",
+    "PoliteBraveKleeHeyGirl-_xWtcd3U5i21USPN",
+    "WanderingShySrirachaCeilingCat-LI_R6NXTuY7iptQx",
+    "WrongBenevolentTitanSeemsGood-JaTIXYKPqviflQtB",
+    "EntertainingGiantDunlinHeyGirl-64hIvuQxm79B2vKM",
+    "EasyLightPorcupinePanicBasket-GuuncP_UA1-oQeCR",
+    "DeadCautiousMangoGingerPower--d6Uy-yoTYzjDuuH"
+  ]
+  
+constructor(@Inject(PLATFORM_ID) private platformId: any) { }
 
   ngOnInit(): void {
+      this.domain = window.location.hostname;
     this.updateStream();
     this.getRandomClip()
     //this.updateClip();
@@ -57,18 +89,15 @@ export class MainPageComponent implements OnInit {
     alert(message);
   }
 
-  channelName: string = 'pan_suzume';
-  clipId: string = 'DirtyCrepuscularMallardRlyTho-wCVRyNm8RTBEbCJy';
-  streamUrl: string = '';
-  clipUrl: string = '';
+  
 
 
   updateStream(): void {
-    this.streamUrl = `https://player.twitch.tv/?channel=${this.channelName}&parent=localhost&autoplay=false`;
+    this.streamUrl = `https://player.twitch.tv/?channel=${this.channelName}&parent=${this.domain}&autoplay=false`;
   }
 
   updateClip(): void {
-    this.clipUrl = `https://clips.twitch.tv/embed?clip=${this.clipId}&parent=localhost&autoplay=false`;
+    this.clipUrl = `https://clips.twitch.tv/embed?clip=${this.clipId}&parent=${this.domain}&autoplay=false`;
   }
 
   loadStream(): void {
@@ -79,26 +108,7 @@ export class MainPageComponent implements OnInit {
     this.updateClip();
   }
 
-  clipsId: string[] = ["AssiduousYawningRedpandaHassanChop-ZMK-VX5etf4TxYDO", "DirtyCrepuscularMallardRlyTho-wCVRyNm8RTBEbCJy",
-    "RockyBetterKleeDxCat-bBOdomh4LHQtjtTp",
-    "CuriousPatientWatercressDeIlluminati-DB_shPsKn1ECR_Dm",
-    "StrangeHealthyKleeSMOrc-oyv3lkhKlxVXltwU",
-    "EmpathicTentativeMallardDancingBaby-VFrLj9P6sbo3ZNt_",
-    "TallWittySpiderChefFrank-jUOkopbCDKC6S4Ke",
-    "PunchyExuberantPresidentOSsloth-IX8M03qR0qsZh3-i",
-    "CleanIgnorantMeerkatWow-cxaX7aV2HWkx2zfQ",
-    "AnimatedBrightPoultryCoolCat-oqZm6Od2QM_gSSCn",
-    "DirtyBillowingSkunkBabyRage-LUY3nhG56Mgjt1Vp",
-    "SaltyFaintGarlicOneHand-8rOjrzeMhz9o1heX",
-    "JollyDeafGoshawkOhMyDog-2dbhpSdsA7CewDaD",
-    "PoliteBraveKleeHeyGirl-_xWtcd3U5i21USPN",
-    "WanderingShySrirachaCeilingCat-LI_R6NXTuY7iptQx",
-    "WrongBenevolentTitanSeemsGood-JaTIXYKPqviflQtB",
-    "EntertainingGiantDunlinHeyGirl-64hIvuQxm79B2vKM",
-    "EasyLightPorcupinePanicBasket-GuuncP_UA1-oQeCR",
-    "DeadCautiousMangoGingerPower--d6Uy-yoTYzjDuuH"
-
-  ]
+  
   getRandomClip() {
 
     var clipsLength = this.clipsId.length;

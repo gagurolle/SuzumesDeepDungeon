@@ -13,6 +13,7 @@ using SuzumesDeepDungeon.Models.Minecraft;
 using SuzumesDeepDungeon.Models.Twitch;
 using SuzumesDeepDungeon.Services;
 using System.Diagnostics;
+using System.Globalization;
 
 namespace SuzumesDeepDungeon.Controllers
 {
@@ -43,8 +44,9 @@ namespace SuzumesDeepDungeon.Controllers
             
             var query = _context.MinecraftContents
                 .Include(u => u.User)
-                .AsQueryable();
-            
+                .AsQueryable().OrderByDescending(g => g.Created); ;
+
+
             var totalCount = await query.CountAsync();
             var withoutPaging = await query.ToListAsync();
 
