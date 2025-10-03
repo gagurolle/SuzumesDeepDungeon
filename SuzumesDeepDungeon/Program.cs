@@ -6,6 +6,7 @@ using SuzumesDeepDungeon.Services;
 using SuzumesDeepDungeon.Services.CSVLoad;
 using System.Text;
 using System.Text.Json.Serialization;
+using SuzumesDeepDungeon.Hub;
 
 AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
 
@@ -19,10 +20,11 @@ builder.Services.AddSwaggerGen();
 
 RawgApi.rawgApi = builder.Configuration["rawgAPI"] ?? "";
 builder.Services.AddCors(options => {
-    options.AddPolicy("AllowAll", policy => {
-        policy.AllowAnyOrigin()
-              .AllowAnyMethod()
-              .AllowAnyHeader();
+    options.AddPolicy("AllowAngularApp", policy => {
+        policy.WithOrigins("https://localhost:4200") // URL РІР°С€РµРіРѕ Angular РїСЂРёР»РѕР¶РµРЅРёСЏ
+            .AllowAnyMethod()
+            .AllowAnyHeader()
+            .AllowCredentials(); // Р’Р°Р¶РЅРѕ РґР»СЏ SignalR
     });
 });
 
@@ -46,7 +48,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]))
         };
     });
-
+builder.Services.AddSignalR();
 builder.Services.AddAuthorization();
 builder.Services.AddScoped<SteamApi>();
 builder.Services.AddScoped<RawgApi>();
@@ -66,8 +68,8 @@ using (var scope = app.Services.CreateScope())
     var services = scope.ServiceProvider;
     try
     {
-        var context = services.GetRequiredService<DatabaseContext>(); // Замените на ваш DbContext
-        context.Database.Migrate(); // Применяем миграции
+        var context = services.GetRequiredService<DatabaseContext>(); // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅ DbContext
+        context.Database.Migrate(); // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
         Console.WriteLine("Migrations applied successfully.");
     }
     catch (Exception ex)
@@ -81,14 +83,16 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
-app.UseCors("AllowAll");
+app.UseCors("AllowAngularApp");
 
 //app.UseHttpsRedirection();
-
 app.UseAuthorization();
+
 
 app.MapControllers();
 
 app.MapGet("/api/health", () => "Backend is healthy");
+
+app.MapHub<ChatHub>("/chatHub");
 
 app.Run();

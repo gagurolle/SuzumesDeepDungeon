@@ -29,6 +29,7 @@
     "@angular/material": "^20.1.4",
     "@angular/platform-browser": "^20.1.0",
     "@angular/router": "^20.1.0",
+    "@microsoft/signalr": "^9.0.6",
     "@types/jwt-decode": "^2.2.1",
     "express": "^5.1.0",
     "jwt-decode": "^4.0.0",

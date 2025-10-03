@@ -7,6 +7,7 @@ import { MinecraftServerComponent } from './minecraft-server/minecraft-server.co
 import { DonateLinksComponent } from './donate-links/donate-links.component';
 import { MainPageComponent } from './main-page/main-page.component';
 import { GamesFromFollowersTwitchComponent } from './games-from-followers-twitch/games-from-followers-twitch.component';
+import { ChatComponent } from './chat/chat.component';
 
 
 
@@ -26,5 +27,6 @@ export const routes: Routes = [
   { path: 'profile', component: ProfileComponent, canActivate: [AuthGuard] },
   { path: 'minecraft', component: MinecraftServerComponent },
   { path: 'donate-link', component: DonateLinksComponent },
-  { path: 'twitch/gamelist', component: GamesFromFollowersTwitchComponent }
+  { path: 'twitch/gamelist', component: GamesFromFollowersTwitchComponent },
+  {path: 'chat', component: ChatComponent},
 ];
