@@ -31,10 +31,11 @@ export class GameService {
       });
     }
 
-    return this.http.get<any>(this.apiUrl, { params: httpParams }).pipe(
+    return this.http.get<PagedResponse<GameRankDTO>>(this.apiUrl, { params: httpParams }).pipe(
       map(response => ({
+        
         items: response.items,
-        page: response,
+        page: response.page,
         pageSize: response.pageSize,
         totalCount: response.totalCount,
         totalPages: response.totalPages

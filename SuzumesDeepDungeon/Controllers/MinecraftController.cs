@@ -55,7 +55,7 @@ namespace SuzumesDeepDungeon.Controllers
                 .Take(pageSize)
                 .ToListAsync();
             
-            var result = items.Select(x => x.GetDTO());
+            var result = items.Select(x => x.GetDTO()).ToList();
             
             var response = new PagedResponse<MinecraftContentDTO>
             {
