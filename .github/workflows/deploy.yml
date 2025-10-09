@@ -1,4 +1,4 @@
-name: Production Deployment1
+name: Production Deployment
 
 on:
   push:
@@ -31,11 +31,7 @@ jobs:
       run: |
         # Устанавливаем Node.js и зависимости в рабочей директории
         npm install -g npm@latest
-        if (Test-Path package-lock.json) {
-            npm ci
-        } else {
-            npm install
-        }
+        npm install
         npm run build -- --configuration production
 
     - name: Prepare production environment
