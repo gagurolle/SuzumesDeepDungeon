@@ -131,22 +131,11 @@ export class GameListComponent implements OnInit, OnDestroy {
 
     this.cdr.detectChanges();
   }
-  onSearchInput(event: Event): void {
-    const input = event.target as HTMLInputElement;
-    const value = input.value.trim();
-
-
-    if (value.length < 2) {
-      if (this.searchName) {
-        this.searchName = '';
-        this.loadGames();
-      }
-      return;
-    }
-
-
-    this.searchSubject.next(value);
-  }
+ onSearchInput(event: Event): void {
+  const input = event.target as HTMLInputElement;
+  const value = input.value.trim();
+  this.searchSubject.next(value);
+}
 
   openAddForm(): void {
     this.currentGame = null;
