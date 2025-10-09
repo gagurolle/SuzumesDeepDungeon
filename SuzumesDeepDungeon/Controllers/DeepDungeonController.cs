@@ -1,7 +1,9 @@
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ViewEngines;
 using Microsoft.EntityFrameworkCore;
+using StackExchange.Redis;
 using SuzumesDeepDungeon.Data;
 using SuzumesDeepDungeon.DTO;
 using SuzumesDeepDungeon.Extensions;
@@ -9,26 +11,47 @@ using SuzumesDeepDungeon.HelpClasses;
 using SuzumesDeepDungeon.Models;
 using SuzumesDeepDungeon.Services;
 using SuzumesDeepDungeon.Services.Rawg_Data;
+using System.Text.Json;
 
 namespace SuzumesDeepDungeon.Controllers;
-
 [ApiController]
 [Route("api/[controller]")]
 public class DeepDungeon : ControllerBase
 {
     private readonly ILogger<DeepDungeon> _logger;
     private readonly DatabaseContext _context;
+    private readonly IConnectionMultiplexer _redis;
+    private readonly IDatabase _cache;
+    private readonly TimeSpan _cacheExpiry = TimeSpan.FromHours(24);
 
-    public DeepDungeon(ILogger<DeepDungeon> logger, DatabaseContext context)
+    public DeepDungeon(ILogger<DeepDungeon> logger, DatabaseContext context, IConnectionMultiplexer redis)
     {
         _logger = logger;
         _context = context;
+        _redis = redis;
+        _cache = _redis.GetDatabase();
+
     }
 
     [HttpGet("GetGameRank")]
     public async Task<ActionResult<GameRankDTO>> GetGameRank(
     [FromQuery] int Id)
     {
+        var cacheKey = $"GameRank:{Id}";
+        try
+        {
+
+            string cachedData = await _cache.StringGetAsync(cacheKey);
+            if (!string.IsNullOrEmpty(cachedData))
+            {
+                _logger.LogInformation($"returned cached data for gameRank {Id}");
+                return Ok(JsonSerializer.Deserialize<GameRankDTO>(cachedData));
+            }
+        }
+        catch(Exception e)
+        {
+            _logger.LogWarning("Something went wrong with Redis Caching - " + e.Message);
+        }
 
         var query = await _context.GameRanks
             .Include(x => x.Stores)
@@ -44,12 +67,17 @@ public class DeepDungeon : ControllerBase
         }
         var result = query.GetDTO();
 
+        string jsonResult = JsonSerializer.Serialize(result);
+
+        // 3. Сохраняем результат запроса в кеш
+        await _cache.StringSetAsync(cacheKey, jsonResult, _cacheExpiry);
+
         return Ok(result);
     }
 
     
     [HttpGet(Name = "GetGameRanks")]
-    public async Task<ActionResult<PagedResponse<IEnumerable<GameRankDTO>>>> GetGameRanks(
+    public async Task<ActionResult<PagedResponse<List<GameRankDTO>>>> GetGameRanks(
     [FromQuery] string? status = null,      
     [FromQuery] int? minRate = null,        
     [FromQuery] int? maxRate = null,        
@@ -62,7 +90,32 @@ public class DeepDungeon : ControllerBase
     [FromQuery] int page = 1,               
     [FromQuery] int pageSize = 30)
     {
-        
+
+        var cacheKey = GenerateGameRanksCacheKey(status, minRate, maxRate, name, tags, sortBy, created, updated, desc, page, pageSize);
+        try
+        {
+            
+
+            string cachedData = await _cache.StringGetAsync(cacheKey);
+            if (!string.IsNullOrEmpty(cachedData))
+            {
+                _logger.LogInformation($"Returning cached game ranks list for key: {cacheKey}");
+                var optionsf = new JsonSerializerOptions
+                {
+                    PropertyNameCaseInsensitive = false,
+                    PropertyNamingPolicy = JsonNamingPolicy.CamelCase
+                };
+
+
+                var cachedResponse = JsonSerializer.Deserialize<PagedResponse<GameRankDTO>>(cachedData, optionsf);
+                return Ok(cachedData);
+            }
+        }
+        catch(Exception e)
+        {
+            _logger.LogWarning("Something went wrong with Redis Caching - " + e.Message);
+        }
+
         if (page < 1) page = 1;
         if (pageSize < 1) pageSize = 30;
         if (pageSize > 100) pageSize = 100;
@@ -133,8 +186,8 @@ public class DeepDungeon : ControllerBase
             .Skip((page - 1) * pageSize)
             .Take(pageSize)
             .ToListAsync();
-        
-        var result = items.Select(x => x.GetDTO());
+
+        var result = items.Select(x => x.GetDTO()).ToList();
         
         var response = new PagedResponse<GameRankDTO>
         {
@@ -144,6 +197,18 @@ public class DeepDungeon : ControllerBase
             TotalCount = totalCount,
             TotalPages = (int)Math.Ceiling(totalCount / (double)pageSize)
         };
+
+        var options = new JsonSerializerOptions
+        {
+            PropertyNameCaseInsensitive = false,
+            PropertyNamingPolicy = JsonNamingPolicy.CamelCase
+        };
+
+        var jsonResponse = JsonSerializer.Serialize(response, options);
+        await _cache.StringSetAsync(cacheKey, jsonResponse, _cacheExpiry);
+
+        _logger.LogInformation($"Game ranks list cached with key: {cacheKey}");
+
 
         return Ok(response);
     }
@@ -161,6 +226,10 @@ public class DeepDungeon : ControllerBase
 
         _context.GameRanks.Remove(gameRank);
         await _context.SaveChangesAsync();
+
+        await InvalidateGameRankCacheAsync(id);
+        _logger.LogInformation($"GameRank с ID {id} удален. Соответствующий кеш сброшен.");
+
         return NoContent();
     }
 
@@ -270,7 +339,9 @@ public class DeepDungeon : ControllerBase
         _context.GameRanks.Add(gameRank);
         await _context.SaveChangesAsync();
 
-        _logger.LogInformation($"GameRank with name {newGameRank.Name} added successfully with ID {gameRank.Id}.");
+        await InvalidateGameRanksCacheAsync();
+        _logger.LogInformation($"GameRank with name {newGameRank.Name} added successfully with ID {gameRank.Id}. Cache invalidated.");
+
         return CreatedAtAction(nameof(GetGameRank), new { id = gameRank.Id }, gameRank.GetDTO());
 
     }
@@ -401,6 +472,10 @@ public class DeepDungeon : ControllerBase
                 await _context.SaveChangesAsync();
                 await transaction.CommitAsync();
                 _logger.LogInformation($"GameRank with ID {id} updated successfully.");
+
+                await InvalidateGameRankCacheAsync(id);
+
+                _logger.LogInformation($"GameRank with ID {id} updated successfully. Cache invalidated.");
             }
             catch
             {
@@ -420,4 +495,50 @@ public class DeepDungeon : ControllerBase
 
         return Ok(existingGameRank.GetDTO());
     }
+
+
+    private string GenerateGameRanksCacheKey(
+    string? status, int? minRate, int? maxRate, string? name,
+    string? tags, string? sortBy, DateTime? created, DateTime? updated,
+    bool desc, int page, int pageSize)
+    {
+        var keyParts = new List<string> { "GameRanks" };
+
+        if (!string.IsNullOrEmpty(status)) keyParts.Add($"status:{status}");
+        if (minRate.HasValue) keyParts.Add($"minRate:{minRate}");
+        if (maxRate.HasValue) keyParts.Add($"maxRate:{maxRate}");
+        if (!string.IsNullOrEmpty(name)) keyParts.Add($"name:{name.ToLower()}");
+        if (!string.IsNullOrEmpty(tags)) keyParts.Add($"tags:{tags.ToLower()}");
+        if (!string.IsNullOrEmpty(sortBy)) keyParts.Add($"sortBy:{sortBy.ToLower()}");
+        if (created.HasValue) keyParts.Add($"created:{created:yyyy-MM-dd}");
+        if (updated.HasValue) keyParts.Add($"updated:{updated:yyyy-MM-dd}");
+        keyParts.Add($"desc:{desc}");
+        keyParts.Add($"page:{page}");
+        keyParts.Add($"pageSize:{pageSize}");
+
+        return string.Join("|", keyParts);
+    }
+
+    // Метод для инвалидации всех кешей списков игр (вызывается в POST, PATCH, DELETE)
+    private async Task InvalidateGameRanksCacheAsync()
+    {
+        var server = _redis.GetServer(_redis.GetEndPoints().First());
+        var keys = server.Keys(pattern: "GameRanks*").ToArray();
+
+        if (keys.Any())
+        {
+            await _cache.KeyDeleteAsync(keys);
+            _logger.LogInformation($"Invalidated {keys.Length} game ranks cache entries");
+        }
+    }
+
+
+
+    private async Task InvalidateGameRankCacheAsync(int gameRankId)
+    {
+        var cacheKey = $"GameRank:{gameRankId}";
+        await _cache.KeyDeleteAsync(cacheKey);
+        await InvalidateGameRanksCacheAsync();
+    }
+
 }

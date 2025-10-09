@@ -20,8 +20,8 @@
       [(ngModel)]="newMessage" 
       (keyup.enter)="sendMessage()" 
       placeholder="Введите сообщение..."
-      [disabled]="!isConnected">
-    <button (click)="sendMessage()" [disabled]="!isConnected || !newMessage.trim()">
+  >
+    <button (click)="sendMessage()">
       Отправить
     </button>
   </div>

@@ -1,5 +1,5 @@
 # 1. Базовый образ для сборки и публикации
-FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
+FROM mcr.microsoft.com/dotnet/sdk:9.0 AS build
 WORKDIR /src
 
 # Копируем только файл проекта для ускорения restore
@@ -10,7 +10,7 @@ RUN dotnet restore "./SuzumesDeepDungeon.csproj"
 COPY . .
 
 # Устанавливаем инструмент dotnet-ef
-RUN dotnet tool install --global dotnet-ef --version 8.*
+RUN dotnet tool install --global dotnet-ef --version 9.*
 
 # Удаляем папку фронтенда, чтобы она не попала в финальный образ
 RUN rm -rf DeepDungeonClient
@@ -20,7 +20,7 @@ ARG BUILD_CONFIGURATION=Release
 RUN dotnet publish "SuzumesDeepDungeon.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
 
 # 2. Финальный образ для запуска приложения
-FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS final
+FROM mcr.microsoft.com/dotnet/aspnet:9.0 AS final
 WORKDIR /app
 
 # Копируем entrypoint скрипт и настраиваем права ДО смены пользователя

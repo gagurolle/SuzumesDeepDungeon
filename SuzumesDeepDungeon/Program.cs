@@ -1,17 +1,33 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using StackExchange.Redis;
 using SuzumesDeepDungeon.Data;
+using SuzumesDeepDungeon.Hub;
 using SuzumesDeepDungeon.Services;
 using SuzumesDeepDungeon.Services.CSVLoad;
 using System.Text;
 using System.Text.Json.Serialization;
-using SuzumesDeepDungeon.Hub;
 
 AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
 
 var builder = WebApplication.CreateBuilder(args);
 
+
+
+string redisConnectionString = builder.Configuration.GetConnectionString("RedisConnection");
+builder.Services.AddSingleton<IConnectionMultiplexer>(ConnectionMultiplexer.Connect(redisConnectionString));
+
+//Console.WriteLine("THIS IS A CONNECTION STRING FOR REDIS   " + redisConnectionString);
+
+builder.Services.AddCors(options => {
+    options.AddPolicy("AllowAngularApp", policy => {
+        policy.WithOrigins("http://localhost:4200") 
+            .AllowAnyMethod()
+            .AllowAnyHeader()
+            .AllowCredentials(); 
+    });
+});
 builder.Configuration.AddEnvironmentVariables();
 
 builder.Services.AddControllers();
@@ -19,14 +35,7 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 RawgApi.rawgApi = builder.Configuration["rawgAPI"] ?? "";
-builder.Services.AddCors(options => {
-    options.AddPolicy("AllowAngularApp", policy => {
-        policy.WithOrigins("https://localhost:4200") // URL вашего Angular приложения
-            .AllowAnyMethod()
-            .AllowAnyHeader()
-            .AllowCredentials(); // Важно для SignalR
-    });
-});
+
 
 builder.Services.AddControllers()
     .AddJsonOptions(options =>
@@ -48,7 +57,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]))
         };
     });
-builder.Services.AddSignalR();
+//builder.Services.AddSignalR();
 builder.Services.AddAuthorization();
 builder.Services.AddScoped<SteamApi>();
 builder.Services.AddScoped<RawgApi>();
@@ -93,6 +102,6 @@ app.MapControllers();
 
 app.MapGet("/api/health", () => "Backend is healthy");
 
-app.MapHub<ChatHub>("/chatHub");
+//app.MapHub<ChatHub>("/chatHub");
 
 app.Run();
