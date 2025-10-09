@@ -144,6 +144,7 @@ export class GameListComponent implements OnInit, OnDestroy {
       return;
     }
 
+
     this.searchSubject.next(value);
   }
 

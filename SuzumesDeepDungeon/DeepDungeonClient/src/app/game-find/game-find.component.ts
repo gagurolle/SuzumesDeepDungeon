@@ -34,7 +34,7 @@ export class GameFindComponent {
     this.games = [];
 
     try {
-      // Используем setTimeout для гарантированного обновления UI перед долгой операцией
+      
       await new Promise(resolve => setTimeout(resolve, 0));
 
       const data = await this.findService.getGames(this.gameName).toPromise();
