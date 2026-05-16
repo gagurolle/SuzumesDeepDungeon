@@ -5,6 +5,10 @@
        font-family: 'Roboto', sans-serif;
    }
 
+   .material-icons {
+       font-family: 'Material Icons' !important;
+   }
+
    body {
        background-color: #121212;
        color: #e0e0e0;
@@ -92,6 +96,8 @@
        text-decoration: none;
        transition: background-color 0.3s;
        cursor: pointer;
+       overflow: hidden;
+       flex-shrink: 0;
    }
 
    .profile-link:hover {

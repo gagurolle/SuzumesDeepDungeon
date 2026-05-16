@@ -1,96 +1,97 @@
-/* Глобальные стили для Angular Material компонентов */
-app-api-form .mat-slide-toggle .mat-slide-toggle-bar {
-  background-color: #333 !important;
-  border: 1px solid #444 !important;
-}
-
-app-api-form .mat-slide-toggle.mat-checked .mat-slide-toggle-bar {
-  background-color: rgba(187, 134, 252, 0.3) !important;
-  border: 1px solid #bb86fc !important;
-}
-
-app-api-form .mat-slide-toggle .mat-slide-toggle-thumb {
-  background-color: #e0e0e0 !important;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3) !important;
-}
-
-app-api-form .mat-slide-toggle.mat-checked .mat-slide-toggle-thumb {
-  background-color: #bb86fc !important;
-}
-
-app-api-form .mat-slide-toggle .mat-slide-toggle-content {
-  color: #e0e0e0 !important;
-  font-weight: 500;
-  margin-left: 8px;
-  font-family: 'Roboto', sans-serif;
-}
-
-/* Контейнер переключателя */
-.toggle-container {
-  display: flex;
-  justify-content: center;
-  padding: 20px;
-  background-color: #121212;
-}
-.profile-container {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  min-height: 100vh;
-  background-color: #121212;
-  padding: 20px;
-}
-
-.profile-card {
+.api-section {
   background-color: #1e1e1e;
-  border-radius: 8px;
-  padding: 40px;
+  border-radius: 12px;
+  padding: 24px;
   width: 100%;
-  max-width: 800px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+  max-width: 600px;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.4);
 }
 
-.profile-title {
-  color: #bb86fc;
-  text-align: center;
-  margin-bottom: 30px;
-  font-weight: 300;
-  font-size: 28px;
-}
-
-.api-form {
-  background-color: #252525;
-  padding: 20px;
-  border-radius: 8px;
-  margin-bottom: 30px;
-}
-
-.form-title {
-  color: #bb86fc;
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
   margin-bottom: 20px;
+}
+
+.section-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.section-title .material-icons {
+  font-size: 20px;
+  color: #bb86fc;
+}
+
+.section-title h3 {
+  margin: 0;
+  font-size: 17px;
   font-weight: 500;
-  font-size: 18px;
+  color: #e0e0e0;
+}
+
+.btn-toggle-form {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  background: rgba(187, 134, 252, 0.1);
+  color: #bb86fc;
+  border: 1px solid rgba(187, 134, 252, 0.3);
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 500;
+  transition: background 0.2s;
+}
+
+.btn-toggle-form:hover {
+  background: rgba(187, 134, 252, 0.2);
+}
+
+.btn-toggle-form .material-icons {
+  font-size: 16px;
+}
+
+.add-form {
+  background: #252525;
+  border-radius: 8px;
+  padding: 20px;
+  margin-bottom: 20px;
+  border: 1px solid #2e2e2e;
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-bottom: 16px;
 }
 
 .form-group {
-  margin-bottom: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
 }
 
 .form-label {
-  display: block;
-  color: #bb86fc;
-  margin-bottom: 8px;
-  font-weight: 500;
+  color: #888;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
 }
 
 .form-input {
-  width: 100%;
-  padding: 12px;
-  background-color: #333;
-  border: 1px solid #444;
-  border-radius: 4px;
+  padding: 9px 12px;
+  background-color: #1a1a1a;
+  border: 1px solid #3a3a3a;
+  border-radius: 6px;
   color: #e0e0e0;
-  font-size: 16px;
+  font-size: 14px;
+  transition: border-color 0.2s;
 }
 
 .form-input:focus {
@@ -100,161 +101,201 @@ app-api-form .mat-slide-toggle .mat-slide-toggle-content {
 
 .error-message {
   color: #cf6679;
-  font-size: 14px;
-  margin-top: 5px;
+  font-size: 12px;
 }
 
-.btn-primary {
+.btn-submit {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 18px;
   background-color: #bb86fc;
   color: #000;
   border: none;
-  padding: 12px 24px;
-  border-radius: 4px;
+  border-radius: 6px;
   cursor: pointer;
-  font-size: 16px;
-  font-weight: 500;
-  display: flex;
-  align-items: center;
-  gap: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  transition: background 0.2s;
 }
 
-.btn-primary:hover {
+.btn-submit:hover {
   background-color: #9965f4;
 }
 
-.btn-primary:disabled {
-  background-color: #444;
-  color: #777;
+.btn-submit:disabled {
+  background-color: #333;
+  color: #555;
   cursor: not-allowed;
 }
 
-.api-list {
-  margin-top: 30px;
+.btn-submit .material-icons {
+  font-size: 17px;
+}
+
+.keys-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.empty-state {
+  text-align: center;
+  color: #444;
+  padding: 32px 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+.empty-state .material-icons {
+  font-size: 38px;
+}
+
+.empty-state p {
+  margin: 0;
+  font-size: 14px;
 }
 
 .api-item {
-  background-color: #252525;
-  padding: 20px;
+  background: #252525;
   border-radius: 8px;
-  margin-bottom: 15px;
-  position: relative;
+  padding: 16px;
+  border: 1px solid #2a2a2a;
+  transition: border-color 0.2s;
+}
+
+.api-item:hover {
+  border-color: #383838;
 }
 
 .api-header {
   display: flex;
   justify-content: space-between;
-  align-items: center;
-  margin-bottom: 15px;
+  align-items: flex-start;
+  margin-bottom: 12px;
+}
+
+.api-title {
+  flex: 1;
+  min-width: 0;
 }
 
 .api-name {
-  color: #bb86fc;
+  margin: 0 0 4px;
+  color: #e0e0e0;
+  font-size: 14px;
   font-weight: 500;
-  font-size: 18px;
 }
 
 .api-description {
-  color: #e0e0e0;
-  margin-bottom: 15px;
-  line-height: 1.5;
+  margin: 0;
+  color: #666;
+  font-size: 13px;
 }
 
-.api-key {
-  background-color: #333;
-  padding: 12px;
-  border-radius: 4px;
-  font-family: monospace;
-  color: #e0e0e0;
-  margin-bottom: 15px;
-  word-break: break-all;
-  position: relative;
-  padding-right: 40px;
-}
-
-.btn-copy {
-  position: absolute;
-  right: 8px;
-  top: 8px;
-  background: transparent;
-  border: none;
-  color: #bb86fc;
-  cursor: pointer;
-}
-
-.api-meta {
-  display: flex;
-  justify-content: space-between;
-  color: #999;
-  font-size: 14px;
-  border-top: 1px solid #333;
-  padding-top: 15px;
-  align-items: center;
-}
-
-.btn-delete {
-  background-color: #cf6679;
-  color: #fff;
-  border: none;
-  padding: 8px 16px;
-  border-radius: 4px;
-  cursor: pointer;
+.api-actions {
   display: flex;
   align-items: center;
   gap: 8px;
-}
-
-.btn-delete:hover {
-  background-color: #ba4d5f;
+  flex-shrink: 0;
+  margin-left: 12px;
 }
 
 .status-badge {
   display: inline-block;
-  padding: 4px 8px;
-  border-radius: 4px;
-  font-size: 12px;
-  font-weight: 500;
+  padding: 2px 10px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
 }
 
 .status-active {
-  background-color: #1b5e20;
+  background: rgba(76, 175, 80, 0.12);
   color: #4caf50;
+  border: 1px solid rgba(76, 175, 80, 0.25);
 }
 
 .status-inactive {
-  background-color: #7f0000;
+  background: rgba(244, 67, 54, 0.1);
   color: #f44336;
+  border: 1px solid rgba(244, 67, 54, 0.2);
 }
 
-.empty-state {
-  text-align: center;
-  color: #999;
-  padding: 40px 0;
+.api-key-display {
   display: flex;
-  flex-direction: column;
   align-items: center;
-  gap: 16px;
+  gap: 8px;
+  background: #1a1a1a;
+  border: 1px solid #2e2e2e;
+  border-radius: 6px;
+  padding: 9px 12px;
+  margin-bottom: 12px;
 }
 
-.empty-state .material-icons {
-  font-size: 48px;
+.api-key-value {
+  flex: 1;
+  font-family: 'Courier New', monospace;
+  font-size: 12px;
+  color: #888;
+  word-break: break-all;
+  overflow: hidden;
 }
 
+.btn-icon {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+  flex-shrink: 0;
+}
 
+.btn-icon .material-icons {
+  font-size: 17px;
+}
 
+.btn-copy-icon {
+  color: #555;
+}
 
-@media (max-width: 768px) {
-  .profile-card {
-    padding: 20px;
+.btn-copy-icon:hover {
+  color: #bb86fc;
+  background: rgba(187, 134, 252, 0.1);
+}
+
+.btn-delete-icon {
+  color: #555;
+}
+
+.btn-delete-icon:hover {
+  color: #cf6679;
+  background: rgba(207, 102, 121, 0.1);
+}
+
+.api-footer {
+  display: flex;
+  align-items: center;
+}
+
+.api-date {
+  color: #444;
+  font-size: 12px;
+}
+
+@media (max-width: 640px) {
+  .form-row {
+    grid-template-columns: 1fr;
   }
-  
-  .api-header {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 10px;
-  }
-  
-  .api-meta {
-    flex-direction: column;
-    gap: 10px;
+
+  .api-section {
+    padding: 16px;
   }
 }

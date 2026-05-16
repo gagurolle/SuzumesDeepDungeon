@@ -1,35 +1,21 @@
-   <div class="profile-container">
-      <div class="profile-card">
-        <h2 class="profile-title">Профиль пользователя</h2>
-        
-        <div class="profile-info">
-          <div class="info-row">
-            <span class="info-label">Имя:</span>
-            <span class="info-value">{{ auth.getUserName }}</span>
-          </div>
-          
-          <div class="info-row">
-            <span class="info-label">Роль:</span>
-            <span class="info-value">{{ auth.getUserRole }}</span>
-          </div>
-        </div>
-
-        <div class="profile-actions">
-          <button mat-raised-button 
-                  color="primary" 
-                  class="action-button"
-                  (click)="goHome()">
-            На главную
-          </button>
-          
-          <button mat-raised-button 
-                  color="warn" 
-                  class="action-button"
-                  (click)="logout()">
-            Выйти
-          </button>
-        </div>
-      </div>
-      <app-api-form [username]="auth.getUserName">
-    </app-api-form>
+<div class="profile-page">
+  <div class="profile-card">
+    <div class="profile-avatar">{{ (auth.getUserName || 'U').charAt(0).toUpperCase() }}</div>
+    <div class="profile-info">
+      <h2 class="profile-name">{{ auth.getUserName }}</h2>
+      <span class="role-badge">{{ auth.getUserRole }}</span>
     </div>
+    <div class="profile-actions">
+      <button class="btn-home" (click)="goHome()">
+        <span class="material-icons">home</span>
+        На главную
+      </button>
+      <button class="btn-logout" (click)="logout()">
+        <span class="material-icons">logout</span>
+        Выйти
+      </button>
+    </div>
+  </div>
+
+  <app-api-form [username]="auth.getUserName"></app-api-form>
+</div>
