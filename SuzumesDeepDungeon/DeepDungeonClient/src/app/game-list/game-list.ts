@@ -1,5 +1,6 @@
 // game-list.component.ts
-import { ChangeDetectorRef, Component, HostListener, NgZone, OnDestroy, OnInit } from '@angular/core';
+import { AfterViewInit, ChangeDetectorRef, Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
+
 
 import { CommonModule } from '@angular/common';
 import { DatePipe } from '@angular/common';
@@ -43,7 +44,7 @@ import { AppMenuComponent } from "../app-menu/app-menu.component";
   styleUrls: ['./game-list.css'],
   providers: [DatePipe]
 })
-export class GameListComponent implements OnInit, OnDestroy {
+export class GameListComponent implements OnInit, AfterViewInit, OnDestroy {
 
   games: GameRankDTO[] = [];
   isLoading = true;
@@ -64,6 +65,9 @@ export class GameListComponent implements OnInit, OnDestroy {
 
   private searchSubject = new Subject<string>();
   private destroy$ = new Subject<void>();
+  private scrollObserver: IntersectionObserver | null = null;
+
+  @ViewChild('scrollSentinel', { static: false }) scrollSentinel!: ElementRef;
 
   constructor(
     private gameService: GameService,
@@ -92,27 +96,24 @@ export class GameListComponent implements OnInit, OnDestroy {
     });
   }
 
+  ngAfterViewInit(): void {
+    this.scrollObserver = new IntersectionObserver(entries => {
+      if (entries[0].isIntersecting) {
+        this.loadMore();
+      }
+    }, { rootMargin: '200px' });
+
+    if (this.scrollSentinel) {
+      this.scrollObserver.observe(this.scrollSentinel.nativeElement);
+    }
+  }
+
   ngOnDestroy(): void {
+    this.scrollObserver?.disconnect();
     this.destroy$.next();
     this.destroy$.complete();
   }
 
-  // Обработчик скролла
-  @HostListener('window:scroll')
-  onWindowScroll(): void {
-    //if (this.isLoading || this.isLoadingMore || !this.hasMore) return;
-
-    // Вычисляем, достигли ли мы низа страницы
-    const threshold = 100; // Загружать за 100px до конца
-    const position = window.scrollY + window.innerHeight;
-    const height = document.body.scrollHeight;
-
-    if (position > height - threshold) {
-      this.loadMore();
-    }
-  }
-
-  // Загрузка дополнительных элементов
   loadMore(): void {
     if (this.isLoadingMore || !this.hasMore) return;
 

@@ -4,7 +4,17 @@
     <div class="deafult-card-style">
     <!-- Герой-секция -->
     <section class="hero">
-      <h1 class="page-title"><img src="https://cdn.7tv.app/emote/01F9V0VY58000AJG70JGM8SMF1/2x.avif" alt="0">Twitch Игры от пользователей<img src="https://cdn.7tv.app/emote/01HD92YYE8000DW97PFPF49BZG/1x.avif" alt="0"></h1>
+      <h1 class="page-title">
+        <picture>
+          <source srcset="https://cdn.7tv.app/emote/01F9V0VY58000AJG70JGM8SMF1/2x.avif" type="image/avif">
+          <img src="https://cdn.7tv.app/emote/01F9V0VY58000AJG70JGM8SMF1/2x.webp" alt="" loading="eager">
+        </picture>
+        Twitch Игры от пользователей
+        <picture>
+          <source srcset="https://cdn.7tv.app/emote/01HD92YYE8000DW97PFPF49BZG/1x.avif" type="image/avif">
+          <img src="https://cdn.7tv.app/emote/01HD92YYE8000DW97PFPF49BZG/1x.webp" alt="" loading="eager">
+        </picture>
+      </h1>
       <p>Когда вы на стриме, с  помощью награды ( за баллы канала ) можно добавить в этот список игру. То есть вы советуете игры, они тут сохраняются, а я потом делаю выводы - играть мне во что-то из этого или нет</p>
     </section>
     </div>
@@ -29,8 +39,8 @@
             <tr>
               <td class="index">{{ i + 1 }}</td>
               <td class="user-info">
-                <img [src]="action.user.profileImageUrl || 'https://static-cdn.jtvnw.net/user-default-pictures-uv/ce57700a-def9-11e9-842d-784f43822e80-profile_image-70x70.png'" 
-                     alt="Profile" class="profile-image">
+                <img [src]="action.user.profileImageUrl || 'https://static-cdn.jtvnw.net/user-default-pictures-uv/ce57700a-def9-11e9-842d-784f43822e80-profile_image-70x70.png'"
+                     alt="Profile" class="profile-image" loading="lazy">
                 <div class="user-details">
                   <span class="user-login">{{ action.user.userLogin }}</span>
                   <span class="user-type">{{ action.user.userType || 'Viewer' }}</span>

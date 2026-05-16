@@ -15,6 +15,7 @@ import { FormsModule } from '@angular/forms';
 export class MainPageComponent implements OnInit {
 
   iterator: number = 0;
+  currentYear = new Date().getFullYear();
   domain: string = '';
   channelName: string = 'pan_suzume';
   clipId: string = 'DirtyCrepuscularMallardRlyTho-wCVRyNm8RTBEbCJy';

@@ -14,7 +14,7 @@
 
             <div class="game-content">
                 <div class="game-image-container">
-                    <img [src]="game.image || 'assets/default-game.jpg'" alt="{{ game.name }}" class="game-image">
+                    <img [src]="game.image || 'assets/default-game.jpg'" alt="{{ game.name }}" class="game-image" loading="eager">
                 </div>
 
                 <div class="game-info">
@@ -121,22 +121,22 @@
                             <div class="screenshots-container">
                                 @if (game.screenshots.steamHeaderUrl) {
                                     <div class="screenshot-item">
-                                        <img [src]="game.screenshots.steamHeaderUrl" alt="Steam Header">
+                                        <img [src]="game.screenshots.steamHeaderUrl" alt="Steam Header" loading="lazy">
                                     </div>
                                 }
                                 @if (game.screenshots.steamCapsuleUrl) {
                                     <div class="screenshot-item">
-                                        <img [src]="game.screenshots.steamCapsuleUrl" alt="Steam Capsule">
+                                        <img [src]="game.screenshots.steamCapsuleUrl" alt="Steam Capsule" loading="lazy">
                                     </div>
                                 }
                                 @if (game.screenshots.steam600x900Url) {
                                     <div class="screenshot-item">
-                                        <img [src]="game.screenshots.steam600x900Url" alt="Steam 600x900">
+                                        <img [src]="game.screenshots.steam600x900Url" alt="Steam 600x900" loading="lazy">
                                     </div>
                                 }
                                 @if (game.screenshots.rawgBackgroundUrl) {
                                     <div class="screenshot-item">
-                                        <img [src]="game.screenshots.rawgBackgroundUrl" alt="RAWG Background">
+                                        <img [src]="game.screenshots.rawgBackgroundUrl" alt="RAWG Background" loading="lazy">
                                     </div>
                                 }
                             </div>
@@ -155,7 +155,7 @@
                                 <div class="achievements-container">
                                     @for (achievement of game.achievements; track achievement.name) {
                                     <div class="achievement-item">
-                                        <img [src]="achievement.imageUrl" alt="{{ achievement.name }}" class="achievement-image">
+                                        <img [src]="achievement.imageUrl" alt="{{ achievement.name }}" class="achievement-image" loading="lazy">
                                         <div class="achievement-details">
                                             <h4>{{ achievement.name }}</h4>
                                             <p>{{ achievement.description }}</p>

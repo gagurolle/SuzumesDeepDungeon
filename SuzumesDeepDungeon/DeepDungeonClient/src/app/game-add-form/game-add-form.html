@@ -180,7 +180,7 @@
                   {{ achievement.description }}
                 </div>
                 @if (achievement.imageUrl) {
-                  <img [src]="achievement.imageUrl" alt="Achievement image" class="achievement-image">
+                  <img [src]="achievement.imageUrl" alt="Achievement image" class="achievement-image" loading="lazy">
                 }
               </div>
             }

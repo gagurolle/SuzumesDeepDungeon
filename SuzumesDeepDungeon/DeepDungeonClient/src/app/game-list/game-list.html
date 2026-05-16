@@ -105,7 +105,7 @@
       <div class="game-card">
         <div class="game-image-container">
           <img [src]="game.image || 'assets/default-game.jpg'" alt="{{ game.name }}" class="game-image"
-            (error)="handleImageError($event)">
+            loading="lazy" (error)="handleImageError($event)">
         </div>
 
         <div class="game-info">
@@ -195,6 +195,7 @@
       </div>
       }
     </div>
+    <div #scrollSentinel></div>
     <!-- Индикатор загрузки дополнительных элементов -->
     @if (isLoadingMore) {
     <div class="loading-more">

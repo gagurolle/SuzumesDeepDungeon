@@ -1,0 +1,13 @@
+{
+  "permissions": {
+    "allow": [
+      "mcp__lean-ctx__ctx_overview",
+      "mcp__lean-ctx__ctx_tree",
+      "mcp__lean-ctx__ctx_read",
+      "PowerShell(head -20)",
+      "PowerShell(Get-ChildItem \"C:\\\\Projects\\\\SuzumesDeepDungeon\\\\SuzumesDeepDungeon\\\\DeepDungeonClient\\\\src\\\\assets\\\\logos\\\\\" | Select-Object Name, @{N='KB';E={[math]::Round\\($_.Length/1KB,1\\)}})",
+      "PowerShell(dir \"C:\\\\Projects\\\\SuzumesDeepDungeon\\\\SuzumesDeepDungeon\\\\DeepDungeonClient\\\\src\\\\assets\\\\\" -Recurse | Where-Object {!$_.PSIsContainer} | Select-Object Name, @{N='KB';E={[math]::Round\\($_.Length/1KB,1\\)}}, FullName | Sort-Object KB -Descending)",
+      "PowerShell(Get-ChildItem \"C:\\\\Projects\\\\SuzumesDeepDungeon\\\\SuzumesDeepDungeon\\\\DeepDungeonClient\\\\src\\\\assets\" -Recurse -File | ForEach-Object { \"$\\($_.Name\\) - $\\([math]::Round\\($_.Length/1KB,1\\)\\) KB\" })"
+    ]
+  }
+}
