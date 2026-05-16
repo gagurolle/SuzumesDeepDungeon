@@ -288,7 +288,7 @@ code {
 .twitch-title {
   font-size: 1.8rem;
   color: #9146ff;
-  margin-bottom: 20px;
+  margin-bottom: 24px;
   text-align: center;
 }
 
@@ -299,24 +299,30 @@ code {
 }
 
 .twitch-option {
-  background-color: rgba(0, 0, 0, 0.2);
-  padding: 15px;
+  background-color: #1e1e1e;
+  border: 1px solid #2e2e2e;
+  padding: 16px;
   border-radius: 8px;
 }
 
-.twitch-option h3 {
+.twitch-option-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 14px;
   color: #9146ff;
-  margin-bottom: 15px;
 }
 
-.twitch-input {
-  width: 100%;
-  padding: 10px;
-  margin-bottom: 10px;
-  border-radius: 5px;
-  border: 1px solid #394867;
-  background-color: rgba(255, 255, 255, 0.1);
-  color: white;
+.twitch-option-header .material-icons {
+  font-size: 20px;
+}
+
+.twitch-option-header h3 {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 500;
+  color: #9146ff;
+  letter-spacing: 0.03em;
 }
 
 .twitch-preview {
@@ -337,18 +343,29 @@ code {
 }
 
 .clip-random-btn {
-  background: linear-gradient(to right, #9146ff, #5c16c5);
-  color: white;
-  border: none;
-  padding: 10px 20px;
-  border-radius: 5px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 14px;
+  padding: 9px 20px;
+  background: transparent;
+  color: #9146ff;
+  border: 2px solid #9146ff;
+  border-radius: 6px;
   cursor: pointer;
-  font-weight: bold;
-  transition: all 0.3s;
+  font-size: 0.88rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  transition: background-color 0.2s, color 0.2s, transform 0.15s;
+}
+
+.clip-random-btn .material-icons {
+  font-size: 17px;
 }
 
 .clip-random-btn:hover {
-  opacity: 0.9;
+  background: #9146ff;
+  color: #fff;
   transform: translateY(-2px);
 }
 
@@ -486,7 +503,7 @@ footer {
 
   .clip-random-btn {
     width: 100%;
-    padding: 10px 0;
+    justify-content: center;
     font-size: 1rem;
   }
 

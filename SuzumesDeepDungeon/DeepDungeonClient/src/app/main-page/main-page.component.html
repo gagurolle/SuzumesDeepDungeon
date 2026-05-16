@@ -63,27 +63,30 @@
 
     <div class="twitch-section hero">
   <h2 class="twitch-title">Twitch трансляции</h2>
-  
+
   <div class="twitch-container">
     <div class="twitch-option">
-      <h3>Прямая трансляция</h3>
+      <div class="twitch-option-header">
+        <span class="material-icons">cast</span>
+        <h3>Прямая трансляция</h3>
+      </div>
       <div class="twitch-preview">
-        <iframe
-          [src]="streamUrl | safeUrl"
-          allowfullscreen>
-        </iframe>
+        <iframe [src]="streamUrl | safeUrl" allowfullscreen></iframe>
       </div>
     </div>
-    
+
     <div class="twitch-option">
-      <h3>Twitch клип</h3>
-      <div class="twitch-preview">
-        <iframe
-          [src]="clipUrl | safeUrl"
-          allowfullscreen>
-        </iframe>
+      <div class="twitch-option-header">
+        <span class="material-icons">movie</span>
+        <h3>Twitch клип</h3>
       </div>
-      <button class="clip-random-btn" (click)="getRandomClip()">Рандомный клип</button>
+      <div class="twitch-preview">
+        <iframe [src]="clipUrl | safeUrl" allowfullscreen></iframe>
+      </div>
+      <button class="clip-random-btn" (click)="getRandomClip()">
+        <span class="material-icons">shuffle</span>
+        Рандомный клип
+      </button>
     </div>
   </div>
 </div>
